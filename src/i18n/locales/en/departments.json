@@ -1,0 +1,31 @@
+{
+  "page": {
+    "title": "Departments",
+    "accessDenied": "You do not have permission to view departments.",
+    "empty": {
+      "title": "No departments yet",
+      "message": "Create the first department to organize users and runs."
+    }
+  },
+  "card": {
+    "users": "{{count}} user(s)",
+    "activeRuns": "{{count}} active run(s)",
+    "noDescription": "—",
+    "created": "Created"
+  },
+  "actions": {
+    "create": "New Department"
+  },
+  "form": {
+    "name": "Name",
+    "description": "Description (optional)",
+    "submit": "Create",
+    "cancel": "Cancel",
+    "namePlaceholder": "e.g. Zone 3 Operations",
+    "descriptionPlaceholder": "Brief description of this department's purpose"
+  },
+  "toast": {
+    "created": "Department created successfully.",
+    "duplicateName": "A department with this name already exists."
+  }
+}

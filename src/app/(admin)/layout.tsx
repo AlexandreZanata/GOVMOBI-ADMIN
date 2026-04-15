@@ -28,7 +28,7 @@ export default async function AdminLayout({
         className={[
           "sr-only focus:not-sr-only",
           "focus:fixed focus:left-2 focus:top-2 focus:z-50",
-          "focus:rounded-[var(--radius-md)] focus:bg-brand-primary",
+          "focus:rounded-md focus:bg-brand-primary",
           "focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white",
           "focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2",
         ].join(" ")}

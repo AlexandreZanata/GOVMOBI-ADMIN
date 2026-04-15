@@ -27,6 +27,7 @@ export enum Permission {
   USER_EDIT = "user:edit",
   USER_DEACTIVATE = "user:deactivate",
   DEPARTMENT_VIEW = "department:view",
+  DEPARTMENT_CREATE = "department:create",
   AUDIT_VIEW = "audit:view",
 }
 

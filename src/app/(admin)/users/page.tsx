@@ -19,9 +19,9 @@ export default function UsersPage() {
               data-testid="users-suspense-fallback"
               className="space-y-3"
             >
-              <div className="h-10 w-full animate-pulse rounded-[var(--radius-md)] bg-neutral-200" />
-              <div className="h-12 w-full animate-pulse rounded-[var(--radius-md)] bg-neutral-200" />
-              <div className="h-12 w-full animate-pulse rounded-[var(--radius-md)] bg-neutral-200" />
+              <div className="h-10 w-full animate-pulse rounded-md bg-neutral-200" />
+              <div className="h-12 w-full animate-pulse rounded-md bg-neutral-200" />
+              <div className="h-12 w-full animate-pulse rounded-md bg-neutral-200" />
             </section>
           }
         >
