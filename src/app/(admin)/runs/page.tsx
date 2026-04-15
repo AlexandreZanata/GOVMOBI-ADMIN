@@ -11,19 +11,17 @@ import { UserRole } from "@/models";
  */
 export default function RunsPage() {
   return (
-    <div className="mx-auto w-full max-w-5xl">
-      <PermissionsProvider role={UserRole.DISPATCHER}>
-        <Suspense
-          fallback={
-            <section data-testid="runs-suspense-fallback" className="space-y-3">
-              <div className="h-10 w-full animate-pulse rounded-md bg-neutral-200" />
-              <div className="h-24 w-full animate-pulse rounded-md bg-neutral-200" />
-            </section>
-          }
-        >
-          <RunsPageClient />
-        </Suspense>
-      </PermissionsProvider>
-    </div>
+    <PermissionsProvider role={UserRole.DISPATCHER}>
+      <Suspense
+        fallback={
+          <section data-testid="runs-suspense-fallback" className="space-y-3">
+            <div className="h-10 w-full animate-pulse rounded-md bg-neutral-200" />
+            <div className="h-24 w-full animate-pulse rounded-md bg-neutral-200" />
+          </section>
+        }
+      >
+        <RunsPageClient />
+      </Suspense>
+    </PermissionsProvider>
   );
 }

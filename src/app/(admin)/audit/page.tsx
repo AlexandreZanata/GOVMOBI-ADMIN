@@ -11,19 +11,17 @@ import { UserRole } from "@/models";
  */
 export default function AuditPage() {
   return (
-    <div className="mx-auto w-full max-w-5xl">
-      <PermissionsProvider role={UserRole.SUPERVISOR}>
-        <Suspense
-          fallback={
-            <section data-testid="audit-suspense-fallback" className="space-y-3">
-              <div className="h-10 w-full animate-pulse rounded-md bg-neutral-200" />
-              <div className="h-24 w-full animate-pulse rounded-md bg-neutral-200" />
-            </section>
-          }
-        >
-          <AuditPageClient />
-        </Suspense>
-      </PermissionsProvider>
-    </div>
+    <PermissionsProvider role={UserRole.SUPERVISOR}>
+      <Suspense
+        fallback={
+          <section data-testid="audit-suspense-fallback" className="space-y-3">
+            <div className="h-10 w-full animate-pulse rounded-md bg-neutral-200" />
+            <div className="h-24 w-full animate-pulse rounded-md bg-neutral-200" />
+          </section>
+        }
+      >
+        <AuditPageClient />
+      </Suspense>
+    </PermissionsProvider>
   );
 }

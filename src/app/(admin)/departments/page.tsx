@@ -11,26 +11,24 @@ import { UserRole } from "@/models";
  */
 export default function DepartmentsPage() {
   return (
-    <div className="mx-auto w-full max-w-5xl">
-      <PermissionsProvider role={UserRole.ADMIN}>
-        <Suspense
-          fallback={
-            <section
-              data-testid="departments-suspense-fallback"
-              className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-            >
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-40 w-full animate-pulse rounded-lg bg-neutral-200"
-                />
-              ))}
-            </section>
-          }
-        >
-          <DepartmentsPageClient />
-        </Suspense>
-      </PermissionsProvider>
-    </div>
+    <PermissionsProvider role={UserRole.ADMIN}>
+      <Suspense
+        fallback={
+          <section
+            data-testid="departments-suspense-fallback"
+            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-40 w-full animate-pulse rounded-lg bg-neutral-200"
+              />
+            ))}
+          </section>
+        }
+      >
+        <DepartmentsPageClient />
+      </Suspense>
+    </PermissionsProvider>
   );
 }
