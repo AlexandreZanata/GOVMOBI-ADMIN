@@ -2,5 +2,9 @@
   "loading": "Loading",
   "cancel": "Cancel",
   "confirm": "Confirm",
-  "close": "Close"
+  "close": "Close",
+  "errorState": {
+    "title": "Something went wrong",
+    "retry": "Retry"
+  }
 }
