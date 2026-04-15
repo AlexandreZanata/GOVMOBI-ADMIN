@@ -9,7 +9,7 @@ import { UserRole } from "@/models";
 
 export interface AdminShellProps {
   /** Page content rendered in the main area. */
-  children: ReactNode;
+  children?: ReactNode;
   /**
    * Initial collapsed state read from the server cookie.
    * Defaults to false (expanded).
