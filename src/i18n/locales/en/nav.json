@@ -1,0 +1,14 @@
+{
+  "runs": "Runs",
+  "cargos": "Cargos",
+  "lotacoes": "Lotações",
+  "servidores": "Servidores",
+  "veiculos": "Vehicles",
+  "users": "Users",
+  "departments": "Departments",
+  "audit": "Audit Trail",
+  "collapse": "Collapse sidebar",
+  "expand": "Expand sidebar",
+  "logout": "Sign out",
+  "profile": "My profile"
+}

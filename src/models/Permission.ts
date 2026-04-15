@@ -14,6 +14,14 @@ export enum Permission {
   MANAGE_USERS = "MANAGE_USERS",
   CONFIGURE_SYSTEM = "CONFIGURE_SYSTEM",
   VIEW_AUDIT_LOG = "VIEW_AUDIT_LOG",
+  // Navigation / domain gates
+  CARGO_VIEW = "cargo:view",
+  LOTACAO_VIEW = "lotacao:view",
+  SERVIDOR_VIEW = "servidor:view",
+  VEICULO_VIEW = "veiculo:view",
+  USER_VIEW = "user:view",
+  DEPARTMENT_VIEW = "department:view",
+  AUDIT_VIEW = "audit:view",
 }
 
 /**

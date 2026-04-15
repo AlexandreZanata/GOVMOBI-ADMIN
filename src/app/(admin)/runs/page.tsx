@@ -11,7 +11,7 @@ import { UserRole } from "@/models";
  */
 export default function RunsPage() {
   return (
-    <main className="mx-auto w-full max-w-5xl p-6">
+    <div className="mx-auto w-full max-w-5xl">
       <PermissionsProvider role={UserRole.DISPATCHER}>
         <Suspense
           fallback={
@@ -24,6 +24,6 @@ export default function RunsPage() {
           <RunsPageClient />
         </Suspense>
       </PermissionsProvider>
-    </main>
+    </div>
   );
 }
