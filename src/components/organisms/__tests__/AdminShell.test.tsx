@@ -8,6 +8,7 @@ import userEvent from "@testing-library/user-event";
 import "../../atoms/__tests__/../../../test/i18n-mock";
 import { AdminShell } from "../AdminShell";
 import { UserRole } from "@/models";
+import React from "react";
 
 // Mock next/navigation — usePathname used inside NavItem
 vi.mock("next/navigation", () => ({
