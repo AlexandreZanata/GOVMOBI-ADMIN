@@ -2,6 +2,18 @@ import { handleApiResponse } from "@/lib/handleApiResponse";
 import type { Run } from "@/models";
 import type { GetRunByIdInput, OverrideRunInput } from "@/types";
 
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+
+/** Paginated envelope returned by GET /v1/runs. */
+interface RunsPage {
+  items: Run[];
+  total: number;
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
+}
+
 /**
  * Facade for run-related business actions and API orchestration.
  */
@@ -13,8 +25,9 @@ export const runsFacade = {
    * @throws Error when backend returns non-2xx status
    */
   async listRuns(): Promise<Run[]> {
-    const response = await fetch("/api/runs");
-    return handleApiResponse<Run[]>(response);
+    const response = await fetch(`${BASE_URL}/v1/runs`);
+    const page = await handleApiResponse<RunsPage>(response);
+    return page.items;
   },
 
   /**
@@ -25,10 +38,7 @@ export const runsFacade = {
    * @throws ApiError on 400, 403, 404, and 500 responses
    */
   async getRunById(input: GetRunByIdInput): Promise<Run> {
-    const response = await fetch(`/v1/runs/${input.runId}`, {
-      method: "GET",
-    });
-
+    const response = await fetch(`${BASE_URL}/v1/runs/${input.runId}`);
     return handleApiResponse<Run>(response);
   },
 
@@ -40,17 +50,14 @@ export const runsFacade = {
    * @throws ApiError on 400, 403, 404, 409, and 500 responses
    */
   async overrideRun(input: OverrideRunInput): Promise<Run> {
-    const response = await fetch(`/v1/runs/${input.runId}/override`, {
+    const response = await fetch(`${BASE_URL}/v1/runs/${input.runId}/override`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         reason: input.reason,
         auditEvent: input.auditEvent,
       }),
     });
-
     return handleApiResponse<Run>(response);
   },
 };

@@ -8,6 +8,9 @@ import {
   type RunListItem,
 } from "@/test/fixtures/runs";
 
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+
 interface CreateRunBody {
   title?: string;
   description?: string;
@@ -98,7 +101,7 @@ function paginate(items: RunListItem[], page: number, pageSize: number): Paginat
  * MSW handlers for run-related endpoints.
  */
 export const runsHandlers = [
-  http.get("/v1/runs", async ({ request }) => {
+  http.get(`${BASE_URL}/v1/runs`, async ({ request }) => {
     await delay(getLatencyMs());
 
     const url = new URL(request.url);
@@ -124,7 +127,7 @@ export const runsHandlers = [
     return HttpResponse.json(paginate(filtered, page, pageSize), { status: 200 });
   }),
 
-  http.get("/v1/runs/:id", async ({ params, request }) => {
+  http.get(`${BASE_URL}/v1/runs/:id`, async ({ params, request }) => {
     await delay(getLatencyMs());
 
     const url = new URL(request.url);
@@ -142,7 +145,7 @@ export const runsHandlers = [
     return HttpResponse.json(makeRunDetail(runId), { status: 200 });
   }),
 
-  http.post("/v1/runs", async ({ request }) => {
+  http.post(`${BASE_URL}/v1/runs`, async ({ request }) => {
     await delay(getLatencyMs());
 
     const url = new URL(request.url);
@@ -181,7 +184,7 @@ export const runsHandlers = [
     return HttpResponse.json(created, { status: 201 });
   }),
 
-  http.post("/v1/runs/:id/assign", async ({ params, request }) => {
+  http.post(`${BASE_URL}/v1/runs/:id/assign`, async ({ params, request }) => {
     await delay(getLatencyMs());
 
     const url = new URL(request.url);
@@ -216,7 +219,7 @@ export const runsHandlers = [
     );
   }),
 
-  http.post("/v1/runs/:id/cancel", async ({ params, request }) => {
+  http.post(`${BASE_URL}/v1/runs/:id/cancel`, async ({ params, request }) => {
     await delay(getLatencyMs());
 
     const url = new URL(request.url);
@@ -250,7 +253,7 @@ export const runsHandlers = [
     );
   }),
 
-  http.post("/v1/runs/:id/override", async ({ params, request }) => {
+  http.post(`${BASE_URL}/v1/runs/:id/override`, async ({ params, request }) => {
     await delay(getLatencyMs());
 
     const url = new URL(request.url);
@@ -304,7 +307,7 @@ export const runsHandlers = [
     );
   }),
 
-  http.patch("/v1/runs/:id/override", async ({ params, request }) => {
+  http.patch(`${BASE_URL}/v1/runs/:id/override`, async ({ params, request }) => {
     await delay(getLatencyMs());
 
     const url = new URL(request.url);
