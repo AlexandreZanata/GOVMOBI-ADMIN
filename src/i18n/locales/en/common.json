@@ -6,5 +6,8 @@
   "errorState": {
     "title": "Something went wrong",
     "retry": "Retry"
+  },
+  "toast": {
+    "serverError": "An unexpected error occurred. Please try again."
   }
 }

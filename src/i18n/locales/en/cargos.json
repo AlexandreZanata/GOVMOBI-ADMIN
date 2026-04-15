@@ -1,0 +1,45 @@
+{
+  "page": {
+    "title": "Cargos",
+    "accessDenied": "You do not have permission to view cargos.",
+    "empty": {
+      "title": "No cargos found",
+      "message": "Create the first cargo to get started."
+    },
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
+  "table": {
+    "nome": "Name",
+    "pesoPrioridade": "Priority Weight",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "actions": {
+    "create": "New Cargo",
+    "edit": "Edit",
+    "delete": "Deactivate",
+    "reativar": "Reactivate"
+  },
+  "form": {
+    "nome": "Name",
+    "pesoPrioridade": "Priority Weight",
+    "submit": "Save",
+    "cancel": "Cancel"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "toast": {
+    "created": "Cargo created successfully.",
+    "updated": "Cargo updated successfully.",
+    "deleted": "Cargo deactivated.",
+    "reativado": "Cargo reactivated.",
+    "duplicateName": "A cargo with this name already exists.",
+    "notFound": "Cargo not found."
+  }
+}

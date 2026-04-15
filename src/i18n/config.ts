@@ -8,16 +8,17 @@ import runsEN from "./locales/en/runs.json";
 import authEN from "./locales/en/auth.json";
 import usersEN from "./locales/en/users.json";
 import navEN from "./locales/en/nav.json";
+import cargosEN from "./locales/en/cargos.json";
 
 /**
  * i18next configuration for GovMobile Admin Panel.
- * Namespaces: common | runs | auth | users | nav
+ * Namespaces: common | runs | auth | users | nav | cargos
  */
 if (!i18n.isInitialized) {
   i18n.use(initReactI18next).init({
     lng: "en",
     fallbackLng: "en",
-    ns: ["common", "runs", "auth", "users", "nav"],
+    ns: ["common", "runs", "auth", "users", "nav", "cargos"],
     defaultNS: "common",
     resources: {
       en: {
@@ -26,6 +27,7 @@ if (!i18n.isInitialized) {
         auth: authEN,
         users: usersEN,
         nav: navEN,
+        cargos: cargosEN,
       },
     },
     interpolation: { escapeValue: false },
