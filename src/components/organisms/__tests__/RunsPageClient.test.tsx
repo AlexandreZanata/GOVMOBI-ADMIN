@@ -77,7 +77,7 @@ describe("RunsPageClient", () => {
 
     expect(screen.queryByTestId("assign-run-run-1")).toBeNull();
     expect(screen.getByTestId("update-run-run-1")).toBeInTheDocument();
-    expect(screen.queryByTestId("override-run-run-1")).toBeNull();
+    expect(screen.queryByTestId("override-run-run-1-trigger")).toBeNull();
 
     rerender(
       <PermissionsProvider role={UserRole.SUPERVISOR}>
@@ -87,7 +87,7 @@ describe("RunsPageClient", () => {
 
     expect(screen.getByTestId("assign-run-run-1")).toBeInTheDocument();
     expect(screen.getByTestId("update-run-run-1")).toBeInTheDocument();
-    expect(screen.getByTestId("override-run-run-1")).toBeInTheDocument();
+    expect(screen.getByTestId("override-run-run-1-trigger")).toBeInTheDocument();
   });
 
   it("renders empty state when no data", () => {

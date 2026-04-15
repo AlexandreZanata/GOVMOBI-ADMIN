@@ -29,5 +29,15 @@
       "updateStatus": "Update Status",
       "override": "Override"
     }
+  },
+  "dialogs": {
+    "override": {
+      "open": "Override",
+      "title": "Confirm run override",
+      "description": "This action requires a reason and will be logged for audit.",
+      "reasonLabel": "Override reason",
+      "confirm": "Confirm override",
+      "cancel": "Cancel"
+    }
   }
 }

@@ -79,4 +79,73 @@ export const runsHandlers = [
       }
     );
   }),
+  http.patch("/v1/runs/:runId/override", async ({ params, request }) => {
+    await delay(200 + Math.floor(Math.random() * 301));
+
+    const runId = String(params.runId);
+    const body = (await request.json()) as {
+      reason?: string;
+      auditEvent?: string;
+    };
+
+    if (!body.reason?.trim()) {
+      return HttpResponse.json(
+        {
+          code: "REASON_REQUIRED",
+          message: "REASON_REQUIRED",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (runId === "forbidden") {
+      return HttpResponse.json(
+        {
+          code: "FORBIDDEN",
+          message: "FORBIDDEN",
+        },
+        {
+          status: 403,
+        }
+      );
+    }
+
+    if (runId === "not-found") {
+      return HttpResponse.json(
+        {
+          code: "RUN_NOT_FOUND",
+          message: "RUN_NOT_FOUND",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
+
+    if (runId === "conflict") {
+      return HttpResponse.json(
+        {
+          code: "RUN_CONFLICT",
+          message: "RUN_CONFLICT",
+        },
+        {
+          status: 409,
+        }
+      );
+    }
+
+    return HttpResponse.json(
+      {
+        ...runByIdMock,
+        id: runId,
+        notes: body.reason,
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        status: 200,
+      }
+    );
+  }),
 ];

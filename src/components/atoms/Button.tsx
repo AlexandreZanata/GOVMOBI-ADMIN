@@ -1,5 +1,6 @@
 "use client";
 
+import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import "@/i18n/config";
 import React from "react";
@@ -52,26 +53,30 @@ const sizeClasses: Record<ButtonSize, string> = {
  * @param props
  * @returns Accessible button element
  */
-export function Button({
-  variant = "primary",
-  size = "md",
-  isLoading = false,
-  disabled,
-  children,
-  className = "",
-  "data-testid": testId,
-  ...props
-}: ButtonProps) {
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    variant = "primary",
+    size = "md",
+    isLoading = false,
+    disabled,
+    children,
+    className = "",
+    "data-testid": testId,
+    ...props
+  },
+  ref
+) {
   const { t } = useTranslation("common");
 
   return (
     <button
+      ref={ref}
       data-testid={testId}
       disabled={disabled || isLoading}
       aria-busy={isLoading}
       aria-label={isLoading ? t("loading") : undefined}
       className={[
-        "inline-flex items-center justify-center gap-2 rounded-md font-medium",
+        "inline-flex items-center justify-center gap-2 rounded-[var(--radius-md)] font-medium",
         "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
         "disabled:pointer-events-none disabled:opacity-50",
         variantClasses[variant],
@@ -105,4 +110,4 @@ export function Button({
       {children}
     </button>
   );
-}
+});

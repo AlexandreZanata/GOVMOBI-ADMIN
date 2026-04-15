@@ -1,6 +1,6 @@
 import { handleApiResponse } from "@/lib/handleApiResponse";
 import type { Run } from "@/models";
-import type { GetRunByIdInput } from "@/types";
+import type { GetRunByIdInput, OverrideRunInput } from "@/types";
 
 /**
  * Facade for run-related business actions and API orchestration.
@@ -27,6 +27,28 @@ export const runsFacade = {
   async getRunById(input: GetRunByIdInput): Promise<Run> {
     const response = await fetch(`/v1/runs/${input.runId}`, {
       method: "GET",
+    });
+
+    return handleApiResponse<Run>(response);
+  },
+
+  /**
+   * Overrides run execution details after elevated authorization.
+   *
+   * @param input - Override payload with run id, reason, and audit event
+   * @returns Promise resolving to the updated run
+   * @throws ApiError on 400, 403, 404, 409, and 500 responses
+   */
+  async overrideRun(input: OverrideRunInput): Promise<Run> {
+    const response = await fetch(`/v1/runs/${input.runId}/override`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        reason: input.reason,
+        auditEvent: input.auditEvent,
+      }),
     });
 
     return handleApiResponse<Run>(response);

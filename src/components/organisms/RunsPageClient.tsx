@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { Button, StatusPill } from "@/components/atoms";
 import { ErrorState } from "@/components/molecules/ErrorState";
+import { RunOverrideDialog } from "@/components/molecules/RunOverrideDialog";
 import { Can } from "@/components/auth/Can";
 import { useRuns } from "@/hooks/useRuns";
 import { Permission, type Run } from "@/models";
@@ -47,9 +48,9 @@ export function RunsPageClient({ "data-testid": testId }: RunsPageClientProps) {
   if (isLoading) {
     content = (
       <section data-testid="runs-loading" className="space-y-3">
-        <div className="h-10 w-full animate-pulse rounded-[var(--radius-md)] bg-neutral-200" />
-        <div className="h-24 w-full animate-pulse rounded-[var(--radius-md)] bg-neutral-200" />
-        <div className="h-24 w-full animate-pulse rounded-[var(--radius-md)] bg-neutral-200" />
+        <div className="h-10 w-full animate-pulse rounded-md bg-neutral-200" />
+        <div className="h-24 w-full animate-pulse rounded-md bg-neutral-200" />
+        <div className="h-24 w-full animate-pulse rounded-md bg-neutral-200" />
       </section>
     );
   } else if (isError) {
@@ -58,7 +59,7 @@ export function RunsPageClient({ "data-testid": testId }: RunsPageClientProps) {
     content = (
       <section
         data-testid="runs-empty"
-        className="rounded-[var(--radius-md)] border border-neutral-200 bg-neutral-50 p-6"
+        className="rounded-md border border-neutral-200 bg-neutral-50 p-6"
       >
         <h2 className="text-base font-semibold text-neutral-900">
           {t("page.empty.title")}
@@ -74,7 +75,7 @@ export function RunsPageClient({ "data-testid": testId }: RunsPageClientProps) {
           <span>{t("page.filters.status")}</span>
           <select
             data-testid="runs-filter-status"
-            className="rounded-[var(--radius-md)] border border-neutral-300 bg-neutral-50 px-3 py-2 text-neutral-900"
+            className="rounded-md border border-neutral-300 bg-neutral-50 px-3 py-2 text-neutral-900"
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
           >
@@ -91,7 +92,7 @@ export function RunsPageClient({ "data-testid": testId }: RunsPageClientProps) {
           <span>{t("page.filters.type")}</span>
           <select
             data-testid="runs-filter-type"
-            className="rounded-[var(--radius-md)] border border-neutral-300 bg-neutral-50 px-3 py-2 text-neutral-900"
+            className="rounded-md border border-neutral-300 bg-neutral-50 px-3 py-2 text-neutral-900"
             value={typeFilter}
             onChange={(event) => setTypeFilter(event.target.value)}
           >
@@ -120,7 +121,7 @@ export function RunsPageClient({ "data-testid": testId }: RunsPageClientProps) {
       fallback={
         <section
           data-testid="runs-access-denied"
-          className="rounded-[var(--radius-md)] border border-danger/30 bg-danger/10 p-4"
+          className="rounded-md border border-danger/30 bg-danger/10 p-4"
         >
           <p className="text-sm font-medium text-danger">{t("page.accessDenied")}</p>
         </section>
@@ -142,7 +143,7 @@ function RunCard({ run }: RunCardProps) {
   return (
     <li
       data-testid={`run-card-${run.id}`}
-      className="rounded-[var(--radius-md)] border border-neutral-200 bg-white p-4"
+      className="rounded-md border border-neutral-200 bg-white p-4"
     >
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -165,11 +166,7 @@ function RunCard({ run }: RunCardProps) {
           </Button>
         </Can>
 
-        <Can perform={Permission.OVERRIDE_ACTION}>
-          <Button data-testid={`override-run-${run.id}`} size="sm" variant="destructive">
-            {t("page.actions.override")}
-          </Button>
-        </Can>
+        <RunOverrideDialog data-testid={`override-run-${run.id}`} runId={run.id} />
       </div>
     </li>
   );
