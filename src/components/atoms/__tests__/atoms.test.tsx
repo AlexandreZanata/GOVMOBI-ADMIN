@@ -9,7 +9,7 @@ import { Badge } from "../Badge";
 import { Input } from "../Input";
 import { Avatar } from "../Avatar";
 import { StatusPill } from "../StatusPill";
-import { RunStatus } from "@/models/run";
+import { RunStatus } from "@/models/Run";
 import type { BadgeVariant } from "../Badge";
 
 // ─── Button ───────────────────────────────────────────────────────────────────

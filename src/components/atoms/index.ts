@@ -15,3 +15,10 @@ export type { AvatarProps, AvatarSize } from "./Avatar";
 
 export { StatusPill } from "./StatusPill";
 export type { StatusPillProps } from "./StatusPill";
+
+export { StatusChip } from "./StatusChip";
+export type {
+  StatusChipProps,
+  StatusChipVariant,
+  StatusChipNamespace,
+} from "./StatusChip";

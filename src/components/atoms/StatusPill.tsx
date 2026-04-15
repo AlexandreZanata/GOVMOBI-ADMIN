@@ -2,7 +2,7 @@
 
 import { useTranslation } from "react-i18next";
 import "@/i18n/config";
-import { RunStatus } from "@/models/run";
+import { RunStatus } from "@/models/Run";
 
 export interface StatusPillProps {
   /** Run lifecycle status */
