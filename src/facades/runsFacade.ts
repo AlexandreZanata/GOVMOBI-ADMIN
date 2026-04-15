@@ -1,12 +1,6 @@
-import type {Run} from "@/models";
-
-/**
- * Error shape returned by GovMobile APIs.
- */
-interface ApiErrorShape {
-  /** Human-readable error message. */
-  message?: string;
-}
+import { handleApiResponse } from "@/lib/handleApiResponse";
+import type { Run } from "@/models";
+import type { GetRunByIdInput } from "@/types";
 
 /**
  * Facade for run-related business actions and API orchestration.
@@ -20,12 +14,21 @@ export const runsFacade = {
    */
   async listRuns(): Promise<Run[]> {
     const response = await fetch("/api/runs");
+    return handleApiResponse<Run[]>(response);
+  },
 
-    if (!response.ok) {
-      const body = (await response.json().catch(() => null)) as ApiErrorShape | null;
-      throw new Error(body?.message ?? "REQUEST_FAILED");
-    }
+  /**
+   * Retrieves a single run by identifier.
+   *
+   * @param input - Run lookup input containing the run identifier
+   * @returns Promise resolving to the requested run contract
+   * @throws ApiError on 400, 403, 404, and 500 responses
+   */
+  async getRunById(input: GetRunByIdInput): Promise<Run> {
+    const response = await fetch(`/v1/runs/${input.runId}`, {
+      method: "GET",
+    });
 
-    return (await response.json()) as Run[];
+    return handleApiResponse<Run>(response);
   },
 };
