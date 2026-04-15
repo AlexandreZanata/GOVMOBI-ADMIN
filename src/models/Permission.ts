@@ -17,6 +17,9 @@ export enum Permission {
   // Navigation / domain gates
   CARGO_VIEW = "cargo:view",
   LOTACAO_VIEW = "lotacao:view",
+  LOTACAO_CREATE = "lotacao:create",
+  LOTACAO_EDIT = "lotacao:edit",
+  LOTACAO_DELETE = "lotacao:delete",
   SERVIDOR_VIEW = "servidor:view",
   VEICULO_VIEW = "veiculo:view",
   USER_VIEW = "user:view",
