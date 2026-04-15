@@ -1,0 +1,55 @@
+{
+  "page": {
+    "title": "Motoristas",
+    "accessDenied": "You do not have permission to view motoristas.",
+    "empty": {
+      "title": "No motoristas found",
+      "message": "Register the first motorista to get started."
+    },
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
+  "table": {
+    "cnhNumero": "CNH Number",
+    "cnhCategoria": "CNH Category",
+    "statusOperacional": "Operational Status",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "actions": {
+    "create": "New Motorista",
+    "edit": "Edit",
+    "desativar": "Deactivate",
+    "reativar": "Reactivate",
+    "updateStatus": "Update Status"
+  },
+  "form": {
+    "servidorId": "Servidor",
+    "cnhNumero": "CNH Number",
+    "cnhCategoria": "CNH Category",
+    "statusOperacional": "Operational Status",
+    "submit": "Save",
+    "cancel": "Cancel"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "DISPONIVEL": "Available",
+    "EM_SERVICO": "In Service",
+    "INDISPONIVEL": "Unavailable",
+    "AFASTADO": "On Leave"
+  },
+  "toast": {
+    "created": "Motorista registered successfully.",
+    "updated": "Motorista updated successfully.",
+    "statusUpdated": "Operational status updated.",
+    "desativado": "Motorista deactivated.",
+    "reativado": "Motorista reactivated.",
+    "duplicateCnh": "A motorista with this CNH number already exists.",
+    "notFound": "Motorista not found.",
+    "invalidData": "Invalid data. Please review the form."
+  }
+}
