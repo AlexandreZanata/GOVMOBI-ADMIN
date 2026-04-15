@@ -1,0 +1,90 @@
+/*
+ * GovMobile Design System — CSS variables & Tailwind v4 theme extension.
+ *
+ * All custom properties are defined here and consumed via tokens.ts.
+ * Tailwind v4 reads the @theme block to generate utility classes.
+ */
+
+/* ─── Raw HSL values (no hsl() wrapper — used inside hsl(var(...))) ─── */
+:root {
+  /* Brand */
+  --color-brand-primary: 220 72% 38%;
+  --color-brand-secondary: 215 30% 52%;
+
+  /* Semantic */
+  --color-success: 142 71% 35%;
+  --color-warning: 38 92% 48%;
+  --color-danger: 0 72% 51%;
+  --color-info: 199 89% 42%;
+
+  /* Neutral scale */
+  --color-neutral-50: 210 20% 98%;
+  --color-neutral-100: 210 17% 95%;
+  --color-neutral-200: 210 16% 90%;
+  --color-neutral-300: 210 14% 80%;
+  --color-neutral-400: 210 12% 65%;
+  --color-neutral-500: 210 10% 50%;
+  --color-neutral-600: 210 10% 38%;
+  --color-neutral-700: 210 12% 28%;
+  --color-neutral-800: 210 14% 18%;
+  --color-neutral-900: 210 16% 10%;
+
+  /* Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+}
+
+/* ─── Tailwind v4 theme extension ─── */
+@theme inline {
+  --color-brand-primary: hsl(var(--color-brand-primary));
+  --color-brand-secondary: hsl(var(--color-brand-secondary));
+
+  --color-success: hsl(var(--color-success));
+  --color-warning: hsl(var(--color-warning));
+  --color-danger: hsl(var(--color-danger));
+  --color-info: hsl(var(--color-info));
+
+  --color-neutral-50: hsl(var(--color-neutral-50));
+  --color-neutral-100: hsl(var(--color-neutral-100));
+  --color-neutral-200: hsl(var(--color-neutral-200));
+  --color-neutral-300: hsl(var(--color-neutral-300));
+  --color-neutral-400: hsl(var(--color-neutral-400));
+  --color-neutral-500: hsl(var(--color-neutral-500));
+  --color-neutral-600: hsl(var(--color-neutral-600));
+  --color-neutral-700: hsl(var(--color-neutral-700));
+  --color-neutral-800: hsl(var(--color-neutral-800));
+  --color-neutral-900: hsl(var(--color-neutral-900));
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-full: var(--radius-full);
+}
+
+/* ─── Run status utility classes ─── */
+.status-pending {
+  background-color: hsl(var(--color-neutral-200));
+  color: hsl(var(--color-neutral-700));
+}
+
+.status-assigned {
+  background-color: hsl(var(--color-info) / 0.15);
+  color: hsl(var(--color-info));
+}
+
+.status-in-progress {
+  background-color: hsl(var(--color-warning) / 0.15);
+  color: hsl(var(--color-warning));
+}
+
+.status-completed {
+  background-color: hsl(var(--color-success) / 0.15);
+  color: hsl(var(--color-success));
+}
+
+.status-cancelled {
+  background-color: hsl(var(--color-danger) / 0.15);
+  color: hsl(var(--color-danger));
+}

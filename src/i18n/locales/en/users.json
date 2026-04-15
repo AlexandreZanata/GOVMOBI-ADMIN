@@ -1,0 +1,8 @@
+{
+  "role": {
+    "AGENT": "Agent",
+    "DISPATCHER": "Dispatcher",
+    "SUPERVISOR": "Supervisor",
+    "ADMIN": "Admin"
+  }
+}

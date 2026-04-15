@@ -1,0 +1,9 @@
+{
+  "status": {
+    "PENDING": "Pending",
+    "ASSIGNED": "Assigned",
+    "IN_PROGRESS": "In Progress",
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled"
+  }
+}

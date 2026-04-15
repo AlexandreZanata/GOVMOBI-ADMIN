@@ -1,0 +1,11 @@
+/**
+ * Run lifecycle status values.
+ * PENDING → ASSIGNED → IN_PROGRESS → COMPLETED | CANCELLED
+ */
+export enum RunStatus {
+  PENDING = "PENDING",
+  ASSIGNED = "ASSIGNED",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+}
