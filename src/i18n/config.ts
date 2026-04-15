@@ -11,16 +11,27 @@ import navEN from "./locales/en/nav.json";
 import cargosEN from "./locales/en/cargos.json";
 import lotacoesEN from "./locales/en/lotacoes.json";
 import departmentsEN from "./locales/en/departments.json";
+import auditEN from "./locales/en/audit.json";
 
 /**
  * i18next configuration for GovMobile Admin Panel.
- * Namespaces: common | runs | auth | users | nav | cargos | lotacoes | departments
+ * Namespaces: common | runs | auth | users | nav | cargos | lotacoes | departments | audit
  */
 if (!i18n.isInitialized) {
   i18n.use(initReactI18next).init({
     lng: "en",
     fallbackLng: "en",
-    ns: ["common", "runs", "auth", "users", "nav", "cargos", "lotacoes", "departments"],
+    ns: [
+      "common",
+      "runs",
+      "auth",
+      "users",
+      "nav",
+      "cargos",
+      "lotacoes",
+      "departments",
+      "audit"
+    ],
     defaultNS: "common",
     resources: {
       en: {
@@ -32,6 +43,7 @@ if (!i18n.isInitialized) {
         cargos: cargosEN,
         lotacoes: lotacoesEN,
         departments: departmentsEN,
+        audit: auditEN,
       },
     },
     interpolation: { escapeValue: false },

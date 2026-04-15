@@ -95,6 +95,8 @@ This index is the entry point for all project documentation. Every file has a de
 | File                                                                                                           | Purpose                                        | Audience                    |
 |----------------------------------------------------------------------------------------------------------------|------------------------------------------------|-----------------------------|
 | [`implementation/ai-driver-dispatcher-prompt-guide.md`](./implementation/ai-driver-dispatcher-prompt-guide.md) | AI prompt templates for feature implementation | Engineering, AI tools       |
+| [`implementation/frota-motoristas-next-steps.md`](./implementation/frota-motoristas-next-steps.md)             | Steps + prompts for `/frota/motoristas` rollout | Engineering, AI tools     |
+| [`implementation/routes/README.md`](./implementation/routes/README.md)                                           | Route-by-route implementation guide index      | Engineering                 |
 | [`ux/flows.md`](./ux/flows.md)                                                                                 | End-to-end admin workflow descriptions         | PM, Design, Engineering, QA |
 
 ---

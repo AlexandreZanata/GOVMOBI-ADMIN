@@ -56,6 +56,7 @@ export const RolePermissionMap: Record<UserRole, Permission[]> = {
     Permission.VIEW_REPORTS,
     Permission.OVERRIDE_ACTION,
     Permission.VIEW_AUDIT_LOG,
+    Permission.AUDIT_VIEW,
   ],
   [UserRole.ADMIN]: Object.values(Permission),
 };
