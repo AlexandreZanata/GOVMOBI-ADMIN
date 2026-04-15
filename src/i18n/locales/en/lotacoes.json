@@ -1,0 +1,43 @@
+{
+  "page": {
+    "title": "Lotações",
+    "accessDenied": "You do not have permission to view lotações.",
+    "empty": {
+      "title": "No lotações found",
+      "message": "Create the first lotação to get started."
+    },
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
+  "table": {
+    "nome": "Name",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "actions": {
+    "create": "New Lotação",
+    "edit": "Edit",
+    "delete": "Deactivate",
+    "reativar": "Reactivate"
+  },
+  "form": {
+    "nome": "Name",
+    "submit": "Save",
+    "cancel": "Cancel"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "toast": {
+    "created": "Lotação created successfully.",
+    "updated": "Lotação updated successfully.",
+    "deleted": "Lotação deactivated.",
+    "reativado": "Lotação reactivated.",
+    "duplicateName": "A lotação with this name already exists.",
+    "notFound": "Lotação not found."
+  }
+}
