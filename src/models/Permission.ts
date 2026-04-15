@@ -23,6 +23,9 @@ export enum Permission {
   SERVIDOR_VIEW = "servidor:view",
   VEICULO_VIEW = "veiculo:view",
   USER_VIEW = "user:view",
+  USER_CREATE = "user:create",
+  USER_EDIT = "user:edit",
+  USER_DEACTIVATE = "user:deactivate",
   DEPARTMENT_VIEW = "department:view",
   AUDIT_VIEW = "audit:view",
 }

@@ -19,8 +19,8 @@ export default function LotacoesPage() {
               data-testid="lotacoes-suspense-fallback"
               className="space-y-3"
             >
-              <div className="h-10 w-full animate-pulse rounded-[var(--radius-md)] bg-neutral-200" />
-              <div className="h-24 w-full animate-pulse rounded-[var(--radius-md)] bg-neutral-200" />
+              <div className="h-10 w-full animate-pulse rounded-md bg-neutral-200" />
+              <div className="h-24 w-full animate-pulse rounded-md bg-neutral-200" />
             </section>
           }
         >
