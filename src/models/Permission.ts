@@ -29,6 +29,12 @@ export enum Permission {
   DEPARTMENT_VIEW = "department:view",
   DEPARTMENT_CREATE = "department:create",
   AUDIT_VIEW = "audit:view",
+  MOTORISTA_VIEW = "motorista:view",
+  MOTORISTA_CREATE = "motorista:create",
+  MOTORISTA_EDIT = "motorista:edit",
+  MOTORISTA_STATUS = "motorista:status",
+  MOTORISTA_DESATIVAR = "motorista:desativar",
+  MOTORISTA_REATIVAR = "motorista:reativar",
 }
 
 /**

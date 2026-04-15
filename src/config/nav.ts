@@ -44,6 +44,12 @@ export const NAV_ITEMS: NavItemConfig[] = [
     permission: Permission.SERVIDOR_VIEW,
   },
   {
+    href: "/frota/motoristas",
+    labelKey: "motoristas",
+    icon: "Truck",
+    permission: Permission.MOTORISTA_VIEW,
+  },
+  {
     href: "/frota/veiculos",
     labelKey: "veiculos",
     icon: "Car",
