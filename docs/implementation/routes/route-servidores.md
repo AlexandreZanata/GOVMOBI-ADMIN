@@ -17,22 +17,22 @@ The `/servidores` page manages public servants (servidores). Each servidor is li
 
 ## API Endpoints
 
-| Method   | Endpoint                      | Description              | Success | Error codes          |
-|----------|-------------------------------|--------------------------|---------|----------------------|
-| `GET`    | `/servidores`                 | List all servidores      | `200`   | —                    |
-| `POST`   | `/servidores`                 | Create servidor          | `201`   | `400` `404` `409`    |
-| `GET`    | `/servidores/:id`             | Get servidor by ID       | `200`   | `404`                |
-| `PUT`    | `/servidores/:id`             | Update servidor (partial)| `200`   | `404`                |
-| `DELETE` | `/servidores/:id`             | Soft-delete servidor     | `200`   | `404`                |
-| `PATCH`  | `/servidores/:id/reativar`    | Reactivate servidor      | `200`   | `404`                |
+| Method   | Endpoint                   | Description               | Success | Error codes       |
+|----------|----------------------------|---------------------------|---------|-------------------|
+| `GET`    | `/servidores`              | List all servidores       | `200`   | —                 |
+| `POST`   | `/servidores`              | Create servidor           | `201`   | `400` `404` `409` |
+| `GET`    | `/servidores/:id`          | Get servidor by ID        | `200`   | `404`             |
+| `PUT`    | `/servidores/:id`          | Update servidor (partial) | `200`   | `404`             |
+| `DELETE` | `/servidores/:id`          | Soft-delete servidor      | `200`   | `404`             |
+| `PATCH`  | `/servidores/:id/reativar` | Reactivate servidor       | `200`   | `404`             |
 
 ### Error codes detail
 
-| HTTP | Meaning                                        |
-|------|------------------------------------------------|
-| `400`| Invalid domain data (CPF, Email, or Papéis)    |
-| `404`| Servidor, Cargo, or Lotação not found          |
-| `409`| CPF or Email already registered                |
+| HTTP  | Meaning                                     |
+|-------|---------------------------------------------|
+| `400` | Invalid domain data (CPF, Email, or Papéis) |
+| `404` | Servidor, Cargo, or Lotação not found       |
+| `409` | CPF or Email already registered             |
 
 ### Request body — POST /servidores
 
@@ -98,24 +98,24 @@ type Papel = "USUARIO" | "ADMIN" | "MOTORISTA";
 
 ## File Map
 
-| File | Type | Purpose |
-|------|------|---------|
-| `src/models/Servidor.ts` | Model | `Servidor` interface + `Papel` type |
-| `src/types/servidores.ts` | Types | Input types for facade methods |
-| `src/facades/servidoresFacade.ts` | Facade | All HTTP calls for this domain |
-| `src/lib/queryKeys/servidoresKeys.ts` | Query keys | TanStack Query key factory |
-| `src/hooks/useServidores.ts` | Hook | List query |
-| `src/hooks/useCreateServidor.ts` | Hook | Create mutation |
-| `src/hooks/useUpdateServidor.ts` | Hook | Update mutation |
-| `src/hooks/useDeleteServidor.ts` | Hook | Soft-delete mutation |
-| `src/hooks/useReativarServidor.ts` | Hook | Reactivate mutation |
-| `src/msw/servidoresHandlers.ts` | MSW | Mock handlers for all endpoints |
-| `src/test/fixtures/servidores.ts` | Fixture | Mock data |
-| `src/app/(admin)/servidores/page.tsx` | Page | Server Component entry |
-| `src/components/organisms/ServidoresPageClient.tsx` | Organism | Interactive table + actions |
-| `src/components/molecules/ServidorFormDialog.tsx` | Molecule | Create / edit dialog |
-| `src/components/molecules/ServidorDeleteDialog.tsx` | Molecule | Soft-delete confirm dialog |
-| `src/i18n/locales/en/servidores.json` | i18n | All labels for this domain |
+| File                                                | Type       | Purpose                             |
+|-----------------------------------------------------|------------|-------------------------------------|
+| `src/models/Servidor.ts`                            | Model      | `Servidor` interface + `Papel` type |
+| `src/types/servidores.ts`                           | Types      | Input types for facade methods      |
+| `src/facades/servidoresFacade.ts`                   | Facade     | All HTTP calls for this domain      |
+| `src/lib/queryKeys/servidoresKeys.ts`               | Query keys | TanStack Query key factory          |
+| `src/hooks/useServidores.ts`                        | Hook       | List query                          |
+| `src/hooks/useCreateServidor.ts`                    | Hook       | Create mutation                     |
+| `src/hooks/useUpdateServidor.ts`                    | Hook       | Update mutation                     |
+| `src/hooks/useDeleteServidor.ts`                    | Hook       | Soft-delete mutation                |
+| `src/hooks/useReativarServidor.ts`                  | Hook       | Reactivate mutation                 |
+| `src/msw/servidoresHandlers.ts`                     | MSW        | Mock handlers for all endpoints     |
+| `src/test/fixtures/servidores.ts`                   | Fixture    | Mock data                           |
+| `src/app/(admin)/servidores/page.tsx`               | Page       | Server Component entry              |
+| `src/components/organisms/ServidoresPageClient.tsx` | Organism   | Interactive table + actions         |
+| `src/components/molecules/ServidorFormDialog.tsx`   | Molecule   | Create / edit dialog                |
+| `src/components/molecules/ServidorDeleteDialog.tsx` | Molecule   | Soft-delete confirm dialog          |
+| `src/i18n/locales/en/servidores.json`               | i18n       | All labels for this domain          |
 
 ---
 

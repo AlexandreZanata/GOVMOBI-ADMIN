@@ -6,7 +6,7 @@ import "@/i18n/config";
 import React from "react";
 
 /** Button visual variants */
-export type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive" | "success";
 
 /** Button size scale */
 export type ButtonSize = "sm" | "md" | "lg";
@@ -32,6 +32,8 @@ const variantClasses: Record<ButtonVariant, string> = {
     "bg-transparent text-brand-primary hover:bg-neutral-100 focus-visible:ring-brand-primary",
   destructive:
     "bg-danger text-white hover:opacity-90 focus-visible:ring-danger",
+  success:
+    "bg-success text-white hover:opacity-90 focus-visible:ring-success",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

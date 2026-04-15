@@ -316,7 +316,7 @@ function MotoristaRow({
             <Button
               data-testid={`motorista-desativar-${motorista.id}`}
               size="sm"
-              variant={motorista.ativo ? "destructive" : "ghost"}
+              variant={motorista.ativo ? "destructive" : "success"}
               onClick={() => onDesativar(motorista)}
             >
               {motorista.ativo

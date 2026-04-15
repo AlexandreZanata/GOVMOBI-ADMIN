@@ -87,7 +87,7 @@ export function MotoristaDesativarDialog({
           </Button>
           <Button
             data-testid={testId ? `${testId}-confirm` : "motorista-desativar-confirm"}
-            variant={isActive ? "destructive" : "ghost"}
+            variant={isActive ? "destructive" : "success"}
             onClick={() => void handleConfirm()}
             isLoading={isPending}
             disabled={isPending}

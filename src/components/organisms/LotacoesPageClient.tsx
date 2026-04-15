@@ -278,7 +278,7 @@ function LotacaoRow({ lotacao, onEdit, onDelete }: LotacaoRowProps) {
               <Button
                 data-testid={`lotacao-reativar-${lotacao.id}`}
                 size="sm"
-                variant="ghost"
+                variant="success"
                 isLoading={reativarMutation.isPending}
                 onClick={handleReativar}
               >

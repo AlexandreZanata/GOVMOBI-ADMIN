@@ -13,6 +13,7 @@ import lotacoesEN from "./locales/en/lotacoes.json";
 import departmentsEN from "./locales/en/departments.json";
 import auditEN from "./locales/en/audit.json";
 import motoristasEN from "./locales/en/motoristas.json";
+import servidoresEN from "./locales/en/servidores.json";
 
 /**
  * i18next configuration for GovMobile Admin Panel.
@@ -32,7 +33,8 @@ if (!i18n.isInitialized) {
       "lotacoes",
       "departments",
       "audit",
-      "motoristas"
+      "motoristas",
+      "servidores"
     ],
     defaultNS: "common",
     resources: {
@@ -47,6 +49,7 @@ if (!i18n.isInitialized) {
         departments: departmentsEN,
         audit: auditEN,
         motoristas: motoristasEN,
+        servidores: servidoresEN,
       },
     },
     interpolation: { escapeValue: false },

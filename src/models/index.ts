@@ -6,3 +6,4 @@ export * from "./Lotacao";
 export * from "./Department";
 export * from "./AuditEntry";
 export * from "./Motorista";
+export * from "./Servidor";
