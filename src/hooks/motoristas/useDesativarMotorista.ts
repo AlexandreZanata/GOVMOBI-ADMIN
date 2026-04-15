@@ -33,8 +33,9 @@ export function useDesativarMotorista() {
   return useMutation<Motorista, ApiError, DesativarMotoristaMutationInput>({
     mutationFn: ({ id }) => motoristasFacade.desativarMotorista(id),
 
-    onSuccess: () => {
+    onSuccess: (_, { id }) => {
       void queryClient.invalidateQueries({ queryKey: motoristasKeys.list() });
+      void queryClient.invalidateQueries({ queryKey: motoristasKeys.detail(id) });
       toast.success(t("toast.desativado"));
     },
 

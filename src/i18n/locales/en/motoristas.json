@@ -28,6 +28,7 @@
   },
   "form": {
     "servidorId": "Servidor",
+    "servidorIdInvalid": "Servidor ID must be a valid UUID.",
     "cnhNumero": "CNH Number",
     "cnhCategoria": "CNH Category",
     "statusOperacional": "Operational Status",

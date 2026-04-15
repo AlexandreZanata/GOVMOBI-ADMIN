@@ -33,8 +33,9 @@ export function useReativarMotorista() {
   return useMutation<Motorista, ApiError, ReativarMotoristaMutationInput>({
     mutationFn: ({ id }) => motoristasFacade.reativarMotorista(id),
 
-    onSuccess: () => {
+    onSuccess: (_, { id }) => {
       void queryClient.invalidateQueries({ queryKey: motoristasKeys.list() });
+      void queryClient.invalidateQueries({ queryKey: motoristasKeys.detail(id) });
       toast.success(t("toast.reativado"));
     },
 

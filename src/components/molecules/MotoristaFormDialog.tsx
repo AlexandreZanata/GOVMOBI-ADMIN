@@ -51,11 +51,16 @@ export function MotoristaFormDialog({
   const headingId = useId();
 
   const [servidorId, setServidorId] = useState(motorista?.servidorId ?? "");
+  const [servidorIdError, setServidorIdError] = useState<string | undefined>();
   const [cnhNumero, setCnhNumero] = useState(motorista?.cnhNumero ?? "");
   const [cnhCategoria, setCnhCategoria] = useState<CnhCategoria>(
     motorista?.cnhCategoria ?? "B"
   );
   const [cnhError, setCnhError] = useState<string | undefined>();
+
+  /** RFC 4122 UUID v4/v7 pattern used to validate servidorId before submit. */
+  const UUID_RE =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
   const createMutation = useCreateMotorista();
   const updateMutation = useUpdateMotorista();
@@ -66,6 +71,7 @@ export function MotoristaFormDialog({
   if (motorista?.id !== prevId.current) {
     prevId.current = motorista?.id;
     setServidorId(motorista?.servidorId ?? "");
+    setServidorIdError(undefined);
     setCnhNumero(motorista?.cnhNumero ?? "");
     setCnhCategoria(motorista?.cnhCategoria ?? "B");
     setCnhError(undefined);
@@ -86,6 +92,13 @@ export function MotoristaFormDialog({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setCnhError(undefined);
+    setServidorIdError(undefined);
+
+    // Validate servidorId is a valid UUID before hitting the API
+    if (mode === "create" && !UUID_RE.test(servidorId.trim())) {
+      setServidorIdError(t("form.servidorIdInvalid"));
+      return;
+    }
 
     try {
       if (mode === "create") {
@@ -102,7 +115,9 @@ export function MotoristaFormDialog({
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
         setCnhError(t("toast.duplicateCnh"));
+        return; // error handled inline — do not re-throw
       }
+      // All other errors are handled by the hook's onError toast
     }
   };
 
@@ -133,6 +148,7 @@ export function MotoristaFormDialog({
               label={t("form.servidorId")}
               value={servidorId}
               onChange={(e) => setServidorId(e.target.value)}
+              error={servidorIdError}
               aria-required="true"
               autoFocus
             />
