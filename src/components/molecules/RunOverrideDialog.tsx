@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Button, Input } from "@/components/atoms";
 import { Can } from "@/components/auth/Can";
 import { ConfirmDialog } from "@/components/molecules/ConfirmDialog";
-import { useOverrideRunMutation } from "@/hooks/useOverrideRunMutation";
+import { useOverrideRunMutation } from "@/hooks/runs/useOverrideRunMutation";
 import { Permission } from "@/models";
 
 /**

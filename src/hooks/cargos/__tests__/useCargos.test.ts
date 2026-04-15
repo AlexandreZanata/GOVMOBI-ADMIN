@@ -3,7 +3,7 @@ import { setupServer } from "msw/node";
 import { renderHook, waitFor } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 
-import { useCargos } from "@/hooks/useCargos";
+import { useCargos } from "@/hooks/cargos/useCargos";
 import { cargosHandlers } from "@/msw/cargosHandlers";
 import { cargosFixture, makeEnvelope } from "@/test/fixtures/cargos";
 import { renderWithProviders } from "@/test/renderWithProviders";

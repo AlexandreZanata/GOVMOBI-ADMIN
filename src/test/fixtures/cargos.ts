@@ -3,7 +3,7 @@ import type { Cargo } from "@/models/Cargo";
 /**
  * Fixture dataset used by cargos MSW handlers and unit tests.
  */
-export const cargosFixture: Cargo[] = [
+export const mockCargos: Cargo[] = [
   {
     id: "cargo-001",
     nome: "Auditor Fiscal",
@@ -32,6 +32,11 @@ export const cargosFixture: Cargo[] = [
     deletedAt: "2026-04-14T08:00:00.000Z",
   },
 ];
+
+/**
+ * Backward-compatible alias for legacy imports.
+ */
+export const cargosFixture: Cargo[] = mockCargos;
 
 /**
  * Builds a well-formed API envelope around a data payload,

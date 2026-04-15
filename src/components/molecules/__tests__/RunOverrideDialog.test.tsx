@@ -5,10 +5,10 @@ import "@/test/i18n-mock";
 
 import { PermissionsProvider } from "@/components/auth/PermissionsProvider";
 import { RunOverrideDialog } from "@/components/molecules/RunOverrideDialog";
-import { useOverrideRunMutation } from "@/hooks/useOverrideRunMutation";
+import { useOverrideRunMutation } from "@/hooks/runs/useOverrideRunMutation";
 import { RunPriority, RunStatus, RunType, UserRole, type Run } from "@/models";
 
-vi.mock("@/hooks/useOverrideRunMutation", () => ({
+vi.mock("@/hooks/runs/useOverrideRunMutation", () => ({
   useOverrideRunMutation: vi.fn(),
 }));
 

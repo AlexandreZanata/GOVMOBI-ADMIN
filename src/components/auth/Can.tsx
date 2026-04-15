@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 
-import { usePermissions } from "@/hooks/usePermissions";
+import { usePermissions } from "@/hooks/auth/usePermissions";
 import { type Permission } from "@/models";
 
 /**

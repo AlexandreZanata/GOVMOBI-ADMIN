@@ -2,7 +2,7 @@ import { delay, http, HttpResponse } from "msw";
 
 import type { Cargo } from "@/models/Cargo";
 import type { CreateCargoInput, UpdateCargoInput } from "@/types/cargos";
-import { cargosFixture, makeEnvelope } from "@/test/fixtures/cargos";
+import { makeEnvelope, mockCargos } from "@/test/fixtures/cargos";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
@@ -39,7 +39,7 @@ export const cargosHandlers = [
   // GET /cargos — list all
   http.get(`${BASE_URL}/cargos`, async () => {
     await delay(latency());
-    return HttpResponse.json(makeEnvelope(cargosFixture));
+    return HttpResponse.json(makeEnvelope(mockCargos));
   }),
 
   // POST /cargos — create
@@ -71,7 +71,7 @@ export const cargosHandlers = [
 
     if (id === NOT_FOUND_ID) return notFound();
 
-    const cargo = cargosFixture.find((c) => c.id === id);
+    const cargo = mockCargos.find((c) => c.id === id);
     if (!cargo) return notFound();
 
     return HttpResponse.json(makeEnvelope(cargo));
@@ -84,7 +84,7 @@ export const cargosHandlers = [
 
     if (id === NOT_FOUND_ID) return notFound();
 
-    const cargo = cargosFixture.find((c) => c.id === id);
+    const cargo = mockCargos.find((c) => c.id === id);
     if (!cargo) return notFound();
 
     const body = (await request.json()) as UpdateCargoInput;
@@ -108,7 +108,7 @@ export const cargosHandlers = [
 
     if (id === NOT_FOUND_ID) return notFound();
 
-    const cargo = cargosFixture.find((c) => c.id === id);
+    const cargo = mockCargos.find((c) => c.id === id);
     if (!cargo) return notFound();
 
     return HttpResponse.json({ success: true, timestamp: new Date().toISOString() });
@@ -121,7 +121,7 @@ export const cargosHandlers = [
 
     if (id === NOT_FOUND_ID) return notFound();
 
-    const cargo = cargosFixture.find((c) => c.id === id);
+    const cargo = mockCargos.find((c) => c.id === id);
     if (!cargo) return notFound();
 
     const reativado: Cargo = {

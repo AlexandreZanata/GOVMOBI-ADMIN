@@ -3,7 +3,7 @@ import { setupServer } from "msw/node";
 import { renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, beforeAll, afterAll, afterEach } from "vitest";
 
-import { useRuns } from "@/hooks/useRuns";
+import { useRuns } from "@/hooks/runs/useRuns";
 import { renderWithProviders } from "@/test/renderWithProviders";
 import { RunPriority, RunStatus, RunType, type Run } from "@/models";
 

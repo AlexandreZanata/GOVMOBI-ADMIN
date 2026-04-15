@@ -11,10 +11,10 @@ import {
   vi,
 } from "vitest";
 
-import { useCreateCargo } from "@/hooks/useCreateCargo";
-import { useUpdateCargo } from "@/hooks/useUpdateCargo";
-import { useDeleteCargo } from "@/hooks/useDeleteCargo";
-import { useReativarCargo } from "@/hooks/useReativarCargo";
+import { useCreateCargo } from "@/hooks/cargos/useCreateCargo";
+import { useUpdateCargo } from "@/hooks/cargos/useUpdateCargo";
+import { useDeleteCargo } from "@/hooks/cargos/useDeleteCargo";
+import { useReativarCargo } from "@/hooks/cargos/useReativarCargo";
 import { cargosHandlers } from "@/msw/cargosHandlers";
 import { renderWithProviders } from "@/test/renderWithProviders";
 

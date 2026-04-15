@@ -5,10 +5,10 @@ import "@/test/i18n-mock";
 
 import { PermissionsProvider } from "@/components/auth/PermissionsProvider";
 import { RunsPageClient } from "@/components/organisms/RunsPageClient";
-import { useRuns } from "@/hooks/useRuns";
+import { useRuns } from "@/hooks/runs/useRuns";
 import { RunPriority, RunStatus, RunType, UserRole, type Run } from "@/models";
 
-vi.mock("@/hooks/useRuns", () => ({
+vi.mock("@/hooks/runs/useRuns", () => ({
   useRuns: vi.fn(),
 }));
 

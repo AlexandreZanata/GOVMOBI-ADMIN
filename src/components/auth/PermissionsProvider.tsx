@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 
 import { UserRole } from "@/models";
-import { PermissionsContextProvider } from "@/hooks/usePermissions";
+import { PermissionsContextProvider } from "@/hooks/auth/usePermissions";
 
 /**
  * Props for the permissions provider.

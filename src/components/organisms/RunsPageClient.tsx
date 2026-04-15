@@ -8,7 +8,7 @@ import { Button, StatusPill } from "@/components/atoms";
 import { ErrorState } from "@/components/molecules/ErrorState";
 import { RunOverrideDialog } from "@/components/molecules/RunOverrideDialog";
 import { Can } from "@/components/auth/Can";
-import { useRuns } from "@/hooks/useRuns";
+import { useRuns } from "@/hooks/runs/useRuns";
 import { Permission, type Run } from "@/models";
 
 /**
