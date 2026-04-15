@@ -5,3 +5,4 @@ export * from "./Cargo";
 export * from "./Lotacao";
 export * from "./Department";
 export * from "./AuditEntry";
+export * from "./Motorista";
