@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   /** Visible label text */
@@ -18,6 +20,10 @@ export interface InputProps
  * @param label - Visible label rendered above the input
  * @param error - Error message; marks the field as invalid
  * @param helperText - Supplementary hint text below the input
+ * @param id
+ * @param className
+ * @param testId
+ * @param props
  * @returns Accessible input group
  */
 export function Input({
@@ -53,7 +59,7 @@ export function Input({
             .join(" ") || undefined
         }
         className={[
-          "h-10 w-full rounded-[var(--radius-md)] border px-3 text-sm",
+          "h-10 w-full rounded-md border px-3 text-sm",
           "bg-white text-neutral-900 placeholder:text-neutral-400",
           "focus:outline-none focus:ring-2 focus:ring-offset-1",
           error

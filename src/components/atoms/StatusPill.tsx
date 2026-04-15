@@ -24,6 +24,7 @@ const statusClass: Record<RunStatus, string> = {
  * Label is resolved via i18n key `runs:status.<STATUS>`.
  *
  * @param status - RunStatus enum value
+ * @param testId
  * @returns Accessible status badge
  */
 export function StatusPill({ status, "data-testid": testId }: StatusPillProps) {
@@ -34,7 +35,7 @@ export function StatusPill({ status, "data-testid": testId }: StatusPillProps) {
       data-testid={testId}
       aria-label={t(`status.${status}`)}
       className={[
-        "inline-flex items-center rounded-[var(--radius-full)] px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
         statusClass[status],
       ].join(" ")}
     >

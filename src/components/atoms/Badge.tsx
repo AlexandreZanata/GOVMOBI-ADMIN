@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 /** Semantic color variants mapped to design tokens */
 export type BadgeVariant = "success" | "warning" | "danger" | "info" | "neutral";
 
@@ -25,6 +27,7 @@ const variantClasses: Record<BadgeVariant, string> = {
  *
  * @param variant - Semantic color (default: "neutral")
  * @param children - Badge text content
+ * @param testId
  * @returns Inline badge element
  */
 export function Badge({
@@ -36,7 +39,7 @@ export function Badge({
     <span
       data-testid={testId}
       className={[
-        "inline-flex items-center rounded-[var(--radius-full)] px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
         variantClasses[variant],
       ].join(" ")}
     >

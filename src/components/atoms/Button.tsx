@@ -2,6 +2,7 @@
 
 import { useTranslation } from "react-i18next";
 import "@/i18n/config";
+import React from "react";
 
 /** Button visual variants */
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive";
@@ -44,7 +45,11 @@ const sizeClasses: Record<ButtonSize, string> = {
  * @param variant - Visual style (default: "primary")
  * @param size - Size scale (default: "md")
  * @param isLoading - Renders a spinner and disables interaction
+ * @param disabled
  * @param children - Button label
+ * @param className
+ * @param testId
+ * @param props
  * @returns Accessible button element
  */
 export function Button({
@@ -66,7 +71,7 @@ export function Button({
       aria-busy={isLoading}
       aria-label={isLoading ? t("loading") : undefined}
       className={[
-        "inline-flex items-center justify-center gap-2 rounded-[var(--radius-md)] font-medium",
+        "inline-flex items-center justify-center gap-2 rounded-md font-medium",
         "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
         "disabled:pointer-events-none disabled:opacity-50",
         variantClasses[variant],

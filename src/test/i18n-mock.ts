@@ -3,6 +3,7 @@
  * Returns the i18n key as the translated string so assertions are predictable.
  */
 import { vi } from "vitest";
+import React from "react";
 
 vi.mock("react-i18next", () => ({
   useTranslation: (ns?: string) => ({

@@ -42,6 +42,7 @@ function getInitials(name: string): string {
  * @param name - Full name for initials and aria-label
  * @param src - Optional image source URL
  * @param size - Size scale (default: "md")
+ * @param testId
  * @returns Circular avatar element
  */
 export function Avatar({
