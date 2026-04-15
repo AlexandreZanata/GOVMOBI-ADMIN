@@ -59,11 +59,13 @@ export function RunOverrideDialog({
   return (
     <Can perform={Permission.OVERRIDE_ACTION}>
       <Button
-        ref={triggerRef}
         data-testid={testId ? `${testId}-trigger` : "override-trigger"}
         size="sm"
         variant="destructive"
-        onClick={() => setOpen(true)}
+        onClick={(event) => {
+          triggerRef.current = event.currentTarget;
+          setOpen(true);
+        }}
       >
         {t("dialogs.override.open")}
       </Button>

@@ -1,151 +1,350 @@
 import { delay, http, HttpResponse } from "msw";
 
-import { RunPriority, RunStatus, RunType, type Run } from "@/models";
+import {
+  makeRunDetail,
+  runsFixture,
+  type PaginatedResponse,
+  type RunDetail,
+  type RunListItem,
+} from "@/test/fixtures/runs";
 
-const runByIdMock: Run = {
-  id: "run-42",
-  type: RunType.INSPECTION,
-  status: RunStatus.ASSIGNED,
-  priority: RunPriority.HIGH,
-  title: "Routine Fleet Inspection",
-  description: "Vehicle readiness inspection in central district",
-  location: {
-    lat: -8.0476,
-    lng: -34.877,
-    address: "Central District Garage",
-  },
-  assignedAgentId: "agent-11",
-  dispatcherId: "dispatcher-4",
-  createdAt: "2026-04-15T09:00:00.000Z",
-  updatedAt: "2026-04-15T09:30:00.000Z",
-  completedAt: null,
-  notes: "Bring maintenance checklist",
-  proofs: [],
-  departmentId: "dept-fleet",
-};
+interface CreateRunBody {
+  title?: string;
+  description?: string;
+  departmentId?: string;
+  priority?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+  agentId?: string | null;
+  scheduledAt?: string | null;
+}
+
+interface AssignRunBody {
+  agentId?: string;
+}
+
+interface CancelRunBody {
+  reason?: string;
+}
+
+interface OverrideRunBody {
+  targetStatus?: "PENDING" | "ASSIGNED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+  reason?: string;
+}
+
+function getLatencyMs(): number {
+  return 200 + Math.floor(Math.random() * 401);
+}
+
+function errorResponse(
+  status: 403 | 404 | 422 | 500,
+  code: string,
+  message: string,
+  field?: string
+) {
+  return HttpResponse.json(
+    {
+      code,
+      message,
+      field,
+    },
+    { status }
+  );
+}
+
+function getScenario(url: URL): string | null {
+  return url.searchParams.get("scenario");
+}
+
+function applyScenario(url: URL) {
+  const scenario = getScenario(url);
+
+  if (scenario === "forbidden") {
+    return errorResponse(403, "FORBIDDEN", "Insufficient permissions");
+  }
+
+  if (scenario === "not-found") {
+    return errorResponse(404, "NOT_FOUND", "Resource not found");
+  }
+
+  if (scenario === "validation") {
+    return errorResponse(
+      422,
+      "VALIDATION_ERROR",
+      "Validation failed for request payload",
+      "reason"
+    );
+  }
+
+  if (scenario === "server") {
+    return errorResponse(500, "SERVER_ERROR", "Unexpected server error");
+  }
+
+  return null;
+}
+
+function paginate(items: RunListItem[], page: number, pageSize: number): PaginatedResponse<RunListItem> {
+  const start = (page - 1) * pageSize;
+  const pageItems = items.slice(start, start + pageSize);
+
+  return {
+    items: pageItems,
+    total: items.length,
+    page,
+    pageSize,
+    hasMore: start + pageSize < items.length,
+  };
+}
 
 /**
  * MSW handlers for run-related endpoints.
  */
 export const runsHandlers = [
-  http.get("/v1/runs/:runId", async ({ params }) => {
-    await delay(200 + Math.floor(Math.random() * 301));
+  http.get("/v1/runs", async ({ request }) => {
+    await delay(getLatencyMs());
 
-    const runId = String(params.runId);
-
-    if (runId === "invalid") {
-      return HttpResponse.json(
-        {
-          code: "INVALID_RUN_ID",
-          message: "INVALID_RUN_ID",
-        },
-        {
-          status: 400,
-        }
-      );
+    const url = new URL(request.url);
+    const scenarioResult = applyScenario(url);
+    if (scenarioResult) {
+      return scenarioResult;
     }
 
-    if (runId === "forbidden") {
-      return HttpResponse.json(
-        {
-          code: "FORBIDDEN",
-          message: "FORBIDDEN",
-        },
-        {
-          status: 403,
-        }
-      );
-    }
+    const status = url.searchParams.get("status");
+    const departmentId = url.searchParams.get("departmentId");
+    const agentId = url.searchParams.get("agentId");
+    const page = Number(url.searchParams.get("page") ?? "1");
+    const pageSize = Number(url.searchParams.get("pageSize") ?? "25");
 
-    if (runId === "not-found") {
-      return HttpResponse.json(
-        {
-          code: "RUN_NOT_FOUND",
-          message: "RUN_NOT_FOUND",
-        },
-        {
-          status: 404,
-        }
-      );
-    }
+    const filtered = runsFixture.filter((run) => {
+      const matchesStatus = status ? run.status === status : true;
+      const matchesDepartment = departmentId ? run.departmentId === departmentId : true;
+      const matchesAgent = agentId ? run.agentId === agentId : true;
 
-    return HttpResponse.json(
-      {
-        ...runByIdMock,
-        id: runId,
-      },
-      {
-        status: 200,
-      }
-    );
+      return matchesStatus && matchesDepartment && matchesAgent;
+    });
+
+    return HttpResponse.json(paginate(filtered, page, pageSize), { status: 200 });
   }),
-  http.patch("/v1/runs/:runId/override", async ({ params, request }) => {
-    await delay(200 + Math.floor(Math.random() * 301));
 
-    const runId = String(params.runId);
-    const body = (await request.json()) as {
-      reason?: string;
-      auditEvent?: string;
+  http.get("/v1/runs/:id", async ({ params, request }) => {
+    await delay(getLatencyMs());
+
+    const url = new URL(request.url);
+    const scenarioResult = applyScenario(url);
+    if (scenarioResult) {
+      return scenarioResult;
+    }
+
+    const runId = String(params.id);
+    const fixtureExists = runsFixture.some((run) => run.id === runId);
+    if (!fixtureExists) {
+      return errorResponse(404, "NOT_FOUND", "Run not found");
+    }
+
+    return HttpResponse.json(makeRunDetail(runId), { status: 200 });
+  }),
+
+  http.post("/v1/runs", async ({ request }) => {
+    await delay(getLatencyMs());
+
+    const url = new URL(request.url);
+    const scenarioResult = applyScenario(url);
+    if (scenarioResult) {
+      return scenarioResult;
+    }
+
+    const body = (await request.json()) as CreateRunBody;
+    if (!body.title?.trim()) {
+      return errorResponse(
+        422,
+        "VALIDATION_ERROR",
+        "Title is required",
+        "title"
+      );
+    }
+
+    const created: RunDetail = {
+      id: "run-created",
+      title: body.title,
+      status: "PENDING",
+      departmentId: body.departmentId ?? "dept-001",
+      agentId: body.agentId ?? null,
+      history: [
+        {
+          status: "PENDING",
+          timestamp: new Date().toISOString(),
+          actorId: "user-dispatcher",
+          actorRole: "DISPATCHER",
+          note: null,
+        },
+      ],
     };
 
-    if (!body.reason?.trim()) {
-      return HttpResponse.json(
-        {
-          code: "REASON_REQUIRED",
-          message: "REASON_REQUIRED",
-        },
-        {
-          status: 400,
-        }
+    return HttpResponse.json(created, { status: 201 });
+  }),
+
+  http.post("/v1/runs/:id/assign", async ({ params, request }) => {
+    await delay(getLatencyMs());
+
+    const url = new URL(request.url);
+    const scenarioResult = applyScenario(url);
+    if (scenarioResult) {
+      return scenarioResult;
+    }
+
+    const body = (await request.json()) as AssignRunBody;
+    if (!body.agentId?.trim()) {
+      return errorResponse(
+        422,
+        "VALIDATION_ERROR",
+        "Agent id is required",
+        "agentId"
       );
     }
 
-    if (runId === "forbidden") {
-      return HttpResponse.json(
-        {
-          code: "FORBIDDEN",
-          message: "FORBIDDEN",
-        },
-        {
-          status: 403,
-        }
-      );
-    }
-
-    if (runId === "not-found") {
-      return HttpResponse.json(
-        {
-          code: "RUN_NOT_FOUND",
-          message: "RUN_NOT_FOUND",
-        },
-        {
-          status: 404,
-        }
-      );
-    }
-
-    if (runId === "conflict") {
-      return HttpResponse.json(
-        {
-          code: "RUN_CONFLICT",
-          message: "RUN_CONFLICT",
-        },
-        {
-          status: 409,
-        }
-      );
+    const runId = String(params.id);
+    const base = runsFixture.find((run) => run.id === runId);
+    if (!base) {
+      return errorResponse(404, "NOT_FOUND", "Run not found");
     }
 
     return HttpResponse.json(
       {
-        ...runByIdMock,
-        id: runId,
-        notes: body.reason,
-        updatedAt: new Date().toISOString(),
+        ...makeRunDetail(runId),
+        status: "ASSIGNED",
+        agentId: body.agentId,
       },
+      { status: 200 }
+    );
+  }),
+
+  http.post("/v1/runs/:id/cancel", async ({ params, request }) => {
+    await delay(getLatencyMs());
+
+    const url = new URL(request.url);
+    const scenarioResult = applyScenario(url);
+    if (scenarioResult) {
+      return scenarioResult;
+    }
+
+    const body = (await request.json()) as CancelRunBody;
+    if (!body.reason?.trim()) {
+      return errorResponse(
+        422,
+        "VALIDATION_ERROR",
+        "Reason is required for cancellation",
+        "reason"
+      );
+    }
+
+    const runId = String(params.id);
+    const base = runsFixture.find((run) => run.id === runId);
+    if (!base) {
+      return errorResponse(404, "NOT_FOUND", "Run not found");
+    }
+
+    return HttpResponse.json(
       {
-        status: 200,
-      }
+        ...makeRunDetail(runId),
+        status: "CANCELLED",
+      },
+      { status: 200 }
+    );
+  }),
+
+  http.post("/v1/runs/:id/override", async ({ params, request }) => {
+    await delay(getLatencyMs());
+
+    const url = new URL(request.url);
+    const scenarioResult = applyScenario(url);
+    if (scenarioResult) {
+      return scenarioResult;
+    }
+
+    const body = (await request.json()) as OverrideRunBody;
+    if (!body.reason?.trim()) {
+      return errorResponse(
+        422,
+        "VALIDATION_ERROR",
+        "Reason is required for override",
+        "reason"
+      );
+    }
+
+    if (!body.targetStatus) {
+      return errorResponse(
+        422,
+        "VALIDATION_ERROR",
+        "Target status is required",
+        "targetStatus"
+      );
+    }
+
+    const runId = String(params.id);
+    const base = runsFixture.find((run) => run.id === runId);
+    if (!base) {
+      return errorResponse(404, "NOT_FOUND", "Run not found");
+    }
+
+    return HttpResponse.json(
+      {
+        ...makeRunDetail(runId),
+        status: body.targetStatus,
+        history: [
+          ...makeRunDetail(runId).history,
+          {
+            status: body.targetStatus,
+            timestamp: new Date().toISOString(),
+            actorId: "user-supervisor",
+            actorRole: "SUPERVISOR",
+            note: body.reason,
+            isOverride: true,
+          },
+        ],
+      },
+      { status: 200 }
+    );
+  }),
+
+  http.patch("/v1/runs/:id/override", async ({ params, request }) => {
+    await delay(getLatencyMs());
+
+    const url = new URL(request.url);
+    const scenarioResult = applyScenario(url);
+    if (scenarioResult) {
+      return scenarioResult;
+    }
+
+    const body = (await request.json()) as OverrideRunBody;
+    if (!body.reason?.trim()) {
+      return errorResponse(
+        422,
+        "VALIDATION_ERROR",
+        "Reason is required for override",
+        "reason"
+      );
+    }
+
+    const runId = String(params.id);
+    const base = runsFixture.find((run) => run.id === runId);
+    if (!base) {
+      return errorResponse(404, "NOT_FOUND", "Run not found");
+    }
+
+    return HttpResponse.json(
+      {
+        ...makeRunDetail(runId),
+        history: [
+          ...makeRunDetail(runId).history,
+          {
+            status: makeRunDetail(runId).status,
+            timestamp: new Date().toISOString(),
+            actorId: "user-supervisor",
+            actorRole: "SUPERVISOR",
+            note: body.reason,
+            isOverride: true,
+          },
+        ],
+      },
+      { status: 200 }
     );
   }),
 ];
