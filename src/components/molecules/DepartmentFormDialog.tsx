@@ -44,6 +44,7 @@ export function DepartmentFormDialog({
   // Reset form when dialog opens
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setName("");
       setDescription("");
       setNameError(undefined);
