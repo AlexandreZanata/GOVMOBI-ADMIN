@@ -11,10 +11,9 @@ import { LotacaoDeleteDialog } from "@/components/molecules/LotacaoDeleteDialog"
 import { LotacaoFormDialog } from "@/components/molecules/LotacaoFormDialog";
 import { useReativarLotacao } from "@/hooks/lotacoes/useReativarLotacao";
 import { useLotacoes } from "@/hooks/useLotacoes";
+import { filterByAtivo } from "@/lib/filterByAtivo";
+import type { AtivoFilter } from "@/lib/filterByAtivo";
 import { Permission, type Lotacao } from "@/models";
-
-/** Active filter for the lotacoes list. */
-type FilterValue = "all" | "active" | "inactive";
 
 /**
  * Props for the lotacoes page client organism.
@@ -36,17 +35,15 @@ export function LotacoesPageClient({
   const { t } = useTranslation("lotacoes");
   const { data, isLoading, isError, refetch } = useLotacoes();
 
-  const [filter, setFilter] = useState<FilterValue>("all");
+  const [filter, setFilter] = useState<AtivoFilter>("all");
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Lotacao | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<Lotacao | undefined>();
 
-  const filtered = useMemo(() => {
-    const list = data ?? [];
-    if (filter === "active") return list.filter((l) => l.ativo);
-    if (filter === "inactive") return list.filter((l) => !l.ativo);
-    return list;
-  }, [data, filter]);
+  const filtered = useMemo(
+    () => filterByAtivo(data ?? [], filter),
+    [data, filter],
+  );
 
   const handleOpenCreate = () => {
     setEditTarget(undefined);
@@ -163,7 +160,7 @@ export function LotacoesPageClient({
           role="group"
           aria-label={t("page.title")}
         >
-          {(["all", "active", "inactive"] as FilterValue[]).map((f) => (
+          {(["all", "active", "inactive"] as AtivoFilter[]).map((f) => (
             <button
               key={f}
               type="button"
@@ -201,7 +198,8 @@ export function LotacoesPageClient({
           data-testid="lotacao-delete-dialog"
           open={!!deleteTarget}
           onClose={() => setDeleteTarget(undefined)}
-          lotacao={deleteTarget}
+          lotacaoId={deleteTarget.id}
+          lotacaoNome={deleteTarget.nome}
         />
       )}
     </Can>
@@ -264,8 +262,8 @@ function LotacaoRow({ lotacao, onEdit, onDelete }: LotacaoRowProps) {
             </Button>
           </Can>
 
-          <Can perform={Permission.LOTACAO_DELETE}>
-            {lotacao.ativo ? (
+          {lotacao.ativo ? (
+            <Can perform={Permission.LOTACAO_DELETE}>
               <Button
                 data-testid={`lotacao-delete-${lotacao.id}`}
                 size="sm"
@@ -274,7 +272,9 @@ function LotacaoRow({ lotacao, onEdit, onDelete }: LotacaoRowProps) {
               >
                 {t("actions.delete")}
               </Button>
-            ) : (
+            </Can>
+          ) : (
+            <Can perform={Permission.LOTACAO_REATIVAR}>
               <Button
                 data-testid={`lotacao-reativar-${lotacao.id}`}
                 size="sm"
@@ -284,8 +284,8 @@ function LotacaoRow({ lotacao, onEdit, onDelete }: LotacaoRowProps) {
               >
                 {t("actions.reativar")}
               </Button>
-            )}
-          </Can>
+            </Can>
+          )}
         </div>
       </td>
     </tr>
