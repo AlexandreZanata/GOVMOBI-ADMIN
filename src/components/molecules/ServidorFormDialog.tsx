@@ -6,6 +6,8 @@ import { useTranslation } from "react-i18next";
 import { Button, Input } from "@/components/atoms";
 import { useCreateServidor } from "@/hooks/servidores/useCreateServidor";
 import { useUpdateServidor } from "@/hooks/servidores/useUpdateServidor";
+import { buildServidorUpdatePayload } from "@/lib/buildServidorUpdatePayload";
+import { formatCpf } from "@/lib/formatCpf";
 import { useCargos } from "@/hooks/cargos/useCargos";
 import { useLotacoes } from "@/hooks/useLotacoes";
 import type { Papel, Servidor } from "@/models/Servidor";
@@ -123,15 +125,15 @@ export function ServidorFormDialog({
           { onSuccess: onClose }
         );
       } else if (servidor) {
+        const changedFields = buildServidorUpdatePayload(servidor, {
+          nome: nome.trim(),
+          telefone: telefone.trim(),
+          cargoId,
+          lotacaoId,
+          papeis,
+        });
         await updateMutation.mutateAsync(
-          {
-            id: servidor.id,
-            nome: nome.trim(),
-            telefone: telefone.trim(),
-            cargoId,
-            lotacaoId,
-            papeis,
-          },
+          { id: servidor.id, ...changedFields },
           { onSuccess: onClose }
         );
       }
@@ -328,15 +330,4 @@ export function ServidorFormDialog({
   );
 }
 
-/**
- * Formats an 11-digit CPF string as "000.000.000-00".
- * Returns the raw value if it doesn't match the expected length.
- *
- * @param cpf - Raw 11-digit CPF string
- * @returns Formatted CPF string
- */
-export function formatCpf(cpf: string): string {
-  const digits = cpf.replace(/\D/g, "");
-  if (digits.length !== 11) return cpf;
-  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
-}
+

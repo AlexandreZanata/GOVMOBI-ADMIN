@@ -9,13 +9,13 @@ import { Can } from "@/components/auth/Can";
 import { ErrorState } from "@/components/molecules/ErrorState";
 import { ServidorDeleteDialog } from "@/components/molecules/ServidorDeleteDialog";
 import { ServidorFormDialog } from "@/components/molecules/ServidorFormDialog";
-import { formatCpf } from "@/components/molecules/ServidorFormDialog";
+import { formatCpf } from "@/lib/formatCpf";
 import { useReativarServidor } from "@/hooks/servidores/useReativarServidor";
 import { useServidores } from "@/hooks/servidores/useServidores";
+import { filterByAtivo } from "@/lib/filterByAtivo";
+import type { AtivoFilter } from "@/lib/filterByAtivo";
 import { Permission } from "@/models";
 import type { Papel, Servidor } from "@/models/Servidor";
-
-type FilterValue = "all" | "active" | "inactive";
 
 /** Maps Papel to a Badge variant. */
 const papelVariant: Record<Papel, "danger" | "info" | "neutral"> = {
@@ -34,17 +34,15 @@ export function ServidoresPageClient() {
   const { t } = useTranslation("servidores");
   const { data, isLoading, isError, refetch } = useServidores();
 
-  const [filter, setFilter] = useState<FilterValue>("all");
+  const [filter, setFilter] = useState<AtivoFilter>("all");
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Servidor | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<Servidor | undefined>();
 
-  const filtered = useMemo(() => {
-    const list = data ?? [];
-    if (filter === "active") return list.filter((s) => s.ativo);
-    if (filter === "inactive") return list.filter((s) => !s.ativo);
-    return list;
-  }, [data, filter]);
+  const filtered = useMemo(
+    () => filterByAtivo(data ?? [], filter),
+    [data, filter],
+  );
 
   const handleOpenCreate = () => {
     setEditTarget(undefined);
@@ -154,7 +152,7 @@ export function ServidoresPageClient() {
           role="group"
           aria-label={t("page.title")}
         >
-          {(["all", "active", "inactive"] as FilterValue[]).map((f) => (
+          {(["all", "active", "inactive"] as AtivoFilter[]).map((f) => (
             <button
               key={f}
               type="button"
@@ -274,8 +272,8 @@ function ServidorRow({ servidor, onEdit, onDelete }: ServidorRowProps) {
             </Button>
           </Can>
 
-          <Can perform={Permission.SERVIDOR_DELETE}>
-            {servidor.ativo ? (
+          {servidor.ativo ? (
+            <Can perform={Permission.SERVIDOR_DELETE}>
               <Button
                 data-testid={`servidor-delete-${servidor.id}`}
                 size="sm"
@@ -284,22 +282,22 @@ function ServidorRow({ servidor, onEdit, onDelete }: ServidorRowProps) {
               >
                 {t("actions.delete")}
               </Button>
-            ) : (
-              <Can perform={Permission.SERVIDOR_REATIVAR}>
-                <Button
-                  data-testid={`servidor-reativar-${servidor.id}`}
-                  size="sm"
-                  variant="success"
-                  isLoading={reativarMutation.isPending}
-                  onClick={() =>
-                    void reativarMutation.mutateAsync({ id: servidor.id })
-                  }
-                >
-                  {t("actions.reativar")}
-                </Button>
-              </Can>
-            )}
-          </Can>
+            </Can>
+          ) : (
+            <Can perform={Permission.SERVIDOR_REATIVAR}>
+              <Button
+                data-testid={`servidor-reativar-${servidor.id}`}
+                size="sm"
+                variant="success"
+                isLoading={reativarMutation.isPending}
+                onClick={() =>
+                  void reativarMutation.mutateAsync({ id: servidor.id })
+                }
+              >
+                {t("actions.reativar")}
+              </Button>
+            </Can>
+          )}
         </div>
       </td>
     </tr>

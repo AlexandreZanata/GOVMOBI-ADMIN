@@ -50,6 +50,10 @@
     "active": "Active",
     "inactive": "Inactive"
   },
+  "delete": {
+    "confirmation": "Do you want to deactivate the servidor \"{{nome}}\"?",
+    "reversible": "This action can be reversed."
+  },
   "toast": {
     "created": "Servidor created successfully.",
     "updated": "Servidor updated successfully.",

@@ -23,10 +23,15 @@ export interface ServidorDeleteDialogProps {
 }
 
 /**
- * Confirmation dialog for soft-deleting a servidor.
+ * Confirmation dialog for soft-deleting (deactivating) a servidor.
+ * Displays the servidor name and a reversibility message.
  * Calls useDeleteServidor on confirm; closes on success.
  *
- * @param props - Dialog state, target servidor info, and test selector
+ * @param props.open - Whether the dialog is visible
+ * @param props.onClose - Callback to close the dialog
+ * @param props.servidorId - ID of the servidor to deactivate
+ * @param props.servidorNome - Display name for the confirmation body
+ * @param props.data-testid - Test selector prefix
  * @returns Accessible destructive confirmation dialog
  */
 export function ServidorDeleteDialog({
@@ -35,14 +40,14 @@ export function ServidorDeleteDialog({
   servidorId,
   servidorNome,
   "data-testid": testId,
-}: ServidorDeleteDialogProps) {
+}: ServidorDeleteDialogProps): React.ReactElement | null {
   const { t } = useTranslation("servidores");
   const headingId = useId();
   const deleteMutation = useDeleteServidor();
 
   if (!open) return null;
 
-  const handleConfirm = async () => {
+  const handleConfirm = async (): Promise<void> => {
     await deleteMutation.mutateAsync(
       { id: servidorId },
       { onSuccess: onClose }
@@ -64,7 +69,13 @@ export function ServidorDeleteDialog({
           {t("actions.delete")}
         </h2>
 
-        <p className="mt-2 text-sm text-neutral-700">{servidorNome}</p>
+        <p className="mt-2 text-sm text-neutral-700">
+          {t("delete.confirmation", { nome: servidorNome })}
+        </p>
+
+        <p className="mt-1 text-xs text-neutral-500">
+          {t("delete.reversible")}
+        </p>
 
         <div className="mt-5 flex items-center justify-end gap-2">
           <Button
