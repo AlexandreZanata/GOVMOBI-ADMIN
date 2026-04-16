@@ -1,10 +1,12 @@
+import { getApiBase } from "@/lib/apiBase";
 import { handleApiResponse } from "@/lib/handleApiResponse";
 import type { Department } from "@/models/Department";
 import type { CreateDepartmentInput } from "@/types/departments";
 import type { PaginatedResponse } from "@/facades/usersFacade";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+function baseUrl(): string {
+  return getApiBase();
+}
 
 /**
  * Facade for department-related business actions and API orchestration.
@@ -19,7 +21,7 @@ export const departmentsFacade = {
    * @throws ApiError on non-2xx responses
    */
   async listDepartments(): Promise<PaginatedResponse<Department>> {
-    const response = await fetch(`${BASE_URL}/departments`);
+    const response = await fetch(`${baseUrl()}/departments`);
     return handleApiResponse<PaginatedResponse<Department>>(response);
   },
 
@@ -32,7 +34,7 @@ export const departmentsFacade = {
    * @throws ApiError 422 on validation failure
    */
   async createDepartment(input: CreateDepartmentInput): Promise<Department> {
-    const response = await fetch(`${BASE_URL}/departments`, {
+    const response = await fetch(`${baseUrl()}/departments`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
