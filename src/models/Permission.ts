@@ -35,7 +35,6 @@ export enum Permission {
   MOTORISTA_STATUS = "motorista:status",
   MOTORISTA_DESATIVAR = "motorista:desativar",
   MOTORISTA_REATIVAR = "motorista:reativar",
-  SERVIDOR_VIEW = "servidor:view",
   SERVIDOR_CREATE = "servidor:create",
   SERVIDOR_EDIT = "servidor:edit",
   SERVIDOR_DELETE = "servidor:delete",

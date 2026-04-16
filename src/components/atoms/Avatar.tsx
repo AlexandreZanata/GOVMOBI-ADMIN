@@ -66,6 +66,7 @@ export function Avatar({
       ].join(" ")}
     >
       {showImage ? (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={src}
           alt={name}
