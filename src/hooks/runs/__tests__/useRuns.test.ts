@@ -7,7 +7,7 @@ import { useRuns } from "@/hooks/runs/useRuns";
 import { renderWithProviders } from "@/test/renderWithProviders";
 import { RunPriority, RunStatus, RunType, type Run } from "@/models";
 
-const RUNS_API_URL = "http://localhost:3000/api/runs";
+const RUNS_API_URL = `${process.env.NEXT_PUBLIC_API_URL || "http://172.19.2.116:3000"}/v1/runs`;
 
 const runFixture: Run = {
   id: "run-1",

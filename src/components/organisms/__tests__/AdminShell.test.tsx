@@ -13,6 +13,7 @@ import React from "react";
 // Mock next/navigation — usePathname used inside NavItem
 vi.mock("next/navigation", () => ({
   usePathname: () => "/runs",
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn(), back: vi.fn() }),
 }));
 
 // Mock next/link — renders a plain <a> in tests

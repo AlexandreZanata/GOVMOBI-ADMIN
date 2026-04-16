@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 
@@ -36,11 +37,21 @@ const runFixture: Run = {
   departmentId: "dept-1",
 };
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
+
 function renderForRole(role: UserRole) {
   return render(
-    <PermissionsProvider role={role}>
-      <RunsPageClient />
-    </PermissionsProvider>
+    <QueryClientProvider client={queryClient}>
+      <PermissionsProvider role={role}>
+        <RunsPageClient />
+      </PermissionsProvider>
+    </QueryClientProvider>
   );
 }
 
@@ -70,9 +81,11 @@ describe("RunsPageClient", () => {
 
   it("permission gates hide and show actions by role", () => {
     const { rerender } = render(
-      <PermissionsProvider role={UserRole.AGENT}>
-        <RunsPageClient />
-      </PermissionsProvider>
+      <QueryClientProvider client={queryClient}>
+        <PermissionsProvider role={UserRole.AGENT}>
+          <RunsPageClient />
+        </PermissionsProvider>
+      </QueryClientProvider>
     );
 
     expect(screen.queryByTestId("assign-run-run-1")).toBeNull();
@@ -80,9 +93,11 @@ describe("RunsPageClient", () => {
     expect(screen.queryByTestId("override-run-run-1-trigger")).toBeNull();
 
     rerender(
-      <PermissionsProvider role={UserRole.SUPERVISOR}>
-        <RunsPageClient />
-      </PermissionsProvider>
+      <QueryClientProvider client={queryClient}>
+        <PermissionsProvider role={UserRole.SUPERVISOR}>
+          <RunsPageClient />
+        </PermissionsProvider>
+      </QueryClientProvider>
     );
 
     expect(screen.getByTestId("assign-run-run-1")).toBeInTheDocument();
@@ -126,3 +141,4 @@ describe("RunsPageClient", () => {
     expect(refetch).toHaveBeenCalledOnce();
   });
 });
+
