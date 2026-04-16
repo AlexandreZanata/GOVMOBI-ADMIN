@@ -1,6 +1,7 @@
 import { setupWorker } from "msw/browser";
 
 import { auditHandlers } from "./auditHandlers";
+import { authHandlers } from "./authHandlers";
 import { cargosHandlers } from "./cargosHandlers";
 import { departmentsHandlers } from "./departmentsHandlers";
 import { lotacoesHandlers } from "./lotacoesHandlers";
@@ -16,6 +17,7 @@ import { servidoresHandlers } from "./servidoresHandlers";
  */
 export const worker = setupWorker(
   ...auditHandlers,
+  ...authHandlers,
   ...cargosHandlers,
   ...departmentsHandlers,
   ...lotacoesHandlers,
