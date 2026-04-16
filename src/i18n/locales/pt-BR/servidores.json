@@ -1,0 +1,62 @@
+{
+  "page": {
+    "title": "Servidores",
+    "accessDenied": "Voce nao tem permissao para visualizar servidores.",
+    "empty": {
+      "title": "Nenhum servidor encontrado",
+      "message": "Cadastre o primeiro servidor para comecar."
+    },
+    "filters": {
+      "all": "Todos",
+      "active": "Ativo",
+      "inactive": "Inativo"
+    }
+  },
+  "table": {
+    "nome": "Nome",
+    "cpf": "CPF",
+    "email": "Email",
+    "cargo": "Cargo",
+    "lotacao": "Lotacao",
+    "papeis": "Papeis",
+    "status": "Status",
+    "actions": "Acoes"
+  },
+  "actions": {
+    "create": "Novo servidor",
+    "edit": "Editar",
+    "delete": "Desativar",
+    "reativar": "Reativar"
+  },
+  "form": {
+    "nome": "Nome completo",
+    "cpf": "CPF",
+    "email": "Email",
+    "telefone": "Telefone",
+    "cargoId": "Cargo",
+    "lotacaoId": "Lotacao",
+    "papeis": "Papeis",
+    "submit": "Salvar",
+    "cancel": "Cancelar",
+    "cpfReadOnly": "O CPF nao pode ser alterado apos a criacao",
+    "emailReadOnly": "O email nao pode ser alterado apos a criacao"
+  },
+  "papeis": {
+    "USUARIO": "Usuario",
+    "ADMIN": "Admin",
+    "MOTORISTA": "Motorista"
+  },
+  "status": {
+    "active": "Ativo",
+    "inactive": "Inativo"
+  },
+  "toast": {
+    "created": "Servidor criado com sucesso.",
+    "updated": "Servidor atualizado com sucesso.",
+    "deleted": "Servidor desativado.",
+    "reativado": "Servidor reativado.",
+    "duplicate": "CPF ou email ja cadastrado.",
+    "invalidData": "Dados invalidos - verifique CPF, email e papeis.",
+    "dependencyNotFound": "Cargo ou lotacao nao encontrado."
+  }
+}

@@ -1,0 +1,13 @@
+/**
+ * Veículos management page — placeholder until the veículos module is implemented.
+ */
+export default function VeiculosPage() {
+  return (
+    <div className="rounded-md border border-neutral-200 bg-white p-8 text-center">
+      <h1 className="text-lg font-semibold text-neutral-900">Veículos</h1>
+      <p className="mt-2 text-sm text-neutral-500">
+        This module is under construction.
+      </p>
+    </div>
+  );
+}

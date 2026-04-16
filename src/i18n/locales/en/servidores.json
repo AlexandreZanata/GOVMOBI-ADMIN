@@ -1,0 +1,62 @@
+{
+  "page": {
+    "title": "Servidores",
+    "accessDenied": "You do not have permission to view servidores.",
+    "empty": {
+      "title": "No servidores found",
+      "message": "Create the first servidor to get started."
+    },
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
+  "table": {
+    "nome": "Name",
+    "cpf": "CPF",
+    "email": "Email",
+    "cargo": "Cargo",
+    "lotacao": "Lotação",
+    "papeis": "Roles",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "actions": {
+    "create": "New Servidor",
+    "edit": "Edit",
+    "delete": "Deactivate",
+    "reativar": "Reactivate"
+  },
+  "form": {
+    "nome": "Full name",
+    "cpf": "CPF",
+    "email": "Email",
+    "telefone": "Phone",
+    "cargoId": "Cargo",
+    "lotacaoId": "Lotação",
+    "papeis": "Roles",
+    "submit": "Save",
+    "cancel": "Cancel",
+    "cpfReadOnly": "CPF cannot be changed after creation",
+    "emailReadOnly": "Email cannot be changed after creation"
+  },
+  "papeis": {
+    "USUARIO": "Usuário",
+    "ADMIN": "Admin",
+    "MOTORISTA": "Motorista"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "toast": {
+    "created": "Servidor created successfully.",
+    "updated": "Servidor updated successfully.",
+    "deleted": "Servidor deactivated.",
+    "reativado": "Servidor reactivated.",
+    "duplicate": "CPF or email already registered.",
+    "invalidData": "Invalid data — check CPF, email, and roles.",
+    "dependencyNotFound": "Cargo or Lotação not found."
+  }
+}

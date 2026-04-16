@@ -1,0 +1,43 @@
+{
+  "status": {
+    "PENDING": "Pending",
+    "ASSIGNED": "Assigned",
+    "IN_PROGRESS": "In Progress",
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled"
+  },
+  "page": {
+    "accessDenied": "Access denied",
+    "empty": {
+      "title": "No runs found",
+      "message": "There are no runs for the selected filters."
+    },
+    "filters": {
+      "status": "Status",
+      "type": "Type",
+      "all": "All"
+    },
+    "types": {
+      "TRANSPORT": "Transport",
+      "INSPECTION": "Inspection",
+      "EMERGENCY": "Emergency",
+      "MAINTENANCE": "Maintenance",
+      "ADMINISTRATIVE": "Administrative"
+    },
+    "actions": {
+      "assign": "Assign",
+      "updateStatus": "Update Status",
+      "override": "Override"
+    }
+  },
+  "dialogs": {
+    "override": {
+      "open": "Override",
+      "title": "Confirm run override",
+      "description": "This action requires a reason and will be logged for audit.",
+      "reasonLabel": "Override reason",
+      "confirm": "Confirm override",
+      "cancel": "Cancel"
+    }
+  }
+}

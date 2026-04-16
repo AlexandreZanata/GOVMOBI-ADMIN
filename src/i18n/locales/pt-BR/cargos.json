@@ -1,0 +1,45 @@
+{
+  "page": {
+    "title": "Cargos",
+    "accessDenied": "Voce nao tem permissao para visualizar cargos.",
+    "empty": {
+      "title": "Nenhum cargo encontrado",
+      "message": "Crie o primeiro cargo para comecar."
+    },
+    "filters": {
+      "all": "Todos",
+      "active": "Ativo",
+      "inactive": "Inativo"
+    }
+  },
+  "table": {
+    "nome": "Nome",
+    "pesoPrioridade": "Peso de prioridade",
+    "status": "Status",
+    "actions": "Acoes"
+  },
+  "actions": {
+    "create": "Novo cargo",
+    "edit": "Editar",
+    "delete": "Desativar",
+    "reativar": "Reativar"
+  },
+  "form": {
+    "nome": "Nome",
+    "pesoPrioridade": "Peso de prioridade",
+    "submit": "Salvar",
+    "cancel": "Cancelar"
+  },
+  "status": {
+    "active": "Ativo",
+    "inactive": "Inativo"
+  },
+  "toast": {
+    "created": "Cargo criado com sucesso.",
+    "updated": "Cargo atualizado com sucesso.",
+    "deleted": "Cargo desativado.",
+    "reativado": "Cargo reativado.",
+    "duplicateName": "Ja existe um cargo com este nome.",
+    "notFound": "Cargo nao encontrado."
+  }
+}

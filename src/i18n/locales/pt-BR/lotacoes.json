@@ -1,0 +1,43 @@
+{
+  "page": {
+    "title": "Lotacoes",
+    "accessDenied": "Voce nao tem permissao para visualizar lotacoes.",
+    "empty": {
+      "title": "Nenhuma lotacao encontrada",
+      "message": "Crie a primeira lotacao para comecar."
+    },
+    "filters": {
+      "all": "Todos",
+      "active": "Ativo",
+      "inactive": "Inativo"
+    }
+  },
+  "table": {
+    "nome": "Nome",
+    "status": "Status",
+    "actions": "Acoes"
+  },
+  "actions": {
+    "create": "Nova lotacao",
+    "edit": "Editar",
+    "delete": "Desativar",
+    "reativar": "Reativar"
+  },
+  "form": {
+    "nome": "Nome",
+    "submit": "Salvar",
+    "cancel": "Cancelar"
+  },
+  "status": {
+    "active": "Ativo",
+    "inactive": "Inativo"
+  },
+  "toast": {
+    "created": "Lotacao criada com sucesso.",
+    "updated": "Lotacao atualizada com sucesso.",
+    "deleted": "Lotacao desativada.",
+    "reativado": "Lotacao reativada.",
+    "duplicateName": "Ja existe uma lotacao com este nome.",
+    "notFound": "Lotacao nao encontrada."
+  }
+}

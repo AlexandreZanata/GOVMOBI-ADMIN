@@ -1,0 +1,32 @@
+{
+  "page": {
+    "title": "Audit Trail",
+    "subtitle": "Read-only timeline of state-changing actions across the platform.",
+    "accessDenied": "You do not have permission to view audit entries.",
+    "empty": {
+      "title": "No audit entries found",
+      "message": "Try changing filters or date range to view matching events."
+    }
+  },
+  "filters": {
+    "eventType": "Event type",
+    "actorId": "Actor ID",
+    "entityType": "Entity type",
+    "from": "From",
+    "to": "To",
+    "placeholders": {
+      "eventType": "run.overridden",
+      "actorId": "user-001",
+      "entityType": "run"
+    }
+  },
+  "actions": {
+    "loadMore": "Load more"
+  },
+  "timeline": {
+    "entity": "Entity: {{entityType}} #{{entityId}}",
+    "payload": "Payload",
+    "payloadEmpty": "none",
+    "actorFallback": "User {{actorId}}"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "page": {
+    "title": "Trilha de auditoria",
+    "subtitle": "Linha do tempo somente leitura de acoes que alteram estado na plataforma.",
+    "accessDenied": "Voce nao tem permissao para visualizar registros de auditoria.",
+    "empty": {
+      "title": "Nenhum registro de auditoria encontrado",
+      "message": "Tente alterar filtros ou intervalo de datas para ver eventos correspondentes."
+    }
+  },
+  "filters": {
+    "eventType": "Tipo de evento",
+    "actorId": "ID do ator",
+    "entityType": "Tipo de entidade",
+    "from": "De",
+    "to": "Ate",
+    "placeholders": {
+      "eventType": "run.overridden",
+      "actorId": "user-001",
+      "entityType": "run"
+    }
+  },
+  "actions": {
+    "loadMore": "Carregar mais"
+  },
+  "timeline": {
+    "entity": "Entidade: {{entityType}} #{{entityId}}",
+    "payload": "Payload",
+    "payloadEmpty": "nenhum",
+    "actorFallback": "Usuario {{actorId}}"
+  }
+}

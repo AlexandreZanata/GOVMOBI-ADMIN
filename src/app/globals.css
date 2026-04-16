@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@import "../theme/govmobile.css";
+
+body {
+  font-family: var(--font-sans, Arial, Helvetica, sans-serif);
+  background-color: hsl(var(--color-neutral-50));
+  color: hsl(var(--color-neutral-900));
+}

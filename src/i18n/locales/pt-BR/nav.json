@@ -1,0 +1,21 @@
+{
+  "runs": "Corridas",
+  "cargos": "Cargos",
+  "lotacoes": "Lotacoes",
+  "servidores": "Servidores",
+  "veiculos": "Veiculos",
+  "motoristas": "Motoristas",
+  "users": "Usuarios",
+  "departments": "Departamentos",
+  "audit": "Trilha de auditoria",
+  "collapse": "Recolher menu",
+  "expand": "Expandir menu",
+  "logout": "Sair",
+  "profile": "Meu perfil",
+  "mainNavigation": "Navegacao principal",
+  "language": {
+    "groupLabel": "Seletor de idioma",
+    "ptBR": "Portugues (Brasil)",
+    "enUS": "Ingles (EUA)"
+  }
+}

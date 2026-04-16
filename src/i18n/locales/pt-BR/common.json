@@ -1,0 +1,13 @@
+{
+  "loading": "Carregando",
+  "cancel": "Cancelar",
+  "confirm": "Confirmar",
+  "close": "Fechar",
+  "errorState": {
+    "title": "Algo deu errado",
+    "retry": "Tentar novamente"
+  },
+  "toast": {
+    "serverError": "Ocorreu um erro inesperado. Tente novamente."
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "page": {
+    "title": "Users",
+    "accessDenied": "You do not have permission to view users.",
+    "empty": {
+      "title": "No users found",
+      "message": "Adjust filters or create a new user."
+    },
+    "filters": {
+      "allRoles": "All roles",
+      "allStatuses": "All statuses",
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
+  "table": {
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "department": "Department",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "actions": {
+    "create": "New User",
+    "edit": "Edit",
+    "deactivate": "Deactivate"
+  },
+  "form": {
+    "name": "Full name",
+    "email": "Email",
+    "role": "Role",
+    "department": "Department",
+    "submit": "Save",
+    "cancel": "Cancel",
+    "emailReadOnly": "Email cannot be changed after creation."
+  },
+  "role": {
+    "ADMIN": "Admin",
+    "SUPERVISOR": "Supervisor",
+    "DISPATCHER": "Dispatcher",
+    "AGENT": "Agent",
+    "FIELD_AGENT": "Field Agent"
+  },
+  "status": {
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
+    "ON_MISSION": "On Mission"
+  },
+  "deactivate": {
+    "title": "Deactivate user",
+    "description": "This user will lose access to the platform.",
+    "confirm": "Deactivate",
+    "cancel": "Cancel",
+    "hasRuns": "This user has {{count}} active run(s) that will be unassigned."
+  },
+  "toast": {
+    "created": "User created successfully.",
+    "updated": "User updated successfully.",
+    "deactivated": "User deactivated.",
+    "duplicateEmail": "A user with this email already exists.",
+    "validationError": "Please check the form fields.",
+    "notFound": "User not found.",
+    "hasActiveRuns": "User had {{count}} active run(s). They have been unassigned."
+  }
+}
