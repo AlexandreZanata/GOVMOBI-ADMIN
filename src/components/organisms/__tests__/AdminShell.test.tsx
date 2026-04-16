@@ -79,10 +79,10 @@ describe("AdminShell", () => {
     expect(document.cookie).toContain("sidebar_collapsed=true");
   });
 
-  it("renders nav with aria-label='Main navigation'", () => {
+  it("renders nav with translated aria-label", () => {
     render(<AdminShell userRole={UserRole.ADMIN} />);
     expect(
-      screen.getByRole("navigation", { name: "Main navigation" })
+      screen.getByRole("navigation", { name: "nav:mainNavigation" })
     ).toBeInTheDocument();
   });
 

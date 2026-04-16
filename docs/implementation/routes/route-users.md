@@ -14,12 +14,12 @@ The `/users` page allows Admins to manage platform users — create accounts, as
 
 ## API Endpoints
 
-| Method   | Endpoint                    | Description         | Success | Error codes      |
-|----------|-----------------------------|---------------------|---------|------------------|
-| `GET`    | `/users`                    | List users          | `200`   | —                |
-| `POST`   | `/users`                    | Create user         | `201`   | `403` `409` `422`|
-| `PATCH`  | `/users/:id`                | Update user fields  | `200`   | `403` `404` `422`|
-| `POST`   | `/users/:id/deactivate`     | Deactivate user     | `200`   | `403` `404` `422`|
+| Method  | Endpoint                | Description        | Success | Error codes       |
+|---------|-------------------------|--------------------|---------|-------------------|
+| `GET`   | `/users`                | List users         | `200`   | —                 |
+| `POST`  | `/users`                | Create user        | `201`   | `403` `409` `422` |
+| `PATCH` | `/users/:id`            | Update user fields | `200`   | `403` `404` `422` |
+| `POST`  | `/users/:id/deactivate` | Deactivate user    | `200`   | `403` `404` `422` |
 
 ### Query parameters for GET /v1/users
 
@@ -33,26 +33,27 @@ The `/users` page allows Admins to manage platform users — create accounts, as
 
 ### Response shape
 
+`GET /v1/users` — `PaginatedResponse<User>`
+
 ```typescript
-// GET /v1/users — PaginatedResponse<User>
-{
-  "items": [
+const listUsersResponse = {
+  items: [
     {
-      "id": "user-uuid",
-      "name": "Jane Smith",
-      "email": "jane.smith@gov.internal",
-      "role": "DISPATCHER",
-      "departmentId": "dept-uuid",
-      "status": "active",
-      "createdAt": "2026-04-15T08:00:00Z",
-      "updatedAt": "2026-04-15T08:00:00Z"
-    }
+      id: "user-uuid",
+      name: "Jane Smith",
+      email: "jane.smith@gov.internal",
+      role: "DISPATCHER",
+      departmentId: "dept-uuid",
+      status: "active",
+      createdAt: "2026-04-15T08:00:00Z",
+      updatedAt: "2026-04-15T08:00:00Z",
+    },
   ],
-  "total": 42,
-  "page": 1,
-  "pageSize": 25,
-  "hasMore": true
-}
+  total: 42,
+  page: 1,
+  pageSize: 25,
+  hasMore: true,
+};
 ```
 
 > This API does NOT use the `{ success, data, timestamp }` envelope. Use `handleApiResponse<T>` directly.
@@ -61,22 +62,22 @@ The `/users` page allows Admins to manage platform users — create accounts, as
 
 ## File Map
 
-| File | Type | Purpose |
-|------|------|---------|
-| `src/models/User.ts` | Model | Already exists — extend if needed |
-| `src/types/users.ts` | Types | Input types for facade methods |
-| `src/facades/usersFacade.ts` | Facade | All HTTP calls for this domain |
-| `src/lib/queryKeys/usersKeys.ts` | Query keys | TanStack Query key factory |
-| `src/hooks/useUsers.ts` | Hook | Paginated list query |
-| `src/hooks/useCreateUser.ts` | Hook | Create mutation |
-| `src/hooks/useUpdateUser.ts` | Hook | Update mutation |
-| `src/hooks/useDeactivateUser.ts` | Hook | Deactivate mutation |
-| `src/msw/usersHandlers.ts` | MSW | Mock handlers |
-| `src/test/fixtures/users.ts` | Fixture | Mock data |
-| `src/app/(admin)/users/page.tsx` | Page | Server Component entry |
-| `src/components/organisms/UsersPageClient.tsx` | Organism | Interactive table + actions |
-| `src/components/molecules/UserFormDialog.tsx` | Molecule | Create / edit dialog |
-| `src/i18n/locales/en/users.json` | i18n | Extend existing file |
+| File                                           | Type       | Purpose                           |
+|------------------------------------------------|------------|-----------------------------------|
+| `src/models/User.ts`                           | Model      | Already exists — extend if needed |
+| `src/types/users.ts`                           | Types      | Input types for facade methods    |
+| `src/facades/usersFacade.ts`                   | Facade     | All HTTP calls for this domain    |
+| `src/lib/queryKeys/usersKeys.ts`               | Query keys | TanStack Query key factory        |
+| `src/hooks/useUsers.ts`                        | Hook       | Paginated list query              |
+| `src/hooks/useCreateUser.ts`                   | Hook       | Create mutation                   |
+| `src/hooks/useUpdateUser.ts`                   | Hook       | Update mutation                   |
+| `src/hooks/useDeactivateUser.ts`               | Hook       | Deactivate mutation               |
+| `src/msw/usersHandlers.ts`                     | MSW        | Mock handlers                     |
+| `src/test/fixtures/users.ts`                   | Fixture    | Mock data                         |
+| `src/app/(admin)/users/page.tsx`               | Page       | Server Component entry            |
+| `src/components/organisms/UsersPageClient.tsx` | Organism   | Interactive table + actions       |
+| `src/components/molecules/UserFormDialog.tsx`  | Molecule   | Create / edit dialog              |
+| `src/i18n/locales/en/users.json`               | i18n       | Extend existing file              |
 
 ---
 
@@ -345,10 +346,13 @@ import { usersHandlers } from "@/msw/usersHandlers";
 
 ```typescript
 // src/models/Permission.ts — add
-USER_VIEW       = "user:view",
-USER_CREATE     = "user:create",
-USER_EDIT       = "user:edit",
-USER_DEACTIVATE = "user:deactivate",
+export enum Permission {
+  // ...existing code...
+  USER_VIEW = "user:view",
+  USER_CREATE = "user:create",
+  USER_EDIT = "user:edit",
+  USER_DEACTIVATE = "user:deactivate",
+}
 ```
 
 ---

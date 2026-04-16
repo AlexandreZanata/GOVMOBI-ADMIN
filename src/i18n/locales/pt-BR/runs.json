@@ -1,0 +1,43 @@
+{
+  "status": {
+    "PENDING": "Pendente",
+    "ASSIGNED": "Atribuida",
+    "IN_PROGRESS": "Em andamento",
+    "COMPLETED": "Concluida",
+    "CANCELLED": "Cancelada"
+  },
+  "page": {
+    "accessDenied": "Acesso negado",
+    "empty": {
+      "title": "Nenhuma corrida encontrada",
+      "message": "Nao ha corridas para os filtros selecionados."
+    },
+    "filters": {
+      "status": "Status",
+      "type": "Tipo",
+      "all": "Todos"
+    },
+    "types": {
+      "TRANSPORT": "Transporte",
+      "INSPECTION": "Inspecao",
+      "EMERGENCY": "Emergencia",
+      "MAINTENANCE": "Manutencao",
+      "ADMINISTRATIVE": "Administrativo"
+    },
+    "actions": {
+      "assign": "Atribuir",
+      "updateStatus": "Atualizar status",
+      "override": "Sobrescrever"
+    }
+  },
+  "dialogs": {
+    "override": {
+      "open": "Sobrescrever",
+      "title": "Confirmar sobrescrita de corrida",
+      "description": "Esta acao exige um motivo e sera registrada para auditoria.",
+      "reasonLabel": "Motivo da sobrescrita",
+      "confirm": "Confirmar sobrescrita",
+      "cancel": "Cancelar"
+    }
+  }
+}

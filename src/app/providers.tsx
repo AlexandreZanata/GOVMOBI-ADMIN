@@ -17,7 +17,10 @@ export function Providers({ children }: { children: ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 30_000,
+            // 5 min stale time — cached data is reused on revisit without a refetch,
+            // eliminating the loading flash when navigating back to a page.
+            staleTime: 5 * 60_000,
+            gcTime: 10 * 60_000,
             retry: 1,
           },
         },

@@ -54,24 +54,24 @@ The `/lotacoes` page manages organizational units (lotações) — e.g. "Secreta
 
 ## File Map
 
-| File | Type | Purpose |
-|------|------|---------|
-| `src/models/Lotacao.ts` | Model | `Lotacao` interface |
-| `src/types/lotacoes.ts` | Types | Input types for facade methods |
-| `src/facades/lotacoesFacade.ts` | Facade | All HTTP calls for this domain |
-| `src/lib/queryKeys/lotacoesKeys.ts` | Query keys | TanStack Query key factory |
-| `src/hooks/useLotacoes.ts` | Hook | List query |
-| `src/hooks/useCreateLotacao.ts` | Hook | Create mutation |
-| `src/hooks/useUpdateLotacao.ts` | Hook | Update mutation |
-| `src/hooks/useDeleteLotacao.ts` | Hook | Soft-delete mutation |
-| `src/hooks/useReativarLotacao.ts` | Hook | Reactivate mutation |
-| `src/msw/lotacoesHandlers.ts` | MSW | Mock handlers for all endpoints |
-| `src/test/fixtures/lotacoes.ts` | Fixture | Mock data |
-| `src/app/(admin)/lotacoes/page.tsx` | Page | Server Component entry |
-| `src/components/organisms/LotacoesPageClient.tsx` | Organism | Interactive table + actions |
-| `src/components/molecules/LotacaoFormDialog.tsx` | Molecule | Create / edit dialog |
-| `src/components/molecules/LotacaoDeleteDialog.tsx` | Molecule | Soft-delete confirm dialog |
-| `src/i18n/locales/en/lotacoes.json` | i18n | All labels for this domain |
+| File                                               | Type       | Purpose                         |
+|----------------------------------------------------|------------|---------------------------------|
+| `src/models/Lotacao.ts`                            | Model      | `Lotacao` interface             |
+| `src/types/lotacoes.ts`                            | Types      | Input types for facade methods  |
+| `src/facades/lotacoesFacade.ts`                    | Facade     | All HTTP calls for this domain  |
+| `src/lib/queryKeys/lotacoesKeys.ts`                | Query keys | TanStack Query key factory      |
+| `src/hooks/useLotacoes.ts`                         | Hook       | List query                      |
+| `src/hooks/useCreateLotacao.ts`                    | Hook       | Create mutation                 |
+| `src/hooks/useUpdateLotacao.ts`                    | Hook       | Update mutation                 |
+| `src/hooks/useDeleteLotacao.ts`                    | Hook       | Soft-delete mutation            |
+| `src/hooks/useReativarLotacao.ts`                  | Hook       | Reactivate mutation             |
+| `src/msw/lotacoesHandlers.ts`                      | MSW        | Mock handlers for all endpoints |
+| `src/test/fixtures/lotacoes.ts`                    | Fixture    | Mock data                       |
+| `src/app/(admin)/lotacoes/page.tsx`                | Page       | Server Component entry          |
+| `src/components/organisms/LotacoesPageClient.tsx`  | Organism   | Interactive table + actions     |
+| `src/components/molecules/LotacaoFormDialog.tsx`   | Molecule   | Create / edit dialog            |
+| `src/components/molecules/LotacaoDeleteDialog.tsx` | Molecule   | Soft-delete confirm dialog      |
+| `src/i18n/locales/en/lotacoes.json`                | i18n       | All labels for this domain      |
 
 ---
 
@@ -313,8 +313,9 @@ Cancel button: variant="ghost"
 
 ### Step 10 — i18n
 
+`src/i18n/locales/en/lotacoes.json`
+
 ```json
-// src/i18n/locales/en/lotacoes.json
 {
   "page": {
     "title": "Lotações",
@@ -355,11 +356,14 @@ import { lotacoesHandlers } from "@/msw/lotacoesHandlers";
 In `src/models/Permission.ts`, add:
 
 ```typescript
-LOTACAO_VIEW     = "lotacao:view",
-LOTACAO_CREATE   = "lotacao:create",
-LOTACAO_EDIT     = "lotacao:edit",
-LOTACAO_DELETE   = "lotacao:delete",
-LOTACAO_REATIVAR = "lotacao:reativar",
+export enum Permission {
+  // ...existing code...
+  LOTACAO_VIEW = "lotacao:view",
+  LOTACAO_CREATE = "lotacao:create",
+  LOTACAO_EDIT = "lotacao:edit",
+  LOTACAO_DELETE = "lotacao:delete",
+  LOTACAO_REATIVAR = "lotacao:reativar",
+}
 ```
 
 ---

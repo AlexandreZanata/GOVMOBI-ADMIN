@@ -501,8 +501,9 @@ Cancel button: variant="ghost"
 
 ### Step 11 — i18n
 
+`src/i18n/locales/en/servidores.json`
+
 ```json
-// src/i18n/locales/en/servidores.json
 {
   "page": {
     "title": "Servidores",
@@ -550,11 +551,14 @@ import { servidoresHandlers } from "@/msw/servidoresHandlers";
 
 ```typescript
 // src/models/Permission.ts — add
-SERVIDOR_VIEW     = "servidor:view",
-SERVIDOR_CREATE   = "servidor:create",
-SERVIDOR_EDIT     = "servidor:edit",
-SERVIDOR_DELETE   = "servidor:delete",
-SERVIDOR_REATIVAR = "servidor:reativar",
+export enum Permission {
+  // ...existing code...
+  SERVIDOR_VIEW = "servidor:view",
+  SERVIDOR_CREATE = "servidor:create",
+  SERVIDOR_EDIT = "servidor:edit",
+  SERVIDOR_DELETE = "servidor:delete",
+  SERVIDOR_REATIVAR = "servidor:reativar",
+}
 ```
 
 ---
@@ -564,7 +568,12 @@ SERVIDOR_REATIVAR = "servidor:reativar",
 In the nav config (see `route-admin-shell.md` Step 2), add:
 
 ```typescript
-{ href: "/servidores", labelKey: "nav.servidores", icon: "UserCheck", permission: Permission.SERVIDOR_VIEW },
+const servidoresNavItem = {
+  href: "/servidores",
+  labelKey: "nav.servidores",
+  icon: "UserCheck",
+  permission: Permission.SERVIDOR_VIEW,
+};
 ```
 
 Add `"nav.servidores": "Servidores"` to `src/i18n/locales/en/nav.json`.

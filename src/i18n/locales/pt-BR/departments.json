@@ -1,0 +1,31 @@
+{
+  "page": {
+    "title": "Departamentos",
+    "accessDenied": "Voce nao tem permissao para visualizar departamentos.",
+    "empty": {
+      "title": "Nenhum departamento ainda",
+      "message": "Crie o primeiro departamento para organizar usuarios e corridas."
+    }
+  },
+  "card": {
+    "users": "{{count}} usuario(s)",
+    "activeRuns": "{{count}} corrida(s) ativa(s)",
+    "noDescription": "-",
+    "created": "Criado em"
+  },
+  "actions": {
+    "create": "Novo departamento"
+  },
+  "form": {
+    "name": "Nome",
+    "description": "Descricao (opcional)",
+    "submit": "Criar",
+    "cancel": "Cancelar",
+    "namePlaceholder": "ex.: Operacoes da Zona 3",
+    "descriptionPlaceholder": "Descricao breve da finalidade deste departamento"
+  },
+  "toast": {
+    "created": "Departamento criado com sucesso.",
+    "duplicateName": "Ja existe um departamento com este nome."
+  }
+}

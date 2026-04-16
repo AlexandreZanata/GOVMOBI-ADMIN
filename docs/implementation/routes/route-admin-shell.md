@@ -28,14 +28,14 @@ No API calls. The shell reads the current user's role from the `PermissionsProvi
 
 ## File Map
 
-| File | Type | Purpose |
-|------|------|---------|
-| `src/app/(admin)/layout.tsx` | Server Component | Root layout — renders `AdminShell` with `{children}` |
-| `src/components/organisms/AdminShell.tsx` | Client Component | Sidebar + header composition |
-| `src/components/organisms/SidebarNav.tsx` | Client Component | Nav link list, collapse state |
-| `src/components/molecules/NavItem.tsx` | Client Component | Single nav link with icon + active indicator |
-| `src/components/molecules/UserMenu.tsx` | Client Component | Avatar, role badge, logout button |
-| `src/i18n/locales/en/nav.json` | i18n | All navigation labels |
+| File                                      | Type             | Purpose                                              |
+|-------------------------------------------|------------------|------------------------------------------------------|
+| `src/app/(admin)/layout.tsx`              | Server Component | Root layout — renders `AdminShell` with `{children}` |
+| `src/components/organisms/AdminShell.tsx` | Client Component | Sidebar + header composition                         |
+| `src/components/organisms/SidebarNav.tsx` | Client Component | Nav link list, collapse state                        |
+| `src/components/molecules/NavItem.tsx`    | Client Component | Single nav link with icon + active indicator         |
+| `src/components/molecules/UserMenu.tsx`   | Client Component | Avatar, role badge, logout button                    |
+| `src/i18n/locales/en/nav.json`            | i18n             | All navigation labels                                |
 
 ---
 
@@ -43,8 +43,9 @@ No API calls. The shell reads the current user's role from the `PermissionsProvi
 
 ### Step 1 — Create `nav.json`
 
+`src/i18n/locales/en/nav.json`
+
 ```json
-// src/i18n/locales/en/nav.json
 {
   "nav": {
     "runs":        "Runs",
@@ -69,23 +70,21 @@ Register `"nav"` in `src/i18n/config.ts` alongside the existing namespaces.
 
 Create a typed config array. Place it in `src/components/organisms/AdminShell.tsx` or a dedicated `src/config/nav.ts`:
 
-```typescript
-import type { Permission } from "@/models";
-
+```text
 export interface NavItemConfig {
   href: string;
   labelKey: string;       // key inside nav.json
   icon: string;           // Lucide icon name
-  permission?: Permission; // if set, wrapped in <Can>
+  permission?: string;    // if set, wrapped in <Can>
 }
 
 export const NAV_ITEMS: NavItemConfig[] = [
-  { href: "/runs",        labelKey: "nav.runs",        icon: "ClipboardList", permission: Permission.VIEW_RUNS },
-  { href: "/cargos",      labelKey: "nav.cargos",      icon: "Briefcase",     permission: Permission.CARGO_VIEW },
-  { href: "/lotacoes",    labelKey: "nav.lotacoes",    icon: "MapPin",        permission: Permission.LOTACAO_VIEW },
-  { href: "/users",       labelKey: "nav.users",       icon: "Users",         permission: Permission.USER_VIEW },
-  { href: "/departments", labelKey: "nav.departments", icon: "Building2",     permission: Permission.DEPARTMENT_VIEW },
-  { href: "/audit",       labelKey: "nav.audit",       icon: "ScrollText",    permission: Permission.AUDIT_VIEW },
+  { href: "/runs", labelKey: "nav.runs", icon: "ClipboardList", permission: "run:view" },
+  { href: "/cargos", labelKey: "nav.cargos", icon: "Briefcase", permission: "cargo:view" },
+  { href: "/lotacoes", labelKey: "nav.lotacoes", icon: "MapPin", permission: "lotacao:view" },
+  { href: "/users", labelKey: "nav.users", icon: "Users", permission: "user:view" },
+  { href: "/departments", labelKey: "nav.departments", icon: "Building2", permission: "department:view" },
+  { href: "/audit", labelKey: "nav.audit", icon: "ScrollText", permission: "audit:view" },
 ];
 ```
 
@@ -157,7 +156,7 @@ Renders:
 
 ### Step 6 — Create `AdminShell` organism
 
-```
+```text
 File: src/components/organisms/AdminShell.tsx
 "use client"
 
@@ -186,13 +185,14 @@ Layout structure:
 
 ### Step 7 — Create `(admin)/layout.tsx`
 
-```typescript
+```text
 // src/app/(admin)/layout.tsx
 // Server Component — no "use client"
 
+import type { ReactNode } from "react";
 import { AdminShell } from "@/components/organisms/AdminShell";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <>
       {/* Skip to content — accessibility */}
@@ -212,7 +212,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
 ### Step 8 — Verify existing `/runs` page still works
 
-The existing `src/app/(admin)/runs/page.tsx` renders inside `<main className="mx-auto w-full max-w-5xl p-6">`. Once the shell is in place, remove the outer padding from the page — the shell's `<main>` already provides `p-6`.
+The existing `src/app/(admin)/runs/page.tsx` renders with outer main padding (`mx-auto w-full max-w-5xl p-6`). Once the shell is in place, remove that outer padding from the page because the shell main container already provides `p-6`.
 
 ---
 
@@ -229,10 +229,10 @@ The existing `src/app/(admin)/runs/page.tsx` renders inside `<main className="mx
 
 ## Common Mistakes
 
-| Mistake | Correct Approach |
-|---------|-----------------|
-| Putting collapse state in URL params | Use cookie — survives navigation |
-| Importing `next/router` | Use `usePathname()` from `next/navigation` |
-| Hardcoding nav labels | All labels via `useTranslation("nav")` |
+| Mistake                                 | Correct Approach                              |
+|-----------------------------------------|-----------------------------------------------|
+| Putting collapse state in URL params    | Use cookie — survives navigation              |
+| Importing `next/router`                 | Use `usePathname()` from `next/navigation`    |
+| Hardcoding nav labels                   | All labels via `useTranslation("nav")`        |
 | Role check with `if (role === "ADMIN")` | Wrap nav item in `<Can perform={permission}>` |
-| Forgetting mobile breakpoint | Sidebar becomes a drawer on `< md` screens |
+| Forgetting mobile breakpoint            | Sidebar becomes a drawer on `< md` screens    |

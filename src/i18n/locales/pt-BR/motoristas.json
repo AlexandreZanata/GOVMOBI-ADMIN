@@ -1,0 +1,56 @@
+{
+  "page": {
+    "title": "Motoristas",
+    "accessDenied": "Voce nao tem permissao para visualizar motoristas.",
+    "empty": {
+      "title": "Nenhum motorista encontrado",
+      "message": "Cadastre o primeiro motorista para comecar."
+    },
+    "filters": {
+      "all": "Todos",
+      "active": "Ativo",
+      "inactive": "Inativo"
+    }
+  },
+  "table": {
+    "cnhNumero": "Numero da CNH",
+    "cnhCategoria": "Categoria da CNH",
+    "statusOperacional": "Status operacional",
+    "status": "Status",
+    "actions": "Acoes"
+  },
+  "actions": {
+    "create": "Novo motorista",
+    "edit": "Editar",
+    "desativar": "Desativar",
+    "reativar": "Reativar",
+    "updateStatus": "Atualizar status"
+  },
+  "form": {
+    "servidorId": "Servidor",
+    "servidorIdInvalid": "O ID do servidor deve ser um UUID valido.",
+    "cnhNumero": "Numero da CNH",
+    "cnhCategoria": "Categoria da CNH",
+    "statusOperacional": "Status operacional",
+    "submit": "Salvar",
+    "cancel": "Cancelar"
+  },
+  "status": {
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "DISPONIVEL": "Disponivel",
+    "EM_SERVICO": "Em servico",
+    "INDISPONIVEL": "Indisponivel",
+    "AFASTADO": "Afastado"
+  },
+  "toast": {
+    "created": "Motorista cadastrado com sucesso.",
+    "updated": "Motorista atualizado com sucesso.",
+    "statusUpdated": "Status operacional atualizado.",
+    "desativado": "Motorista desativado.",
+    "reativado": "Motorista reativado.",
+    "duplicateCnh": "Ja existe um motorista com este numero de CNH.",
+    "notFound": "Motorista nao encontrado.",
+    "invalidData": "Dados invalidos. Revise o formulario."
+  }
+}

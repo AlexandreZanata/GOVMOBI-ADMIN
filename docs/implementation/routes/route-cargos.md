@@ -53,24 +53,24 @@ The `/cargos` page allows admins to manage job positions (cargos) used across th
 
 ## File Map
 
-| File | Type | Purpose |
-|------|------|---------|
-| `src/models/Cargo.ts` | Model | `Cargo` interface |
-| `src/types/cargos.ts` | Types | Input types for facade methods |
-| `src/facades/cargosFacade.ts` | Facade | All HTTP calls for this domain |
-| `src/lib/queryKeys/cargosKeys.ts` | Query keys | TanStack Query key factory |
-| `src/hooks/useCargos.ts` | Hook | List query |
-| `src/hooks/useCreateCargo.ts` | Hook | Create mutation |
-| `src/hooks/useUpdateCargo.ts` | Hook | Update mutation |
-| `src/hooks/useDeleteCargo.ts` | Hook | Soft-delete mutation |
-| `src/hooks/useReativarCargo.ts` | Hook | Reactivate mutation |
-| `src/msw/cargosHandlers.ts` | MSW | Mock handlers for all endpoints |
-| `src/test/fixtures/cargos.ts` | Fixture | Mock data |
-| `src/app/(admin)/cargos/page.tsx` | Page | Server Component entry |
-| `src/components/organisms/CargosPageClient.tsx` | Organism | Interactive table + actions |
-| `src/components/molecules/CargoFormDialog.tsx` | Molecule | Create / edit dialog |
-| `src/components/molecules/CargoDeleteDialog.tsx` | Molecule | Soft-delete confirm dialog |
-| `src/i18n/locales/en/cargos.json` | i18n | All labels for this domain |
+| File                                             | Type       | Purpose                         |
+|--------------------------------------------------|------------|---------------------------------|
+| `src/models/Cargo.ts`                            | Model      | `Cargo` interface               |
+| `src/types/cargos.ts`                            | Types      | Input types for facade methods  |
+| `src/facades/cargosFacade.ts`                    | Facade     | All HTTP calls for this domain  |
+| `src/lib/queryKeys/cargosKeys.ts`                | Query keys | TanStack Query key factory      |
+| `src/hooks/useCargos.ts`                         | Hook       | List query                      |
+| `src/hooks/useCreateCargo.ts`                    | Hook       | Create mutation                 |
+| `src/hooks/useUpdateCargo.ts`                    | Hook       | Update mutation                 |
+| `src/hooks/useDeleteCargo.ts`                    | Hook       | Soft-delete mutation            |
+| `src/hooks/useReativarCargo.ts`                  | Hook       | Reactivate mutation             |
+| `src/msw/cargosHandlers.ts`                      | MSW        | Mock handlers for all endpoints |
+| `src/test/fixtures/cargos.ts`                    | Fixture    | Mock data                       |
+| `src/app/(admin)/cargos/page.tsx`                | Page       | Server Component entry          |
+| `src/components/organisms/CargosPageClient.tsx`  | Organism   | Interactive table + actions     |
+| `src/components/molecules/CargoFormDialog.tsx`   | Molecule   | Create / edit dialog            |
+| `src/components/molecules/CargoDeleteDialog.tsx` | Molecule   | Soft-delete confirm dialog      |
+| `src/i18n/locales/en/cargos.json`                | i18n       | All labels for this domain      |
 
 ---
 
@@ -315,8 +315,9 @@ Cancel button: variant="ghost"
 
 ### Step 10 — i18n
 
+`src/i18n/locales/en/cargos.json`
+
 ```json
-// src/i18n/locales/en/cargos.json
 {
   "page": {
     "title": "Cargos",
@@ -359,11 +360,14 @@ import { cargosHandlers } from "@/msw/cargosHandlers";
 In `src/models/Permission.ts`, add:
 
 ```typescript
-CARGO_VIEW     = "cargo:view",
-CARGO_CREATE   = "cargo:create",
-CARGO_EDIT     = "cargo:edit",
-CARGO_DELETE   = "cargo:delete",
-CARGO_REATIVAR = "cargo:reativar",
+export enum Permission {
+  // ...existing code...
+  CARGO_VIEW = "cargo:view",
+  CARGO_CREATE = "cargo:create",
+  CARGO_EDIT = "cargo:edit",
+  CARGO_DELETE = "cargo:delete",
+  CARGO_REATIVAR = "cargo:reativar",
+}
 ```
 
 ---

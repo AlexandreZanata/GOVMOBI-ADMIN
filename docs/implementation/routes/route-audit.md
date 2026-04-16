@@ -36,30 +36,30 @@ There are no create, edit, or delete actions on this page.
 ### Response shape
 
 ```typescript
-{
-  "items": [
+const listAuditResponse = {
+  items: [
     {
-      "id": "audit-uuid",
-      "eventType": "run.overridden",
-      "actorId": "user-uuid",
-      "actorRole": "SUPERVISOR",
-      "entityType": "run",
-      "entityId": "run-uuid",
-      "departmentId": "dept-uuid",
-      "payload": {
-        "prevStatus": "IN_PROGRESS",
-        "newStatus": "COMPLETED",
-        "reason": "Agent confirmed verbally"
+      id: "audit-uuid",
+      eventType: "run.overridden",
+      actorId: "user-uuid",
+      actorRole: "SUPERVISOR",
+      entityType: "run",
+      entityId: "run-uuid",
+      departmentId: "dept-uuid",
+      payload: {
+        prevStatus: "IN_PROGRESS",
+        newStatus: "COMPLETED",
+        reason: "Agent confirmed verbally",
       },
-      "priority": "high",
-      "timestamp": "2026-04-15T10:30:00Z"
-    }
+      priority: "high",
+      timestamp: "2026-04-15T10:30:00Z",
+    },
   ],
-  "total": 847,
-  "page": 1,
-  "pageSize": 50,
-  "hasMore": true
-}
+  total: 847,
+  page: 1,
+  pageSize: 50,
+  hasMore: true,
+};
 ```
 
 > This API does NOT use the `{ success, data, timestamp }` envelope. Use `handleApiResponse<T>` directly.
@@ -68,18 +68,18 @@ There are no create, edit, or delete actions on this page.
 
 ## File Map
 
-| File | Type | Purpose |
-|------|------|---------|
-| `src/models/AuditEntry.ts` | Model | `AuditEntry` interface |
-| `src/types/audit.ts` | Types | Filter input type |
-| `src/facades/auditFacade.ts` | Facade | HTTP calls |
-| `src/lib/queryKeys/auditKeys.ts` | Query keys | TanStack Query key factory |
-| `src/hooks/useAuditTrail.ts` | Hook | Infinite query (load more) |
-| `src/msw/auditHandlers.ts` | MSW | Mock handlers |
-| `src/test/fixtures/audit.ts` | Fixture | Mock data |
-| `src/app/(admin)/audit/page.tsx` | Page | Server Component entry |
-| `src/components/organisms/AuditPageClient.tsx` | Organism | Timeline list + filters |
-| `src/i18n/locales/en/audit.json` | i18n | All labels |
+| File                                           | Type       | Purpose                    |
+|------------------------------------------------|------------|----------------------------|
+| `src/models/AuditEntry.ts`                     | Model      | `AuditEntry` interface     |
+| `src/types/audit.ts`                           | Types      | Filter input type          |
+| `src/facades/auditFacade.ts`                   | Facade     | HTTP calls                 |
+| `src/lib/queryKeys/auditKeys.ts`               | Query keys | TanStack Query key factory |
+| `src/hooks/useAuditTrail.ts`                   | Hook       | Infinite query (load more) |
+| `src/msw/auditHandlers.ts`                     | MSW        | Mock handlers              |
+| `src/test/fixtures/audit.ts`                   | Fixture    | Mock data                  |
+| `src/app/(admin)/audit/page.tsx`               | Page       | Server Component entry     |
+| `src/components/organisms/AuditPageClient.tsx` | Organism   | Timeline list + filters    |
+| `src/i18n/locales/en/audit.json`               | i18n       | All labels                 |
 
 ---
 
@@ -292,8 +292,9 @@ Empty: empty state section
 
 ### Step 8 — i18n
 
+`src/i18n/locales/en/audit.json`
+
 ```json
-// src/i18n/locales/en/audit.json
 {
   "page": {
     "title": "Audit Trail",
@@ -338,7 +339,10 @@ import { auditHandlers } from "@/msw/auditHandlers";
 
 ```typescript
 // src/models/Permission.ts — add
-AUDIT_VIEW = "audit:view",
+export enum Permission {
+  // ...existing code...
+  AUDIT_VIEW = "audit:view",
+}
 ```
 
 ---

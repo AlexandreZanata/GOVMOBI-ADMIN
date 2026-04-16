@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
 
 export interface NavItemProps {
@@ -20,6 +21,7 @@ export interface NavItemProps {
 /**
  * Single admin sidebar navigation link.
  * Detects the active route via `usePathname` and applies `aria-current="page"`.
+ * Eagerly prefetches the route on mount so navigation feels instant.
  *
  * @param href - Destination route
  * @param label - Translated display label
@@ -36,11 +38,18 @@ export function NavItem({
   "data-testid": testId,
 }: NavItemProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const isActive = pathname === href || pathname.startsWith(`${href}/`);
+
+  // Eagerly prefetch on mount so route JS is ready before the user clicks
+  useEffect(() => {
+    router.prefetch(href);
+  }, [href, router]);
 
   return (
     <Link
       href={href}
+      prefetch={true}
       data-testid={testId ?? `nav-item-${href.replace(/\//g, "-")}`}
       aria-current={isActive ? "page" : undefined}
       title={isCollapsed ? label : undefined}

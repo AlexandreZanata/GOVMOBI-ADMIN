@@ -71,24 +71,24 @@ The `/frota/veiculos` page manages the vehicle fleet. Each vehicle has a license
 
 ## File Map
 
-| File | Type | Purpose |
-|------|------|---------|
-| `src/models/Veiculo.ts` | Model | `Veiculo` interface |
-| `src/types/veiculos.ts` | Types | Input types for facade methods |
-| `src/facades/veiculosFacade.ts` | Facade | All HTTP calls for this domain |
-| `src/lib/queryKeys/veiculosKeys.ts` | Query keys | TanStack Query key factory |
-| `src/hooks/useVeiculos.ts` | Hook | List query |
-| `src/hooks/useCreateVeiculo.ts` | Hook | Create mutation |
-| `src/hooks/useUpdateVeiculo.ts` | Hook | Update mutation |
-| `src/hooks/useDesativarVeiculo.ts` | Hook | Soft-delete mutation |
-| `src/hooks/useReativarVeiculo.ts` | Hook | Reactivate mutation |
-| `src/msw/veiculosHandlers.ts` | MSW | Mock handlers for all endpoints |
-| `src/test/fixtures/veiculos.ts` | Fixture | Mock data |
-| `src/app/(admin)/frota/veiculos/page.tsx` | Page | Server Component entry |
-| `src/components/organisms/VeiculosPageClient.tsx` | Organism | Interactive table + actions |
-| `src/components/molecules/VeiculoFormDialog.tsx` | Molecule | Create / edit dialog |
-| `src/components/molecules/VeiculoDesativarDialog.tsx` | Molecule | Soft-delete confirm dialog |
-| `src/i18n/locales/en/veiculos.json` | i18n | All labels for this domain |
+| File                                                  | Type       | Purpose                         |
+|-------------------------------------------------------|------------|---------------------------------|
+| `src/models/Veiculo.ts`                               | Model      | `Veiculo` interface             |
+| `src/types/veiculos.ts`                               | Types      | Input types for facade methods  |
+| `src/facades/veiculosFacade.ts`                       | Facade     | All HTTP calls for this domain  |
+| `src/lib/queryKeys/veiculosKeys.ts`                   | Query keys | TanStack Query key factory      |
+| `src/hooks/useVeiculos.ts`                            | Hook       | List query                      |
+| `src/hooks/useCreateVeiculo.ts`                       | Hook       | Create mutation                 |
+| `src/hooks/useUpdateVeiculo.ts`                       | Hook       | Update mutation                 |
+| `src/hooks/useDesativarVeiculo.ts`                    | Hook       | Soft-delete mutation            |
+| `src/hooks/useReativarVeiculo.ts`                     | Hook       | Reactivate mutation             |
+| `src/msw/veiculosHandlers.ts`                         | MSW        | Mock handlers for all endpoints |
+| `src/test/fixtures/veiculos.ts`                       | Fixture    | Mock data                       |
+| `src/app/(admin)/frota/veiculos/page.tsx`             | Page       | Server Component entry          |
+| `src/components/organisms/VeiculosPageClient.tsx`     | Organism   | Interactive table + actions     |
+| `src/components/molecules/VeiculoFormDialog.tsx`      | Molecule   | Create / edit dialog            |
+| `src/components/molecules/VeiculoDesativarDialog.tsx` | Molecule   | Soft-delete confirm dialog      |
+| `src/i18n/locales/en/veiculos.json`                   | i18n       | All labels for this domain      |
 
 ---
 
@@ -478,8 +478,9 @@ Cancel button: variant="ghost"
 
 ### Step 10 — i18n
 
+`src/i18n/locales/en/veiculos.json`
+
 ```json
-// src/i18n/locales/en/veiculos.json
 {
   "page": {
     "title": "Fleet Vehicles",
@@ -519,11 +520,14 @@ import { veiculosHandlers } from "@/msw/veiculosHandlers";
 
 ```typescript
 // src/models/Permission.ts — add
-VEICULO_VIEW      = "veiculo:view",
-VEICULO_CREATE    = "veiculo:create",
-VEICULO_EDIT      = "veiculo:edit",
-VEICULO_DESATIVAR = "veiculo:desativar",
-VEICULO_REATIVAR  = "veiculo:reativar",
+export enum Permission {
+  // ...existing code...
+  VEICULO_VIEW = "veiculo:view",
+  VEICULO_CREATE = "veiculo:create",
+  VEICULO_EDIT = "veiculo:edit",
+  VEICULO_DESATIVAR = "veiculo:desativar",
+  VEICULO_REATIVAR = "veiculo:reativar",
+}
 ```
 
 ---
@@ -533,7 +537,12 @@ VEICULO_REATIVAR  = "veiculo:reativar",
 In the nav config (see `route-admin-shell.md` Step 2), add a "Frota" group or a direct link:
 
 ```typescript
-{ href: "/frota/veiculos", labelKey: "nav.veiculos", icon: "Car", permission: Permission.VEICULO_VIEW },
+const veiculosNavItem = {
+  href: "/frota/veiculos",
+  labelKey: "nav.veiculos",
+  icon: "Car",
+  permission: Permission.VEICULO_VIEW,
+};
 ```
 
 Add `"nav.veiculos": "Vehicles"` to `src/i18n/locales/en/nav.json`.

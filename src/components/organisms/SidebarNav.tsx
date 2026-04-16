@@ -105,7 +105,7 @@ export function SidebarNav({
 
       {/* Navigation links */}
       <nav
-        aria-label="Main navigation"
+        aria-label={t("mainNavigation")}
         className="flex-1 overflow-y-auto px-2 py-3"
       >
         <ul className="space-y-1" role="list">

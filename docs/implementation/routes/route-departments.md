@@ -14,31 +14,30 @@ The `/departments` page lets Admins view and create departments. Departments are
 
 ## API Endpoints
 
-| Method | Endpoint            | Description         | Success | Error codes      |
-|--------|---------------------|---------------------|---------|------------------|
-| `GET`  | `/departments`      | List departments    | `200`   | —                |
-| `POST` | `/departments`      | Create department   | `201`   | `403` `409` `422`|
+| Method | Endpoint       | Description       | Success | Error codes       |
+|--------|----------------|-------------------|---------|-------------------|
+| `GET`  | `/departments` | List departments  | `200`   | —                 |
+| `POST` | `/departments` | Create department | `201`   | `403` `409` `422` |
 
 ### Response shape
 
 ```typescript
-// GET /v1/departments — PaginatedResponse<Department>
-{
-  "items": [
+const listDepartmentsResponse = {
+  items: [
     {
-      "id": "dept-uuid",
-      "name": "Zone 3 Operations",
-      "description": "Handles all Zone 3 field operations",
-      "userCount": 12,
-      "activeRunCount": 4,
-      "createdAt": "2026-04-01T00:00:00Z"
-    }
+      id: "dept-uuid",
+      name: "Zone 3 Operations",
+      description: "Handles all Zone 3 field operations",
+      userCount: 12,
+      activeRunCount: 4,
+      createdAt: "2026-04-01T00:00:00Z",
+    },
   ],
-  "total": 5,
-  "page": 1,
-  "pageSize": 25,
-  "hasMore": false
-}
+  total: 5,
+  page: 1,
+  pageSize: 25,
+  hasMore: false,
+};
 ```
 
 > This API does NOT use the `{ success, data, timestamp }` envelope. Use `handleApiResponse<T>` directly.
@@ -47,20 +46,20 @@ The `/departments` page lets Admins view and create departments. Departments are
 
 ## File Map
 
-| File | Type | Purpose |
-|------|------|---------|
-| `src/models/Department.ts` | Model | `Department` interface |
-| `src/types/departments.ts` | Types | Input types |
-| `src/facades/departmentsFacade.ts` | Facade | HTTP calls |
-| `src/lib/queryKeys/departmentsKeys.ts` | Query keys | TanStack Query key factory |
-| `src/hooks/useDepartments.ts` | Hook | List query |
-| `src/hooks/useCreateDepartment.ts` | Hook | Create mutation |
-| `src/msw/departmentsHandlers.ts` | MSW | Mock handlers |
-| `src/test/fixtures/departments.ts` | Fixture | Mock data |
-| `src/app/(admin)/departments/page.tsx` | Page | Server Component entry |
-| `src/components/organisms/DepartmentsPageClient.tsx` | Organism | Card grid + actions |
-| `src/components/molecules/DepartmentFormDialog.tsx` | Molecule | Create dialog |
-| `src/i18n/locales/en/departments.json` | i18n | All labels |
+| File                                                 | Type       | Purpose                    |
+|------------------------------------------------------|------------|----------------------------|
+| `src/models/Department.ts`                           | Model      | `Department` interface     |
+| `src/types/departments.ts`                           | Types      | Input types                |
+| `src/facades/departmentsFacade.ts`                   | Facade     | HTTP calls                 |
+| `src/lib/queryKeys/departmentsKeys.ts`               | Query keys | TanStack Query key factory |
+| `src/hooks/useDepartments.ts`                        | Hook       | List query                 |
+| `src/hooks/useCreateDepartment.ts`                   | Hook       | Create mutation            |
+| `src/msw/departmentsHandlers.ts`                     | MSW        | Mock handlers              |
+| `src/test/fixtures/departments.ts`                   | Fixture    | Mock data                  |
+| `src/app/(admin)/departments/page.tsx`               | Page       | Server Component entry     |
+| `src/components/organisms/DepartmentsPageClient.tsx` | Organism   | Card grid + actions        |
+| `src/components/molecules/DepartmentFormDialog.tsx`  | Molecule   | Create dialog              |
+| `src/i18n/locales/en/departments.json`               | i18n       | All labels                 |
 
 ---
 
@@ -272,8 +271,9 @@ On submit: calls useCreateDepartment, closes on success
 
 ### Step 10 — i18n
 
+`src/i18n/locales/en/departments.json`
+
 ```json
-// src/i18n/locales/en/departments.json
 {
   "page": {
     "title": "Departments",
@@ -303,8 +303,11 @@ import { departmentsHandlers } from "@/msw/departmentsHandlers";
 
 ```typescript
 // src/models/Permission.ts — add
-DEPARTMENT_VIEW   = "department:view",
-DEPARTMENT_CREATE = "department:create",
+export enum Permission {
+  // ...existing code...
+  DEPARTMENT_VIEW = "department:view",
+  DEPARTMENT_CREATE = "department:create",
+}
 ```
 
 ---

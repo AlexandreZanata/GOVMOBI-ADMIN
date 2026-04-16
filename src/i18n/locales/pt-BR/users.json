@@ -1,0 +1,66 @@
+{
+  "page": {
+    "title": "Usuarios",
+    "accessDenied": "Voce nao tem permissao para visualizar usuarios.",
+    "empty": {
+      "title": "Nenhum usuario encontrado",
+      "message": "Ajuste os filtros ou crie um novo usuario."
+    },
+    "filters": {
+      "allRoles": "Todos os perfis",
+      "allStatuses": "Todos os status",
+      "active": "Ativo",
+      "inactive": "Inativo"
+    }
+  },
+  "table": {
+    "name": "Nome",
+    "email": "Email",
+    "role": "Perfil",
+    "department": "Departamento",
+    "status": "Status",
+    "actions": "Acoes"
+  },
+  "actions": {
+    "create": "Novo usuario",
+    "edit": "Editar",
+    "deactivate": "Desativar"
+  },
+  "form": {
+    "name": "Nome completo",
+    "email": "Email",
+    "role": "Perfil",
+    "department": "Departamento",
+    "submit": "Salvar",
+    "cancel": "Cancelar",
+    "emailReadOnly": "O email nao pode ser alterado apos a criacao."
+  },
+  "role": {
+    "ADMIN": "Administrador",
+    "SUPERVISOR": "Supervisor",
+    "DISPATCHER": "Despachante",
+    "AGENT": "Agente",
+    "FIELD_AGENT": "Agente de campo"
+  },
+  "status": {
+    "ACTIVE": "Ativo",
+    "INACTIVE": "Inativo",
+    "ON_MISSION": "Em missao"
+  },
+  "deactivate": {
+    "title": "Desativar usuario",
+    "description": "Este usuario perdera acesso a plataforma.",
+    "confirm": "Desativar",
+    "cancel": "Cancelar",
+    "hasRuns": "Este usuario possui {{count}} corrida(s) ativa(s) que serao desatribuida(s)."
+  },
+  "toast": {
+    "created": "Usuario criado com sucesso.",
+    "updated": "Usuario atualizado com sucesso.",
+    "deactivated": "Usuario desativado.",
+    "duplicateEmail": "Ja existe um usuario com este email.",
+    "validationError": "Verifique os campos do formulario.",
+    "notFound": "Usuario nao encontrado.",
+    "hasActiveRuns": "O usuario tinha {{count}} corrida(s) ativa(s). Elas foram desatribuida(s)."
+  }
+}

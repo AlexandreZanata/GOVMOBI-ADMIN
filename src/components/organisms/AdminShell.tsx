@@ -4,6 +4,7 @@ import { useState, useCallback, type ReactNode } from "react";
 
 import { PermissionsProvider } from "@/components/auth/PermissionsProvider";
 import { SidebarNav } from "@/components/organisms/SidebarNav";
+import { LanguageSwitcher } from "@/components/molecules/LanguageSwitcher";
 import { NAV_ITEMS } from "@/config/nav";
 import { UserRole } from "@/models";
 
@@ -72,10 +73,11 @@ export function AdminShell({
 
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
           {/* Top header bar */}
-          <header className="flex h-14 shrink-0 items-center border-b border-neutral-200 bg-white px-6">
+          <header className="flex h-14 shrink-0 items-center justify-between border-b border-neutral-200 bg-white px-6">
             <h1 className="text-sm font-semibold text-neutral-900">
               GovMobile Admin
             </h1>
+            <LanguageSwitcher />
           </header>
 
           {/* Main content */}
