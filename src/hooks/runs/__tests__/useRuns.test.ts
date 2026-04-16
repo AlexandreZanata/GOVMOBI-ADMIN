@@ -50,7 +50,7 @@ describe("useRuns", () => {
     server.use(
       http.get(RUNS_API_URL, async () => {
         await new Promise((resolve) => setTimeout(resolve, 50));
-        return HttpResponse.json([runFixture], { status: 200 });
+        return HttpResponse.json({ items: [runFixture] }, { status: 200 });
       })
     );
 
@@ -67,7 +67,7 @@ describe("useRuns", () => {
   it("returns data on successful request", async () => {
     server.use(
       http.get(RUNS_API_URL, () => {
-        return HttpResponse.json([runFixture], { status: 200 });
+        return HttpResponse.json({ items: [runFixture] }, { status: 200 });
       })
     );
 
