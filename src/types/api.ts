@@ -30,4 +30,6 @@ export interface ApiErrorPayload {
   code?: string;
   /** Human-readable description for UI and logs. */
   message?: string;
+  /** Field name associated with a 422 validation error. */
+  field?: string;
 }
