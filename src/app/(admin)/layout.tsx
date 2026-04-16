@@ -2,14 +2,16 @@ import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 
 import { AdminShell } from "@/components/organisms/AdminShell";
+import { AuthGuard } from "@/components/organisms/AuthGuard";
 
 /**
  * Admin route group layout.
  * Server Component — reads the sidebar collapse cookie and passes it to
  * the client shell so the initial render matches the user's last preference.
+ * Wraps content with AuthGuard to verify authentication before rendering.
  *
  * @param children - Page content from the matched admin route
- * @returns Admin shell wrapping the page content
+ * @returns Auth-guarded admin shell wrapping the page content
  */
 export default async function AdminLayout({
   children,
@@ -36,9 +38,11 @@ export default async function AdminLayout({
         Skip to content
       </a>
 
-      <AdminShell defaultCollapsed={defaultCollapsed}>
-        {children}
-      </AdminShell>
+      <AuthGuard>
+        <AdminShell defaultCollapsed={defaultCollapsed}>
+          {children}
+        </AdminShell>
+      </AuthGuard>
     </>
   );
 }
