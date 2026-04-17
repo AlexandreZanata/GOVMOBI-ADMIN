@@ -1,9 +1,9 @@
 "use client";
 
-import { useId } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/atoms";
+import { Modal } from "@/components/molecules/Modal";
 import { useDeleteCargo } from "@/hooks/cargos/useDeleteCargo";
 
 /**
@@ -42,10 +42,7 @@ export function CargoDeleteDialog({
   "data-testid": testId,
 }: CargoDeleteDialogProps): React.ReactElement | null {
   const { t } = useTranslation("cargos");
-  const headingId = useId();
   const deleteMutation = useDeleteCargo();
-
-  if (!open) return null;
 
   const handleConfirm = async (): Promise<void> => {
     await deleteMutation.mutateAsync(
@@ -55,32 +52,13 @@ export function CargoDeleteDialog({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 p-4"
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={t("actions.delete")}
       data-testid={testId}
-    >
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={headingId}
-        className="w-full max-w-md rounded-lg border border-neutral-300 bg-white p-5 shadow-sm"
-      >
-        <h2
-          id={headingId}
-          className="text-base font-semibold text-neutral-900"
-        >
-          {t("actions.delete")}
-        </h2>
-
-        <p className="mt-2 text-sm text-neutral-700">
-          {t("delete.confirmation", { nome: cargoNome })}
-        </p>
-
-        <p className="mt-1 text-xs text-neutral-500">
-          {t("delete.reversible")}
-        </p>
-
-        <div className="mt-5 flex items-center justify-end gap-2">
+      footer={
+        <div className="flex items-center justify-end gap-2">
           <Button
             data-testid={testId ? `${testId}-cancel` : "cargo-delete-cancel"}
             variant="ghost"
@@ -99,7 +77,14 @@ export function CargoDeleteDialog({
             {t("actions.delete")}
           </Button>
         </div>
-      </section>
-    </div>
+      }
+    >
+      <p className="text-sm text-neutral-700">
+        {t("delete.confirmation", { nome: cargoNome })}
+      </p>
+      <p className="mt-1 text-xs text-neutral-500">
+        {t("delete.reversible")}
+      </p>
+    </Modal>
   );
 }

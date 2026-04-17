@@ -19,6 +19,7 @@
     "actions": "Actions"
   },
   "actions": {
+    "view": "View",
     "create": "New Cargo",
     "edit": "Edit",
     "delete": "Deactivate",

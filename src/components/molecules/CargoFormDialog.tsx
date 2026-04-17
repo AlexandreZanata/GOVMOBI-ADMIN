@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button, Input } from "@/components/atoms";
+import { Modal } from "@/components/molecules/Modal";
 import { useCreateCargo } from "@/hooks/cargos/useCreateCargo";
 import { useUpdateCargo } from "@/hooks/cargos/useUpdateCargo";
 import type { Cargo } from "@/models/Cargo";
@@ -57,9 +58,6 @@ export function CargoFormDialog({
   "data-testid": testId,
 }: CargoFormDialogProps): React.ReactElement | null {
   const { t } = useTranslation("cargos");
-  const headingId = useId();
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const wasOpenRef = useRef(false);
 
   const [nome, setNome] = useState(cargo?.nome ?? "");
   const [pesoPrioridade, setPesoPrioridade] = useState<string>(
@@ -91,29 +89,6 @@ export function CargoFormDialog({
       setPesoError(undefined);
     }
   }, [open, mode]);
-
-  // Return focus to trigger on close
-  useEffect(() => {
-    if (!open && wasOpenRef.current) {
-      triggerRef.current?.focus();
-    }
-    wasOpenRef.current = open;
-  }, [open]);
-
-  // Escape key closes dialog
-  useEffect(() => {
-    if (!open) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onClose();
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open, onClose]);
-
-  if (!open) return null;
 
   const validate = (): boolean => {
     let valid = true;
@@ -179,75 +154,67 @@ export function CargoFormDialog({
     mode === "create" ? "form.titleCreate" : "form.titleEdit";
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 p-4"
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={t(titleKey)}
+      maxWidth="max-w-4xl"
       data-testid={testId}
+      footer={
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            type="button"
+            data-testid={testId ? `${testId}-cancel` : "cargo-form-cancel"}
+            variant="ghost"
+            onClick={onClose}
+          >
+            {t("form.cancel")}
+          </Button>
+          <Button
+            type="submit"
+            form="cargo-form"
+            data-testid={testId ? `${testId}-submit` : "cargo-form-submit"}
+            variant="primary"
+            isLoading={isPending}
+            disabled={isPending}
+          >
+            {t("form.submit")}
+          </Button>
+        </div>
+      }
     >
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={headingId}
-        className="w-full max-w-md rounded-lg border border-neutral-300 bg-white p-5 shadow-sm"
+      <form
+        id="cargo-form"
+        data-testid={testId ? `${testId}-form` : "cargo-form"}
+        onSubmit={(e) => void handleSubmit(e)}
+        className="grid gap-4 sm:grid-cols-2"
+        noValidate
       >
-        <h2
-          id={headingId}
-          className="text-base font-semibold text-neutral-900"
-        >
-          {t(titleKey)}
-        </h2>
+        <Input
+          data-testid={testId ? `${testId}-nome` : "cargo-form-nome"}
+          label={t("form.nome")}
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          error={nomeError}
+          maxLength={NOME_MAX_LENGTH}
+          aria-required="true"
+          autoFocus
+        />
 
-        <form
-          data-testid={testId ? `${testId}-form` : "cargo-form"}
-          onSubmit={(e) => void handleSubmit(e)}
-          className="mt-4 space-y-4"
-          noValidate
-        >
-          <Input
-            data-testid={testId ? `${testId}-nome` : "cargo-form-nome"}
-            label={t("form.nome")}
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-            error={nomeError}
-            maxLength={NOME_MAX_LENGTH}
-            aria-required="true"
-            autoFocus
-          />
-
-          <Input
-            data-testid={
-              testId ? `${testId}-pesoPrioridade` : "cargo-form-pesoPrioridade"
-            }
-            label={t("form.pesoPrioridade")}
-            type="number"
-            value={pesoPrioridade}
-            onChange={(e) => setPesoPrioridade(e.target.value)}
-            error={pesoError}
-            min={PESO_MIN}
-            max={PESO_MAX}
-            aria-required="true"
-          />
-
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              type="button"
-              data-testid={testId ? `${testId}-cancel` : "cargo-form-cancel"}
-              variant="ghost"
-              onClick={onClose}
-            >
-              {t("form.cancel")}
-            </Button>
-            <Button
-              type="submit"
-              data-testid={testId ? `${testId}-submit` : "cargo-form-submit"}
-              variant="primary"
-              isLoading={isPending}
-              disabled={isPending}
-            >
-              {t("form.submit")}
-            </Button>
-          </div>
-        </form>
-      </section>
-    </div>
+        <Input
+          data-testid={
+            testId ? `${testId}-pesoPrioridade` : "cargo-form-pesoPrioridade"
+          }
+          label={t("form.pesoPrioridade")}
+          type="number"
+          value={pesoPrioridade}
+          onChange={(e) => setPesoPrioridade(e.target.value)}
+          error={pesoError}
+          min={PESO_MIN}
+          max={PESO_MAX}
+          aria-required="true"
+        />
+      </form>
+    </Modal>
   );
 }
