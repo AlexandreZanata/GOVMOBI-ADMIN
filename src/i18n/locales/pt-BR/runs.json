@@ -4,9 +4,17 @@
     "ASSIGNED": "Atribuida",
     "IN_PROGRESS": "Em andamento",
     "COMPLETED": "Concluida",
-    "CANCELLED": "Cancelada"
+    "CANCELLED": "Cancelada",
+    "solicitada": "Solicitada",
+    "aguardando_aceite": "Aguardando aceite",
+    "aceita": "Aceita",
+    "em_rota": "Em rota",
+    "concluida": "Concluída",
+    "cancelada": "Cancelada",
+    "expirada": "Expirada"
   },
   "page": {
+    "title": "Corridas",
     "accessDenied": "Acesso negado",
     "empty": {
       "title": "Nenhuma corrida encontrada",
@@ -29,6 +37,17 @@
       "updateStatus": "Atualizar status",
       "override": "Sobrescrever"
     }
+  },
+  "table": {
+    "id": "ID",
+    "status": "Status",
+    "passageiro": "Passageiro",
+    "motorista": "Motorista",
+    "origem": "Origem",
+    "destino": "Destino",
+    "distancia": "Distância",
+    "duracao": "Duração",
+    "createdAt": "Criada em"
   },
   "dialogs": {
     "override": {

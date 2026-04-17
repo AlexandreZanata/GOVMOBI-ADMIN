@@ -1,66 +1,45 @@
 import { getApiBase } from "@/lib/apiBase";
 import { fetchWithAuth } from "@/facades/authFacade";
 import { handleApiResponse } from "@/lib/handleApiResponse";
-import type { Run } from "@/models";
-import type { GetRunByIdInput, OverrideRunInput } from "@/types";
+import type { CorridasFilters, CorridasPage, Run } from "@/models/Run";
 
 function baseUrl(): string {
   return getApiBase();
 }
 
-/** Paginated envelope returned by GET /runs. */
-interface RunsPage {
-  items: Run[];
-  total: number;
-  page: number;
-  pageSize: number;
-  hasMore: boolean;
-}
-
 /**
- * Facade for run-related business actions and API orchestration.
+ * Facade for corrida (ride) business actions and API orchestration.
+ * Endpoint: GET /corridas — returns { data, total, page, limit, totalPages }
  */
 export const runsFacade = {
   /**
-   * Retrieves the run list for dashboard and operations views.
+   * Retrieves a paginated list of corridas with optional filters.
    *
-   * @returns Promise resolving to run contracts
-   * @throws Error when backend returns non-2xx status
+   * @param filters - Optional pagination and status filters
+   * @returns Promise resolving to the paginated corridas response
+   * @throws ApiError on non-2xx responses
    */
-  async listRuns(): Promise<Run[]> {
-    const response = await fetchWithAuth(`${baseUrl()}/v1/runs`);
-    const page = await handleApiResponse<RunsPage>(response);
-    return page.items;
+  async listRuns(filters: CorridasFilters = {}): Promise<CorridasPage> {
+    const params = new URLSearchParams();
+    if (filters.page) params.set("page", String(filters.page));
+    if (filters.limit) params.set("limit", String(filters.limit));
+    if (filters.status) params.set("status", filters.status);
+
+    const query = params.toString();
+    const url = `${baseUrl()}/corridas${query ? `?${query}` : ""}`;
+    const response = await fetchWithAuth(url);
+    return handleApiResponse<CorridasPage>(response);
   },
 
   /**
-   * Retrieves a single run by identifier.
+   * Retrieves a single corrida by identifier.
    *
-   * @param input - Run lookup input containing the run identifier
-   * @returns Promise resolving to the requested run contract
-   * @throws ApiError on 400, 403, 404, and 500 responses
+   * @param id - Corrida identifier
+   * @returns Promise resolving to the corrida
+   * @throws ApiError 404 when not found
    */
-  async getRunById(input: GetRunByIdInput): Promise<Run> {
-    const response = await fetchWithAuth(`${baseUrl()}/v1/runs/${input.runId}`);
-    return handleApiResponse<Run>(response);
-  },
-
-  /**
-   * Overrides run execution details after elevated authorization.
-   *
-   * @param input - Override payload with run id, reason, and audit event
-   * @returns Promise resolving to the updated run
-   * @throws ApiError on 400, 403, 404, 409, and 500 responses
-   */
-  async overrideRun(input: OverrideRunInput): Promise<Run> {
-    const response = await fetchWithAuth(`${baseUrl()}/v1/runs/${input.runId}/override`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        reason: input.reason,
-        auditEvent: input.auditEvent,
-      }),
-    });
+  async getRunById(id: string): Promise<Run> {
+    const response = await fetchWithAuth(`${baseUrl()}/corridas/${id}`);
     return handleApiResponse<Run>(response);
   },
 };

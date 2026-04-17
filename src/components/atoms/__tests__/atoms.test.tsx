@@ -151,12 +151,10 @@ describe("StatusPill", () => {
   );
 
   it("applies the correct status CSS class for each status", () => {
-    const classMap: Record<RunStatus, string> = {
-      [RunStatus.PENDING]: "status-pending",
-      [RunStatus.ASSIGNED]: "status-assigned",
-      [RunStatus.IN_PROGRESS]: "status-in-progress",
-      [RunStatus.COMPLETED]: "status-completed",
-      [RunStatus.CANCELLED]: "status-cancelled",
+    const classMap: Partial<Record<RunStatus, string>> = {
+      [RunStatus.SOLICITADA]:        "text-warning",
+      [RunStatus.CONCLUIDA]:         "text-success",
+      [RunStatus.CANCELADA]:         "text-danger",
     };
 
     for (const [status, cls] of Object.entries(classMap)) {
