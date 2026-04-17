@@ -40,7 +40,9 @@
     "submit": "Save",
     "cancel": "Cancel",
     "cpfReadOnly": "CPF cannot be changed after creation",
-    "emailReadOnly": "Email cannot be changed after creation"
+    "emailReadOnly": "Email cannot be changed after creation",
+    "senha": "Password",
+    "senhaHelper": "Minimum 8 characters"
   },
   "papeis": {
     "USUARIO": "Usuário",

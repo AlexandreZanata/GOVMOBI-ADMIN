@@ -62,6 +62,7 @@ export function ServidorFormDialog({
   const [cargoId, setCargoId] = useState(servidor?.cargoId ?? "");
   const [lotacaoId, setLotacaoId] = useState(servidor?.lotacaoId ?? "");
   const [papeis, setPapeis] = useState<Papel[]>(servidor?.papeis ?? ["USUARIO"]);
+  const [senha, setSenha] = useState("");
   const [inlineError, setInlineError] = useState<string | undefined>();
 
   const createMutation = useCreateServidor();
@@ -85,6 +86,7 @@ export function ServidorFormDialog({
     setCargoId(servidor?.cargoId ?? "");
     setLotacaoId(servidor?.lotacaoId ?? "");
     setPapeis(servidor?.papeis ?? ["USUARIO"]);
+    setSenha("");
     setInlineError(undefined);
   }
 
@@ -121,6 +123,7 @@ export function ServidorFormDialog({
             cargoId,
             lotacaoId,
             papeis,
+            senha,
           },
           { onSuccess: onClose }
         );
@@ -237,6 +240,20 @@ export function ServidorFormDialog({
               </p>
               <p className="text-xs text-neutral-500">{t("form.emailReadOnly")}</p>
             </div>
+          )}
+
+          {/* Senha — only on create */}
+          {mode === "create" && (
+            <Input
+              data-testid={testId ? `${testId}-senha` : "servidor-form-senha"}
+              label={t("form.senha")}
+              type="password"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              aria-required="true"
+              autoComplete="new-password"
+              helperText={t("form.senhaHelper")}
+            />
           )}
 
           <Input
