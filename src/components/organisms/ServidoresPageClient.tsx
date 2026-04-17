@@ -3,8 +3,9 @@
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { Search } from "lucide-react";
 
-import { Badge, Button, Input } from "@/components/atoms";
+import { Badge, Button } from "@/components/atoms";
 import { Can } from "@/components/auth/Can";
 import { ErrorState } from "@/components/molecules/ErrorState";
 import { ServidorDeleteDialog } from "@/components/molecules/ServidorDeleteDialog";
@@ -18,7 +19,6 @@ import type { AtivoFilter } from "@/lib/filterByAtivo";
 import { Permission } from "@/models";
 import type { Papel, Servidor } from "@/models/Servidor";
 
-/** Maps Papel to a Badge variant. */
 const papelVariant: Record<Papel, "danger" | "info" | "neutral"> = {
   ADMIN: "danger",
   MOTORISTA: "info",
@@ -26,8 +26,7 @@ const papelVariant: Record<Papel, "danger" | "info" | "neutral"> = {
 };
 
 /**
- * Client-side servidores page renderer with text search, status filter,
- * loading/error/empty states, and permission-gated CRUD actions.
+ * Client-side servidores page with search, status filter, and CRUD actions.
  */
 export function ServidoresPageClient() {
   const { t } = useTranslation("servidores");
@@ -39,13 +38,8 @@ export function ServidoresPageClient() {
   const [editTarget, setEditTarget] = useState<Servidor | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<Servidor | undefined>();
 
-  // 1. Filter by ativo status
-  const byStatus = useMemo(
-    () => filterByAtivo(data ?? [], filter),
-    [data, filter],
-  );
+  const byStatus = useMemo(() => filterByAtivo(data ?? [], filter), [data, filter]);
 
-  // 2. Filter by search term (nome, CPF digits, email)
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
     if (!term) return byStatus;
@@ -53,55 +47,50 @@ export function ServidoresPageClient() {
     return byStatus.filter((s) =>
       s.nome.toLowerCase().includes(term) ||
       s.email.toLowerCase().includes(term) ||
-      (digits && s.cpf.includes(digits))
+      (digits.length >= 3 && s.cpf.includes(digits))
     );
   }, [byStatus, search]);
 
   const handleOpenCreate = () => { setEditTarget(undefined); setFormOpen(true); };
-  const handleOpenEdit = (servidor: Servidor) => { setEditTarget(servidor); setFormOpen(true); };
+  const handleOpenEdit = (s: Servidor) => { setEditTarget(s); setFormOpen(true); };
   const handleCloseForm = () => { setFormOpen(false); setEditTarget(undefined); };
 
   let content: ReactNode;
 
   if (isLoading) {
     content = (
-      <section data-testid="servidores-loading" className="space-y-3">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-12 w-full animate-pulse rounded-md bg-neutral-200" />
+      <div className="space-y-2">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="h-14 w-full animate-pulse rounded-lg bg-neutral-100" />
         ))}
-      </section>
+      </div>
     );
   } else if (isError) {
     content = <ErrorState data-testid="servidores-error" onRetry={() => void refetch()} />;
   } else if (!filtered.length) {
     content = (
-      <section data-testid="servidores-empty" className="rounded-md border border-neutral-200 bg-neutral-50 p-6">
-        <h2 className="text-base font-semibold text-neutral-900">{t("page.empty.title")}</h2>
-        <p className="mt-1 text-sm text-neutral-700">{t("page.empty.message")}</p>
-      </section>
+      <div data-testid="servidores-empty" className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-neutral-50 py-16 text-center">
+        <p className="text-sm font-medium text-neutral-600">{t("page.empty.title")}</p>
+        <p className="mt-1 text-xs text-neutral-400">{t("page.empty.message")}</p>
+      </div>
     );
   } else {
     content = (
-      <div data-testid="servidores-table" className="overflow-hidden rounded-md border border-neutral-200">
+      <div data-testid="servidores-table" className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
         <table className="w-full text-sm">
-          <thead className="bg-neutral-50 text-left text-xs font-medium uppercase text-neutral-500">
-            <tr>
-              <th className="px-4 py-3">{t("table.nome")}</th>
-              <th className="hidden px-4 py-3 md:table-cell">{t("table.cpf")}</th>
-              <th className="hidden px-4 py-3 lg:table-cell">{t("table.email")}</th>
-              <th className="px-4 py-3">{t("table.papeis")}</th>
-              <th className="px-4 py-3">{t("table.status")}</th>
-              <th className="px-4 py-3 text-right">{t("table.actions")}</th>
+          <thead>
+            <tr className="border-b border-neutral-100 bg-neutral-50">
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("table.nome")}</th>
+              <th className="hidden px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500 md:table-cell">{t("table.cpf")}</th>
+              <th className="hidden px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500 lg:table-cell">{t("table.email")}</th>
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("table.papeis")}</th>
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("table.status")}</th>
+              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("table.actions")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-neutral-100 bg-white">
+          <tbody className="divide-y divide-neutral-50">
             {filtered.map((servidor) => (
-              <ServidorRow
-                key={servidor.id}
-                servidor={servidor}
-                onEdit={handleOpenEdit}
-                onDelete={setDeleteTarget}
-              />
+              <ServidorRow key={servidor.id} servidor={servidor} onEdit={handleOpenEdit} onDelete={setDeleteTarget} />
             ))}
           </tbody>
         </table>
@@ -113,37 +102,56 @@ export function ServidoresPageClient() {
     <Can
       perform={Permission.SERVIDOR_VIEW}
       fallback={
-        <section data-testid="servidores-access-denied" className="rounded-md border border-danger/30 bg-danger/10 p-4">
+        <div className="rounded-xl border border-danger/20 bg-danger/5 p-6">
           <p className="text-sm font-medium text-danger">{t("page.accessDenied")}</p>
-        </section>
+        </div>
       }
     >
-      <div className="space-y-4">
-        {/* Header */}
-        <div className="flex items-center justify-between gap-3">
-          <h1 className="text-lg font-semibold text-neutral-900">{t("page.title")}</h1>
+      <div className="space-y-5">
+
+        {/* ── Page header ── */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-neutral-900">{t("page.title")}</h1>
+            {data && (
+              <p className="mt-0.5 text-sm text-neutral-500">
+                {filtered.length} {filtered.length === 1 ? "servidor" : "servidores"}
+                {search && ` encontrado${filtered.length !== 1 ? "s" : ""}`}
+              </p>
+            )}
+          </div>
           <Can perform={Permission.SERVIDOR_CREATE}>
             <Button data-testid="servidores-create-btn" variant="primary" size="sm" onClick={handleOpenCreate}>
-              {t("actions.create")}
+              + {t("actions.create")}
             </Button>
           </Can>
         </div>
 
-        {/* Search + status filters row */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          {/* Text search */}
-          <div className="flex-1">
-            <Input
+        {/* ── Toolbar: search + filters ── */}
+        <div className="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center">
+          {/* Search */}
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" aria-hidden="true" />
+            <input
               data-testid="servidores-search"
-              placeholder={t("page.searchPlaceholder")}
+              type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              aria-label={t("page.searchPlaceholder")}
+              placeholder="Buscar por nome, CPF ou email..."
+              aria-label="Buscar servidores"
+              className={[
+                "h-9 w-full rounded-lg border border-neutral-200 bg-neutral-50 pl-9 pr-3 text-sm",
+                "text-neutral-900 placeholder:text-neutral-400",
+                "focus:border-brand-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary/20",
+              ].join(" ")}
             />
           </div>
 
-          {/* Status filter pills */}
-          <div data-testid="servidores-filter" className="flex gap-2" role="group" aria-label={t("page.title")}>
+          {/* Divider */}
+          <div className="hidden h-6 w-px bg-neutral-200 sm:block" aria-hidden="true" />
+
+          {/* Status pills */}
+          <div className="flex gap-1.5" role="group" aria-label="Filtrar por status">
             {(["all", "active", "inactive"] as AtivoFilter[]).map((f) => (
               <button
                 key={f}
@@ -152,9 +160,11 @@ export function ServidoresPageClient() {
                 aria-pressed={filter === f}
                 onClick={() => setFilter(f)}
                 className={[
-                  "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-opacity",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
-                  filter === f ? "bg-brand-primary text-white" : "bg-neutral-200 text-neutral-700 hover:opacity-80",
+                  "rounded-full px-3 py-1 text-xs font-medium transition-all",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1",
+                  filter === f
+                    ? "bg-brand-primary text-white shadow-sm"
+                    : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200",
                 ].join(" ")}
               >
                 {t(`page.filters.${f}`)}
@@ -166,7 +176,6 @@ export function ServidoresPageClient() {
         {content}
       </div>
 
-      {/* Create / Edit dialog */}
       <ServidorFormDialog
         data-testid="servidor-form-dialog"
         open={formOpen}
@@ -175,7 +184,6 @@ export function ServidoresPageClient() {
         servidor={editTarget}
       />
 
-      {/* Delete confirmation dialog */}
       {deleteTarget && (
         <ServidorDeleteDialog
           data-testid="servidor-delete-dialog"
@@ -189,88 +197,66 @@ export function ServidoresPageClient() {
   );
 }
 
-// ── Row sub-component ────────────────────────────────────────────────────────
+// ── Row ──────────────────────────────────────────────────────────────────────
 
 interface ServidorRowProps {
   servidor: Servidor;
-  onEdit: (servidor: Servidor) => void;
-  onDelete: (servidor: Servidor) => void;
+  onEdit: (s: Servidor) => void;
+  onDelete: (s: Servidor) => void;
 }
 
-/**
- * Single table row for a servidor with edit, delete, and reativar actions.
- *
- * @param props - Servidor data and action callbacks
- * @returns Table row with permission-gated action buttons
- */
 function ServidorRow({ servidor, onEdit, onDelete }: ServidorRowProps) {
   const { t } = useTranslation("servidores");
   const reativarMutation = useReativarServidor();
 
   return (
-    <tr
-      data-testid={`servidor-row-${servidor.id}`}
-      className="transition-colors hover:bg-neutral-50"
-    >
-      <td className="px-4 py-3 font-medium text-neutral-900">{servidor.nome}</td>
+    <tr data-testid={`servidor-row-${servidor.id}`} className="group transition-colors hover:bg-neutral-50/60">
+      <td className="px-5 py-3.5">
+        <span className="font-medium text-neutral-900">{servidor.nome}</span>
+      </td>
 
-      <td className="hidden px-4 py-3 text-neutral-600 md:table-cell">
+      <td className="hidden px-5 py-3.5 text-neutral-500 md:table-cell">
         {formatCpf(servidor.cpf)}
       </td>
 
-      <td className="hidden px-4 py-3 text-neutral-600 lg:table-cell">
+      <td className="hidden px-5 py-3.5 text-neutral-500 lg:table-cell">
         {servidor.email}
       </td>
 
-      <td className="px-4 py-3">
+      <td className="px-5 py-3.5">
         <div className="flex flex-wrap gap-1">
           {servidor.papeis.map((papel) => (
-            <Badge
-              key={papel}
-              data-testid={`servidor-papel-${servidor.id}-${papel}`}
-              variant={papelVariant[papel]}
-            >
+            <Badge key={papel} variant={papelVariant[papel]} data-testid={`servidor-papel-${servidor.id}-${papel}`}>
               {t(`papeis.${papel}`)}
             </Badge>
           ))}
         </div>
       </td>
 
-      <td className="px-4 py-3">
+      <td className="px-5 py-3.5">
         <span
           data-testid={`servidor-status-${servidor.id}`}
           className={[
-            "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
-            servidor.ativo
-              ? "bg-success/15 text-success"
-              : "bg-neutral-200 text-neutral-700",
+            "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
+            servidor.ativo ? "bg-success/10 text-success" : "bg-neutral-100 text-neutral-500",
           ].join(" ")}
         >
+          <span className={["h-1.5 w-1.5 rounded-full", servidor.ativo ? "bg-success" : "bg-neutral-400"].join(" ")} aria-hidden="true" />
           {servidor.ativo ? t("status.active") : t("status.inactive")}
         </span>
       </td>
 
-      <td className="px-4 py-3">
-        <div className="flex items-center justify-end gap-2">
+      <td className="px-5 py-3.5">
+        <div className="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100">
           <Can perform={Permission.SERVIDOR_EDIT}>
-            <Button
-              data-testid={`servidor-edit-${servidor.id}`}
-              size="sm"
-              variant="secondary"
-              onClick={() => onEdit(servidor)}
-            >
+            <Button data-testid={`servidor-edit-${servidor.id}`} size="sm" variant="secondary" onClick={() => onEdit(servidor)}>
               {t("actions.edit")}
             </Button>
           </Can>
 
           {servidor.ativo ? (
             <Can perform={Permission.SERVIDOR_DELETE}>
-              <Button
-                data-testid={`servidor-delete-${servidor.id}`}
-                size="sm"
-                variant="destructive"
-                onClick={() => onDelete(servidor)}
-              >
+              <Button data-testid={`servidor-delete-${servidor.id}`} size="sm" variant="destructive" onClick={() => onDelete(servidor)}>
                 {t("actions.delete")}
               </Button>
             </Can>
@@ -279,11 +265,9 @@ function ServidorRow({ servidor, onEdit, onDelete }: ServidorRowProps) {
               <Button
                 data-testid={`servidor-reativar-${servidor.id}`}
                 size="sm"
-                variant="success"
+                variant="primary"
                 isLoading={reativarMutation.isPending}
-                onClick={() =>
-                  void reativarMutation.mutateAsync({ id: servidor.id })
-                }
+                onClick={() => void reativarMutation.mutateAsync({ id: servidor.id })}
               >
                 {t("actions.reativar")}
               </Button>

@@ -156,25 +156,35 @@ export function ServidorFormDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby={headingId}
-        className="w-full max-w-lg rounded-lg border border-neutral-300 bg-white p-5 shadow-sm"
+        className="w-full max-w-lg rounded-xl border border-neutral-200 bg-white shadow-lg"
       >
-        <h2 id={headingId} className="text-base font-semibold text-neutral-900">
-          {mode === "create" ? t("actions.create") : t("actions.edit")}
-        </h2>
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4">
+          <h2 id={headingId} className="text-base font-semibold text-neutral-900">
+            {mode === "create" ? t("actions.create") : t("actions.edit")}
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={t("form.cancel")}
+            className="rounded-md p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
 
         {inlineError && (
-          <p
-            role="alert"
-            className="mt-3 rounded-md border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger"
-          >
-            {inlineError}
-          </p>
+          <div className="mx-6 mt-4 rounded-lg border border-danger/20 bg-danger/5 px-4 py-3">
+            <p role="alert" className="text-sm text-danger">{inlineError}</p>
+          </div>
         )}
 
         <form
           data-testid={testId ? `${testId}-form` : "servidor-form"}
           onSubmit={(e) => void handleSubmit(e)}
-          className="mt-4 space-y-4"
+          className="max-h-[70vh] space-y-4 overflow-y-auto px-6 py-4"
           noValidate
         >
           <Input
@@ -305,7 +315,7 @@ export function ServidorFormDialog({
             </div>
           </fieldset>
 
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex items-center justify-end gap-2 border-t border-neutral-100 pt-4">
             <Button
               type="button"
               data-testid={testId ? `${testId}-cancel` : "servidor-form-cancel"}
