@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { authFacade } from "@/facades/authFacade";
@@ -12,12 +13,12 @@ import type { ApiError } from "@/types";
  * Query hook that fetches the authenticated user profile via `GET /auth/me`.
  *
  * Used primarily by the `AuthGuard` to verify the session on mount / page
- * refresh.  On a successful response the user is stored in the auth Zustand
- * store and `isHydrated` is set to `true`.  On error, `isHydrated` is still
+ * refresh. On a successful response the user is stored in the auth Zustand
+ * store and `isHydrated` is set to `true`. On error, `isHydrated` is still
  * set to `true` so the guard can distinguish "still loading" from
  * "not authenticated".
  *
- * @returns `isLoading`, `isError`, `data` (AuthUser), and `error`.
+ * @returns `isLoading`, `isError`, `data` (AuthUser), `error`, and `refetch`.
  */
 export function useCurrentUser() {
   const setUser = useAuthStore((s) => s.setUser);
@@ -26,25 +27,31 @@ export function useCurrentUser() {
   const query = useQuery<AuthUser, ApiError>({
     queryKey: authKeys.me(),
     queryFn: () => authFacade.me(),
-    select: (data) => {
-      // Side-effect in select is intentional — keeps store in sync
-      // whenever the query data changes (initial fetch or refetch).
-      setUser(data);
-      setHydrated(true);
-      return data;
+    // Don't retry on 401 — it means the session is gone
+    retry: (failureCount, error) => {
+      if ((error as ApiError).status === 401) return false;
+      return failureCount < 2;
     },
-    meta: {
-      onError: () => {
-        setHydrated(true);
-      },
-    },
+    // Keep data fresh for 5 minutes — avoids unnecessary refetches
+    staleTime: 5 * 60_000,
+    // Don't refetch on window focus — avoids logout on tab switch
+    refetchOnWindowFocus: false,
   });
 
-  // Handle error hydration via effect-free approach:
-  // When the query errors, we still need to mark hydration complete.
-  if (query.isError) {
-    setHydrated(true);
-  }
+  // Sync successful data into the auth store
+  useEffect(() => {
+    if (query.data) {
+      setUser(query.data);
+      setHydrated(true);
+    }
+  }, [query.data, setUser, setHydrated]);
+
+  // Mark hydration complete on error too (so AuthGuard can redirect)
+  useEffect(() => {
+    if (query.isError) {
+      setHydrated(true);
+    }
+  }, [query.isError, setHydrated]);
 
   return {
     isLoading: query.isLoading,

@@ -20,6 +20,28 @@ let accessToken: string | null = null;
 let refreshToken: string | null = null;
 let refreshPromise: Promise<TokenPair> | null = null;
 
+// ---------------------------------------------------------------------------
+// Token persistence helpers (sessionStorage — survives page refresh, cleared on tab close)
+// ---------------------------------------------------------------------------
+
+const TOKEN_KEY = "govmobile.access_token";
+const REFRESH_KEY = "govmobile.refresh_token";
+
+function loadTokens(): void {
+  if (typeof window === "undefined") return;
+  accessToken = sessionStorage.getItem(TOKEN_KEY);
+  refreshToken = sessionStorage.getItem(REFRESH_KEY);
+}
+
+function saveTokens(pair: TokenPair): void {
+  accessToken = pair.accessToken;
+  refreshToken = pair.refreshToken;
+  if (typeof window !== "undefined") {
+    sessionStorage.setItem(TOKEN_KEY, pair.accessToken);
+    sessionStorage.setItem(REFRESH_KEY, pair.refreshToken);
+  }
+}
+
 /**
  * Clears all in-memory token state.
  * Called on logout and when a refresh attempt fails.
@@ -28,7 +50,14 @@ function clearTokens(): void {
   accessToken = null;
   refreshToken = null;
   refreshPromise = null;
+  if (typeof window !== "undefined") {
+    sessionStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(REFRESH_KEY);
+  }
 }
+
+// Load persisted tokens on module initialisation (browser only)
+loadTokens();
 
 // ---------------------------------------------------------------------------
 // Authenticated fetch wrapper
@@ -131,8 +160,7 @@ export const authFacade = {
       ? raw.data
       : { accessToken: raw.accessToken, refreshToken: raw.refreshToken };
 
-    accessToken = tokens.accessToken;
-    refreshToken = tokens.refreshToken;
+    saveTokens(tokens);
 
     return authFacade.me();
   },
@@ -189,8 +217,7 @@ export const authFacade = {
         ? raw.data
         : { accessToken: raw.accessToken, refreshToken: raw.refreshToken };
 
-      accessToken = tokens.accessToken;
-      refreshToken = tokens.refreshToken;
+      saveTokens(tokens);
       return tokens;
     })();
 
