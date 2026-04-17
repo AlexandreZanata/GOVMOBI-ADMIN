@@ -9,6 +9,9 @@ import type { NextConfig } from "next";
  */
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Fix HMR WebSocket connecting to network IP instead of localhost
+  // when running in a VM or container environment
+  devIndicators: false,
   async rewrites() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
     return [

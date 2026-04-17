@@ -1,4 +1,5 @@
 import { getApiBase } from "@/lib/apiBase";
+import { fetchWithAuth } from "@/facades/authFacade";
 import { handleEnvelopedResponse } from "@/lib/handleApiResponse";
 import type { Motorista } from "@/models/Motorista";
 import type {
@@ -31,7 +32,7 @@ export const motoristasFacade = {
    * @throws ApiError on non-2xx responses
    */
   async listMotoristas(): Promise<Motorista[]> {
-    const response = await fetch(`${baseUrl()}/frota/motoristas`);
+    const response = await fetchWithAuth(`${baseUrl()}/frota/motoristas`);
     return handleEnvelopedResponse<Motorista[]>(response);
   },
 
@@ -44,7 +45,7 @@ export const motoristasFacade = {
    * @throws ApiError 500 when the backend receives an invalid UUID (treat as 404)
    */
   async getMotoristaById(input: GetMotoristaByIdInput): Promise<Motorista> {
-    const response = await fetch(`${baseUrl()}/frota/motoristas/${input.id}`);
+    const response = await fetchWithAuth(`${baseUrl()}/frota/motoristas/${input.id}`);
     return handleEnvelopedResponse<Motorista>(response);
   },
 
@@ -57,7 +58,7 @@ export const motoristasFacade = {
    * @throws ApiError 400 on validation failure
    */
   async createMotorista(input: CreateMotoristaInput): Promise<Motorista> {
-    const response = await fetch(`${baseUrl()}/frota/motoristas`, {
+    const response = await fetchWithAuth(`${baseUrl()}/frota/motoristas`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
@@ -78,7 +79,7 @@ export const motoristasFacade = {
     id: string,
     input: UpdateMotoristaInput
   ): Promise<Motorista> {
-    const response = await fetch(`${baseUrl()}/frota/motoristas/${id}`, {
+    const response = await fetchWithAuth(`${baseUrl()}/frota/motoristas/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),

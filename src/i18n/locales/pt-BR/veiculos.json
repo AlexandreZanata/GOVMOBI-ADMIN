@@ -1,0 +1,58 @@
+{
+  "page": {
+    "title": "Veículos",
+    "accessDenied": "Você não tem permissão para visualizar veículos.",
+    "empty": {
+      "title": "Nenhum veículo encontrado",
+      "message": "Cadastre o primeiro veículo para começar."
+    },
+    "filters": {
+      "all": "Todos",
+      "active": "Ativo",
+      "inactive": "Inativo"
+    }
+  },
+  "table": {
+    "placa": "Placa",
+    "modelo": "Modelo",
+    "ano": "Ano",
+    "status": "Status",
+    "actions": "Ações"
+  },
+  "actions": {
+    "create": "Novo Veículo",
+    "edit": "Editar",
+    "desativar": "Desativar",
+    "reativar": "Reativar"
+  },
+  "form": {
+    "titleCreate": "Novo Veículo",
+    "titleEdit": "Editar Veículo",
+    "placa": "Placa",
+    "placaHint": "Formato Mercosul: ABC1D23",
+    "modelo": "Modelo",
+    "ano": "Ano",
+    "submit": "Salvar",
+    "cancel": "Cancelar",
+    "placaRequired": "A placa é obrigatória.",
+    "modeloRequired": "O modelo é obrigatório.",
+    "anoRequired": "O ano é obrigatório.",
+    "duplicatePlaca": "Já existe um veículo com esta placa."
+  },
+  "delete": {
+    "confirmation": "Deseja desativar o veículo \"{{placa}}\"?",
+    "reversible": "Esta ação pode ser revertida."
+  },
+  "status": {
+    "active": "Ativo",
+    "inactive": "Inativo"
+  },
+  "toast": {
+    "created": "Veículo cadastrado com sucesso.",
+    "updated": "Veículo atualizado com sucesso.",
+    "desativado": "Veículo desativado.",
+    "reativado": "Veículo reativado.",
+    "duplicatePlaca": "Já existe um veículo com esta placa.",
+    "notFound": "Veículo não encontrado."
+  }
+}

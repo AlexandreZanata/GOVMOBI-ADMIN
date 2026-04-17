@@ -4,3 +4,4 @@ export * from "./runs";
 export * from "./cargos";
 export * from "./lotacoes";
 export * from "./audit";
+export * from "./veiculos";
