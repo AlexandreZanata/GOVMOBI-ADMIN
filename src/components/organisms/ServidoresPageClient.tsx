@@ -10,6 +10,7 @@ import { Can } from "@/components/auth/Can";
 import { ErrorState } from "@/components/molecules/ErrorState";
 import { ServidorDeleteDialog } from "@/components/molecules/ServidorDeleteDialog";
 import { ServidorFormDialog } from "@/components/molecules/ServidorFormDialog";
+import { ServidorViewModal } from "@/components/molecules/ServidorViewModal";
 import { formatCpf } from "@/lib/formatCpf";
 import { unformatCpf } from "@/lib/cpfUtils";
 import { useReativarServidor } from "@/hooks/servidores/useReativarServidor";
@@ -37,6 +38,7 @@ export function ServidoresPageClient() {
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Servidor | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<Servidor | undefined>();
+  const [viewTarget, setViewTarget] = useState<Servidor | undefined>();
 
   const byStatus = useMemo(() => filterByAtivo(data ?? [], filter), [data, filter]);
 
@@ -90,7 +92,7 @@ export function ServidoresPageClient() {
           </thead>
           <tbody className="divide-y divide-neutral-50">
             {filtered.map((servidor) => (
-              <ServidorRow key={servidor.id} servidor={servidor} onEdit={handleOpenEdit} onDelete={setDeleteTarget} />
+              <ServidorRow key={servidor.id} servidor={servidor} onView={setViewTarget} onEdit={handleOpenEdit} onDelete={setDeleteTarget} />
             ))}
           </tbody>
         </table>
@@ -193,6 +195,13 @@ export function ServidoresPageClient() {
           servidorNome={deleteTarget.nome}
         />
       )}
+
+      <ServidorViewModal
+        data-testid="servidor-view-modal"
+        open={!!viewTarget}
+        onClose={() => setViewTarget(undefined)}
+        servidor={viewTarget}
+      />
     </Can>
   );
 }
@@ -201,11 +210,12 @@ export function ServidoresPageClient() {
 
 interface ServidorRowProps {
   servidor: Servidor;
+  onView: (s: Servidor) => void;
   onEdit: (s: Servidor) => void;
   onDelete: (s: Servidor) => void;
 }
 
-function ServidorRow({ servidor, onEdit, onDelete }: ServidorRowProps) {
+function ServidorRow({ servidor, onView, onEdit, onDelete }: ServidorRowProps) {
   const { t } = useTranslation("servidores");
   const reativarMutation = useReativarServidor();
 
@@ -256,6 +266,7 @@ function ServidorRow({ servidor, onEdit, onDelete }: ServidorRowProps) {
             data-testid={`servidor-view-${servidor.id}`}
             aria-label={t("actions.view")}
             title={t("actions.view")}
+            onClick={() => onView(servidor)}
             className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
