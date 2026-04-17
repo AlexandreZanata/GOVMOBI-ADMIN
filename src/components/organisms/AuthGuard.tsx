@@ -32,6 +32,8 @@ export interface AuthGuardProps {
 export function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter();
   const pathname = usePathname();
+  // Use query data directly — avoids the useEffect timing gap where
+  // isLoading=false but the store hasn't been updated yet
   const { isLoading, isError, data: user, error, refetch } = useCurrentUser();
 
   const isAuthError =
@@ -105,6 +107,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
   }
 
   // Authenticated — wrap children with PermissionsProvider
+  // Use query.data directly (not the store) to avoid the useEffect timing gap
   if (user) {
     // Normalize role to match UserRole enum values (API may return lowercase or different casing)
     const normalizedRole = (
@@ -122,6 +125,20 @@ export function AuthGuard({ children }: AuthGuardProps) {
     );
   }
 
-  // Fallback — should not reach here, but render nothing
-  return null;
+  // No user and no error — still waiting for the query to settle
+  // This can happen briefly between isLoading=false and data being available.
+  // Show the skeleton to avoid a flash of blank content.
+  return (
+    <div
+      data-testid="auth-guard"
+      aria-busy="true"
+      className="flex h-screen w-full items-center justify-center bg-neutral-50"
+    >
+      <div className="flex flex-col items-center gap-4">
+        <div className="h-8 w-48 animate-pulse rounded-md bg-neutral-200" />
+        <div className="h-4 w-64 animate-pulse rounded-md bg-neutral-200" />
+        <div className="h-4 w-56 animate-pulse rounded-md bg-neutral-200" />
+      </div>
+    </div>
+  );
 }
