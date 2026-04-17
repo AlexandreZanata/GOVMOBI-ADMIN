@@ -10,7 +10,8 @@
       "all": "Todos",
       "active": "Ativo",
       "inactive": "Inativo"
-    }
+    },
+    "searchPlaceholder": "Buscar por nome, CPF ou email..."
   },
   "table": {
     "nome": "Nome",

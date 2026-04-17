@@ -4,12 +4,13 @@ import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Badge, Button } from "@/components/atoms";
+import { Badge, Button, Input } from "@/components/atoms";
 import { Can } from "@/components/auth/Can";
 import { ErrorState } from "@/components/molecules/ErrorState";
 import { ServidorDeleteDialog } from "@/components/molecules/ServidorDeleteDialog";
 import { ServidorFormDialog } from "@/components/molecules/ServidorFormDialog";
 import { formatCpf } from "@/lib/formatCpf";
+import { unformatCpf } from "@/lib/cpfUtils";
 import { useReativarServidor } from "@/hooks/servidores/useReativarServidor";
 import { useServidores } from "@/hooks/servidores/useServidores";
 import { filterByAtivo } from "@/lib/filterByAtivo";
@@ -25,39 +26,40 @@ const papelVariant: Record<Papel, "danger" | "info" | "neutral"> = {
 };
 
 /**
- * Client-side servidores page renderer with table, filter, loading/error/empty states.
- * Manages create, edit, soft-delete, and reactivation actions.
- *
- * @returns Interactive servidores management content
+ * Client-side servidores page renderer with text search, status filter,
+ * loading/error/empty states, and permission-gated CRUD actions.
  */
 export function ServidoresPageClient() {
   const { t } = useTranslation("servidores");
   const { data, isLoading, isError, refetch } = useServidores();
 
   const [filter, setFilter] = useState<AtivoFilter>("all");
+  const [search, setSearch] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Servidor | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<Servidor | undefined>();
 
-  const filtered = useMemo(
+  // 1. Filter by ativo status
+  const byStatus = useMemo(
     () => filterByAtivo(data ?? [], filter),
     [data, filter],
   );
 
-  const handleOpenCreate = () => {
-    setEditTarget(undefined);
-    setFormOpen(true);
-  };
+  // 2. Filter by search term (nome, CPF digits, email)
+  const filtered = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return byStatus;
+    const digits = unformatCpf(term);
+    return byStatus.filter((s) =>
+      s.nome.toLowerCase().includes(term) ||
+      s.email.toLowerCase().includes(term) ||
+      (digits && s.cpf.includes(digits))
+    );
+  }, [byStatus, search]);
 
-  const handleOpenEdit = (servidor: Servidor) => {
-    setEditTarget(servidor);
-    setFormOpen(true);
-  };
-
-  const handleCloseForm = () => {
-    setFormOpen(false);
-    setEditTarget(undefined);
-  };
+  const handleOpenCreate = () => { setEditTarget(undefined); setFormOpen(true); };
+  const handleOpenEdit = (servidor: Servidor) => { setEditTarget(servidor); setFormOpen(true); };
+  const handleCloseForm = () => { setFormOpen(false); setEditTarget(undefined); };
 
   let content: ReactNode;
 
@@ -70,27 +72,17 @@ export function ServidoresPageClient() {
       </section>
     );
   } else if (isError) {
-    content = (
-      <ErrorState data-testid="servidores-error" onRetry={() => void refetch()} />
-    );
+    content = <ErrorState data-testid="servidores-error" onRetry={() => void refetch()} />;
   } else if (!filtered.length) {
     content = (
-      <section
-        data-testid="servidores-empty"
-        className="rounded-md border border-neutral-200 bg-neutral-50 p-6"
-      >
-        <h2 className="text-base font-semibold text-neutral-900">
-          {t("page.empty.title")}
-        </h2>
+      <section data-testid="servidores-empty" className="rounded-md border border-neutral-200 bg-neutral-50 p-6">
+        <h2 className="text-base font-semibold text-neutral-900">{t("page.empty.title")}</h2>
         <p className="mt-1 text-sm text-neutral-700">{t("page.empty.message")}</p>
       </section>
     );
   } else {
     content = (
-      <div
-        data-testid="servidores-table"
-        className="overflow-hidden rounded-md border border-neutral-200"
-      >
+      <div data-testid="servidores-table" className="overflow-hidden rounded-md border border-neutral-200">
         <table className="w-full text-sm">
           <thead className="bg-neutral-50 text-left text-xs font-medium uppercase text-neutral-500">
             <tr>
@@ -121,10 +113,7 @@ export function ServidoresPageClient() {
     <Can
       perform={Permission.SERVIDOR_VIEW}
       fallback={
-        <section
-          data-testid="servidores-access-denied"
-          className="rounded-md border border-danger/30 bg-danger/10 p-4"
-        >
+        <section data-testid="servidores-access-denied" className="rounded-md border border-danger/30 bg-danger/10 p-4">
           <p className="text-sm font-medium text-danger">{t("page.accessDenied")}</p>
         </section>
       }
@@ -134,42 +123,44 @@ export function ServidoresPageClient() {
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-lg font-semibold text-neutral-900">{t("page.title")}</h1>
           <Can perform={Permission.SERVIDOR_CREATE}>
-            <Button
-              data-testid="servidores-create-btn"
-              variant="primary"
-              size="sm"
-              onClick={handleOpenCreate}
-            >
+            <Button data-testid="servidores-create-btn" variant="primary" size="sm" onClick={handleOpenCreate}>
               {t("actions.create")}
             </Button>
           </Can>
         </div>
 
-        {/* Filter toggle */}
-        <div
-          data-testid="servidores-filter"
-          className="flex gap-2"
-          role="group"
-          aria-label={t("page.title")}
-        >
-          {(["all", "active", "inactive"] as AtivoFilter[]).map((f) => (
-            <button
-              key={f}
-              type="button"
-              data-testid={`servidores-filter-${f}`}
-              aria-pressed={filter === f}
-              onClick={() => setFilter(f)}
-              className={[
-                "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-opacity",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
-                filter === f
-                  ? "bg-brand-primary text-white"
-                  : "bg-neutral-200 text-neutral-700 hover:opacity-80",
-              ].join(" ")}
-            >
-              {t(`page.filters.${f}`)}
-            </button>
-          ))}
+        {/* Search + status filters row */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          {/* Text search */}
+          <div className="flex-1">
+            <Input
+              data-testid="servidores-search"
+              placeholder={t("page.searchPlaceholder")}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              aria-label={t("page.searchPlaceholder")}
+            />
+          </div>
+
+          {/* Status filter pills */}
+          <div data-testid="servidores-filter" className="flex gap-2" role="group" aria-label={t("page.title")}>
+            {(["all", "active", "inactive"] as AtivoFilter[]).map((f) => (
+              <button
+                key={f}
+                type="button"
+                data-testid={`servidores-filter-${f}`}
+                aria-pressed={filter === f}
+                onClick={() => setFilter(f)}
+                className={[
+                  "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-opacity",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
+                  filter === f ? "bg-brand-primary text-white" : "bg-neutral-200 text-neutral-700 hover:opacity-80",
+                ].join(" ")}
+              >
+                {t(`page.filters.${f}`)}
+              </button>
+            ))}
+          </div>
         </div>
 
         {content}
