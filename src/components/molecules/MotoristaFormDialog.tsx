@@ -9,36 +9,24 @@ import { useUpdateMotorista } from "@/hooks/motoristas/useUpdateMotorista";
 import type { CnhCategoria, Motorista } from "@/models/Motorista";
 import { ApiError } from "@/types";
 
-/** Dialog mode — controls which mutation is called on submit. */
 export type MotoristaFormMode = "create" | "edit";
 
-/** Available CNH category options. */
 const CNH_OPTIONS: CnhCategoria[] = ["A", "B", "AB", "C", "D", "E"];
 
-/**
- * Props for the motorista create/edit form dialog.
- */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export interface MotoristaFormDialogProps {
-  /** Whether the dialog is open. */
   open: boolean;
-  /** Called when the dialog should close. */
   onClose: () => void;
-  /** Dialog mode — "create" or "edit". */
   mode: MotoristaFormMode;
-  /** Existing motorista data pre-populated when mode is "edit". */
   motorista?: Motorista;
-  /** Test selector prefix. */
   "data-testid"?: string;
 }
 
 /**
  * Modal form dialog for registering a new motorista or editing CNH data.
- * In "create" mode: collects servidorId, cnhNumero, cnhCategoria.
- * In "edit" mode: allows updating cnhNumero and cnhCategoria only.
- * Shows inline error on 409 (duplicate CNH).
- *
- * @param props - Dialog state, mode, optional motorista data, and test selector
- * @returns Accessible modal form dialog
+ * Create mode: servidorId, municipioId, cnhNumero, cnhCategoria.
+ * Edit mode: cnhNumero and cnhCategoria only.
  */
 export function MotoristaFormDialog({
   open,
@@ -51,59 +39,56 @@ export function MotoristaFormDialog({
   const headingId = useId();
 
   const [servidorId, setServidorId] = useState(motorista?.servidorId ?? "");
-  const [servidorIdError, setServidorIdError] = useState<string | undefined>();
+  const [municipioId, setMunicipioId] = useState("");
   const [cnhNumero, setCnhNumero] = useState(motorista?.cnhNumero ?? "");
-  const [cnhCategoria, setCnhCategoria] = useState<CnhCategoria>(
-    motorista?.cnhCategoria ?? "B"
-  );
-  const [cnhError, setCnhError] = useState<string | undefined>();
+  const [cnhCategoria, setCnhCategoria] = useState<CnhCategoria>(motorista?.cnhCategoria ?? "B");
 
-  /** RFC 4122 UUID v4/v7 pattern used to validate servidorId before submit. */
-  const UUID_RE =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [inlineError, setInlineError] = useState<string | undefined>();
 
   const createMutation = useCreateMotorista();
   const updateMutation = useUpdateMotorista();
   const isPending = createMutation.isPending || updateMutation.isPending;
 
-  // Sync fields when motorista prop changes
   const prevId = useRef(motorista?.id);
   if (motorista?.id !== prevId.current) {
     prevId.current = motorista?.id;
     setServidorId(motorista?.servidorId ?? "");
-    setServidorIdError(undefined);
     setCnhNumero(motorista?.cnhNumero ?? "");
     setCnhCategoria(motorista?.cnhCategoria ?? "B");
-    setCnhError(undefined);
+    setErrors({});
+    setInlineError(undefined);
   }
 
-  // Escape key closes dialog
   useEffect(() => {
     if (!open) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { e.preventDefault(); onClose(); }
-    };
+    const onKeyDown = (e: KeyboardEvent) => { if (e.key === "Escape") { e.preventDefault(); onClose(); } };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [open, onClose]);
 
   if (!open) return null;
 
+  const validate = (): boolean => {
+    const errs: Record<string, string> = {};
+    if (mode === "create") {
+      if (!UUID_RE.test(servidorId.trim())) errs.servidorId = t("form.servidorIdInvalid");
+      if (!UUID_RE.test(municipioId.trim())) errs.municipioId = t("form.municipioIdInvalid");
+    }
+    if (!cnhNumero.trim()) errs.cnhNumero = t("form.cnhNumeroRequired");
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setCnhError(undefined);
-    setServidorIdError(undefined);
-
-    // Validate servidorId is a valid UUID before hitting the API
-    if (mode === "create" && !UUID_RE.test(servidorId.trim())) {
-      setServidorIdError(t("form.servidorIdInvalid"));
-      return;
-    }
+    setInlineError(undefined);
+    if (!validate()) return;
 
     try {
       if (mode === "create") {
         await createMutation.mutateAsync(
-          { servidorId: servidorId.trim(), cnhNumero: cnhNumero.trim(), cnhCategoria },
+          { servidorId: servidorId.trim(), municipioId: municipioId.trim(), cnhNumero: cnhNumero.trim(), cnhCategoria },
           { onSuccess: onClose }
         );
       } else if (motorista) {
@@ -114,69 +99,92 @@ export function MotoristaFormDialog({
       }
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
-        setCnhError(t("toast.duplicateCnh"));
-        return; // error handled inline — do not re-throw
+        setInlineError(t("toast.duplicateCnh"));
       }
-      // All other errors are handled by the hook's onError toast
     }
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 p-4"
-      data-testid={testId}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 p-4" data-testid={testId}>
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby={headingId}
-        className="w-full max-w-md rounded-lg border border-neutral-300 bg-white p-5 shadow-sm"
+        className="w-full max-w-md rounded-xl border border-neutral-200 bg-white shadow-lg"
       >
-        <h2 id={headingId} className="text-base font-semibold text-neutral-900">
-          {mode === "create" ? t("actions.create") : t("actions.edit")}
-        </h2>
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4">
+          <h2 id={headingId} className="text-base font-semibold text-neutral-900">
+            {mode === "create" ? t("actions.create") : t("actions.edit")}
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={t("form.cancel")}
+            className="rounded-md p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {inlineError && (
+          <div className="mx-6 mt-4 rounded-lg border border-danger/20 bg-danger/5 px-4 py-3">
+            <p role="alert" className="text-sm text-danger">{inlineError}</p>
+          </div>
+        )}
 
         <form
           data-testid={testId ? `${testId}-form` : "motorista-form"}
           onSubmit={(e) => void handleSubmit(e)}
-          className="mt-4 space-y-4"
+          className="space-y-4 px-6 py-4"
           noValidate
         >
           {mode === "create" && (
-            <Input
-              data-testid={testId ? `${testId}-servidorId` : "motorista-form-servidorId"}
-              label={t("form.servidorId")}
-              value={servidorId}
-              onChange={(e) => setServidorId(e.target.value)}
-              error={servidorIdError}
-              aria-required="true"
-              autoFocus
-            />
+            <>
+              <Input
+                data-testid="motorista-form-servidorId"
+                label={t("form.servidorId")}
+                placeholder="UUID do servidor"
+                value={servidorId}
+                onChange={(e) => setServidorId(e.target.value)}
+                error={errors.servidorId}
+                aria-required="true"
+                autoFocus
+              />
+              <Input
+                data-testid="motorista-form-municipioId"
+                label={t("form.municipioId")}
+                placeholder="UUID do município"
+                value={municipioId}
+                onChange={(e) => setMunicipioId(e.target.value)}
+                error={errors.municipioId}
+                aria-required="true"
+              />
+            </>
           )}
 
           <Input
-            data-testid={testId ? `${testId}-cnhNumero` : "motorista-form-cnhNumero"}
+            data-testid="motorista-form-cnhNumero"
             label={t("form.cnhNumero")}
             value={cnhNumero}
             onChange={(e) => setCnhNumero(e.target.value)}
-            error={cnhError}
+            error={errors.cnhNumero}
             aria-required="true"
             autoFocus={mode === "edit"}
           />
 
           <div className="flex flex-col gap-1">
-            <label
-              htmlFor="motorista-form-cnhCategoria"
-              className="text-sm font-medium text-neutral-700"
-            >
+            <label htmlFor="motorista-form-cnhCategoria" className="text-sm font-medium text-neutral-700">
               {t("form.cnhCategoria")}
             </label>
             <select
               id="motorista-form-cnhCategoria"
-              data-testid={testId ? `${testId}-cnhCategoria` : "motorista-form-cnhCategoria"}
+              data-testid="motorista-form-cnhCategoria"
               value={cnhCategoria}
               onChange={(e) => setCnhCategoria(e.target.value as CnhCategoria)}
-              className="h-10 w-full rounded-md border border-neutral-300 bg-white px-3 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-1"
+              className="h-10 w-full rounded-lg border border-neutral-300 bg-white px-3 text-sm text-neutral-900 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
             >
               {CNH_OPTIONS.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
@@ -184,22 +192,11 @@ export function MotoristaFormDialog({
             </select>
           </div>
 
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              type="button"
-              data-testid={testId ? `${testId}-cancel` : "motorista-form-cancel"}
-              variant="ghost"
-              onClick={onClose}
-            >
+          <div className="flex items-center justify-end gap-2 border-t border-neutral-100 pt-4">
+            <Button type="button" variant="ghost" onClick={onClose} data-testid="motorista-form-cancel">
               {t("form.cancel")}
             </Button>
-            <Button
-              type="submit"
-              data-testid={testId ? `${testId}-submit` : "motorista-form-submit"}
-              variant="primary"
-              isLoading={isPending}
-              disabled={isPending}
-            >
+            <Button type="submit" variant="primary" isLoading={isPending} disabled={isPending} data-testid="motorista-form-submit">
               {t("form.submit")}
             </Button>
           </div>
