@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
 import { PermissionsProvider } from "@/components/auth/PermissionsProvider";
 import { ErrorState } from "@/components/molecules/ErrorState";
+import { UserRole } from "@/models";
 import type { ApiError } from "@/types";
 
 /**
@@ -105,9 +106,16 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
   // Authenticated — wrap children with PermissionsProvider
   if (user) {
+    // Normalize role to match UserRole enum values (API may return lowercase or different casing)
+    const normalizedRole = (
+      Object.values(UserRole).find(
+        (r) => r.toUpperCase() === String(user.role).toUpperCase()
+      ) ?? UserRole.DISPATCHER
+    ) as UserRole;
+
     return (
       <div data-testid="auth-guard">
-        <PermissionsProvider role={user.role}>
+        <PermissionsProvider role={normalizedRole}>
           {children}
         </PermissionsProvider>
       </div>

@@ -34,6 +34,10 @@ export function usePermissions(): {
 
   return {
     role,
-    can: (permission: Permission) => RolePermissionMap[role].includes(permission),
+    can: (permission: Permission) => {
+      const permissions = RolePermissionMap[role];
+      if (!permissions) return false;
+      return permissions.includes(permission);
+    },
   };
 }
