@@ -28,7 +28,7 @@ export const runsFacade = {
    * @throws Error when backend returns non-2xx status
    */
   async listRuns(): Promise<Run[]> {
-    const response = await fetchWithAuth(`${baseUrl()}/runs`);
+    const response = await fetchWithAuth(`${baseUrl()}/v1/runs`);
     const page = await handleApiResponse<RunsPage>(response);
     return page.items;
   },
@@ -41,7 +41,7 @@ export const runsFacade = {
    * @throws ApiError on 400, 403, 404, and 500 responses
    */
   async getRunById(input: GetRunByIdInput): Promise<Run> {
-    const response = await fetchWithAuth(`${baseUrl()}/runs/${input.runId}`);
+    const response = await fetchWithAuth(`${baseUrl()}/v1/runs/${input.runId}`);
     return handleApiResponse<Run>(response);
   },
 
@@ -53,7 +53,7 @@ export const runsFacade = {
    * @throws ApiError on 400, 403, 404, 409, and 500 responses
    */
   async overrideRun(input: OverrideRunInput): Promise<Run> {
-    const response = await fetchWithAuth(`${baseUrl()}/runs/${input.runId}/override`, {
+    const response = await fetchWithAuth(`${baseUrl()}/v1/runs/${input.runId}/override`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

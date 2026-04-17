@@ -6,6 +6,7 @@ import type {
   RegisterInput,
   TokenPair,
 } from "@/models/Auth";
+import { UserRole } from "@/models/User";
 import type { Servidor } from "@/models/Servidor";
 import { ApiError } from "@/types";
 
@@ -173,10 +174,33 @@ export const authFacade = {
    */
   async me(): Promise<AuthUser> {
     const response = await fetchWithAuth(`${baseUrl()}/auth/me`);
-    const raw = await handleApiResponse<AuthUser & { success?: boolean; data?: AuthUser }>(response);
+    const raw = await handleApiResponse<
+      AuthUser & {
+        success?: boolean;
+        data?: AuthUser & { papeis?: string[] };
+        papeis?: string[];
+      }
+    >(response);
 
     // Handle both direct AuthUser and enveloped { success, data: AuthUser }
-    return raw.data && raw.data.id ? raw.data : raw as AuthUser;
+    const userData = raw.data && raw.data.id ? raw.data : (raw as AuthUser & { papeis?: string[] });
+
+    // Normalize: API may return papeis[] instead of role string
+    // Map the highest-privilege papel to a UserRole
+    if (!userData.role && userData.papeis && userData.papeis.length > 0) {
+      const papeisUpper = userData.papeis.map((p: string) => p.toUpperCase());
+      if (papeisUpper.includes("ADMIN")) {
+        (userData as AuthUser).role = UserRole.ADMIN;
+      } else if (papeisUpper.includes("SUPERVISOR")) {
+        (userData as AuthUser).role = UserRole.SUPERVISOR;
+      } else if (papeisUpper.includes("DISPATCHER")) {
+        (userData as AuthUser).role = UserRole.DISPATCHER;
+      } else {
+        (userData as AuthUser).role = UserRole.AGENT;
+      }
+    }
+
+    return userData as AuthUser;
   },
 
   /**
