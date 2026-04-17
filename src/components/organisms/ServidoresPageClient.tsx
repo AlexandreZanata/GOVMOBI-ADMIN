@@ -210,7 +210,7 @@ function ServidorRow({ servidor, onEdit, onDelete }: ServidorRowProps) {
   const reativarMutation = useReativarServidor();
 
   return (
-    <tr data-testid={`servidor-row-${servidor.id}`} className="group transition-colors hover:bg-neutral-50/60">
+    <tr data-testid={`servidor-row-${servidor.id}`} className="transition-colors hover:bg-neutral-50/60">
       <td className="px-5 py-3.5">
         <span className="font-medium text-neutral-900">{servidor.nome}</span>
       </td>
@@ -246,31 +246,71 @@ function ServidorRow({ servidor, onEdit, onDelete }: ServidorRowProps) {
         </span>
       </td>
 
+      {/* ── Icon-only action buttons (always visible) ── */}
       <td className="px-5 py-3.5">
-        <div className="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+        <div className="flex items-center justify-end gap-1">
+
+          {/* View */}
+          <button
+            type="button"
+            data-testid={`servidor-view-${servidor.id}`}
+            aria-label={t("actions.view")}
+            title={t("actions.view")}
+            className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
+
+          {/* Edit */}
           <Can perform={Permission.SERVIDOR_EDIT}>
-            <Button data-testid={`servidor-edit-${servidor.id}`} size="sm" variant="secondary" onClick={() => onEdit(servidor)}>
-              {t("actions.edit")}
-            </Button>
+            <button
+              type="button"
+              data-testid={`servidor-edit-${servidor.id}`}
+              aria-label={t("actions.edit")}
+              title={t("actions.edit")}
+              onClick={() => onEdit(servidor)}
+              className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-brand-primary/10 hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+              </svg>
+            </button>
           </Can>
 
+          {/* Deactivate / Reactivate */}
           {servidor.ativo ? (
             <Can perform={Permission.SERVIDOR_DELETE}>
-              <Button data-testid={`servidor-delete-${servidor.id}`} size="sm" variant="destructive" onClick={() => onDelete(servidor)}>
-                {t("actions.delete")}
-              </Button>
+              <button
+                type="button"
+                data-testid={`servidor-delete-${servidor.id}`}
+                aria-label={t("actions.delete")}
+                title={t("actions.delete")}
+                onClick={() => onDelete(servidor)}
+                className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-danger/10 hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+              </button>
             </Can>
           ) : (
             <Can perform={Permission.SERVIDOR_REATIVAR}>
-              <Button
+              <button
+                type="button"
                 data-testid={`servidor-reativar-${servidor.id}`}
-                size="sm"
-                variant="primary"
-                isLoading={reativarMutation.isPending}
+                aria-label={t("actions.reativar")}
+                title={t("actions.reativar")}
+                disabled={reativarMutation.isPending}
                 onClick={() => void reativarMutation.mutateAsync({ id: servidor.id })}
+                className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-success/10 hover:text-success focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success disabled:opacity-50"
               >
-                {t("actions.reativar")}
-              </Button>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+              </button>
             </Can>
           )}
         </div>

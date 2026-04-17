@@ -26,6 +26,7 @@
   "actions": {
     "create": "New Servidor",
     "edit": "Edit",
+    "view": "View",
     "delete": "Deactivate",
     "reativar": "Reactivate"
   },
