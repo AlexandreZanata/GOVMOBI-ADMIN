@@ -100,12 +100,13 @@ export const motoristasFacade = {
     id: string,
     input: UpdateMotoristaStatusInput
   ): Promise<Motorista> {
-    const response = await fetch(
+    const response = await fetchWithAuth(
       `${baseUrl()}/frota/motoristas/${id}/status`,
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(input),
+        // API expects { status: "DISPONIVEL" } not { statusOperacional: ... }
+        body: JSON.stringify({ status: input.statusOperacional }),
       }
     );
     return handleEnvelopedResponse<Motorista>(response);
