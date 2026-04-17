@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button, Input } from "@/components/atoms";
+import { Modal } from "@/components/molecules/Modal";
 import { useCreateLotacao } from "@/hooks/lotacoes/useCreateLotacao";
 import { useUpdateLotacao } from "@/hooks/lotacoes/useUpdateLotacao";
 import type { Lotacao } from "@/models/Lotacao";
@@ -53,9 +54,6 @@ export function LotacaoFormDialog({
   "data-testid": testId,
 }: LotacaoFormDialogProps): React.ReactElement | null {
   const { t } = useTranslation("lotacoes");
-  const headingId = useId();
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const wasOpenRef = useRef(false);
 
   const [nome, setNome] = useState(lotacao?.nome ?? "");
   const [nomeError, setNomeError] = useState<string | undefined>();
@@ -79,27 +77,6 @@ export function LotacaoFormDialog({
       setNomeError(undefined);
     }
   }, [open, mode]);
-
-  // Return focus to trigger on close
-  useEffect(() => {
-    if (!open && wasOpenRef.current) {
-      triggerRef.current?.focus();
-    }
-    wasOpenRef.current = open;
-  }, [open]);
-
-  // Escape key closes dialog
-  useEffect(() => {
-    if (!open) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onClose();
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open, onClose]);
 
   if (!open) return null;
 
@@ -141,65 +118,54 @@ export function LotacaoFormDialog({
     }
   };
 
-  const titleKey =
-    mode === "create" ? "form.titleCreate" : "form.titleEdit";
-
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 p-4"
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={mode === "create" ? t("form.titleCreate") : t("form.titleEdit")}
+      maxWidth="max-w-4xl"
       data-testid={testId}
+      footer={
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            type="button"
+            data-testid={testId ? `${testId}-cancel` : "lotacao-form-cancel"}
+            variant="ghost"
+            onClick={onClose}
+          >
+            {t("form.cancel")}
+          </Button>
+          <Button
+            type="submit"
+            form="lotacao-form"
+            data-testid={testId ? `${testId}-submit` : "lotacao-form-submit"}
+            variant="primary"
+            isLoading={isPending}
+            disabled={isPending}
+          >
+            {t("form.submit")}
+          </Button>
+        </div>
+      }
     >
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={headingId}
-        className="w-full max-w-md rounded-lg border border-neutral-300 bg-white p-5 shadow-sm"
+      <form
+        id="lotacao-form"
+        data-testid={testId ? `${testId}-form` : "lotacao-form"}
+        onSubmit={(e) => void handleSubmit(e)}
+        className="space-y-4"
+        noValidate
       >
-        <h2
-          id={headingId}
-          className="text-base font-semibold text-neutral-900"
-        >
-          {t(titleKey)}
-        </h2>
-
-        <form
-          data-testid={testId ? `${testId}-form` : "lotacao-form"}
-          onSubmit={(e) => void handleSubmit(e)}
-          className="mt-4 space-y-4"
-          noValidate
-        >
-          <Input
-            data-testid={testId ? `${testId}-nome` : "lotacao-form-nome"}
-            label={t("form.nome")}
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-            error={nomeError}
-            maxLength={NOME_MAX_LENGTH}
-            aria-required="true"
-            autoFocus
-          />
-
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              type="button"
-              data-testid={testId ? `${testId}-cancel` : "lotacao-form-cancel"}
-              variant="ghost"
-              onClick={onClose}
-            >
-              {t("form.cancel")}
-            </Button>
-            <Button
-              type="submit"
-              data-testid={testId ? `${testId}-submit` : "lotacao-form-submit"}
-              variant="primary"
-              isLoading={isPending}
-              disabled={isPending}
-            >
-              {t("form.submit")}
-            </Button>
-          </div>
-        </form>
-      </section>
-    </div>
+        <Input
+          data-testid={testId ? `${testId}-nome` : "lotacao-form-nome"}
+          label={t("form.nome")}
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          error={nomeError}
+          maxLength={NOME_MAX_LENGTH}
+          aria-required="true"
+          autoFocus
+        />
+      </form>
+    </Modal>
   );
 }

@@ -214,4 +214,76 @@ describe("LotacoesPageClient", () => {
       screen.queryByTestId("lotacao-row-lotacao-001")
     ).toBeNull();
   });
+
+  it("renders search input with correct attributes", () => {
+    renderForRole(UserRole.ADMIN);
+
+    const searchInput = screen.getByTestId("lotacoes-search");
+    expect(searchInput).toBeInTheDocument();
+    expect(searchInput).toHaveAttribute("type", "search");
+    expect(searchInput).toHaveAttribute("placeholder", "Buscar por nome...");
+    expect(searchInput).toHaveAttribute("aria-label", "Buscar lotações");
+  });
+
+  it("filters lotações by nome (case-insensitive)", () => {
+    renderForRole(UserRole.ADMIN);
+
+    const searchInput = screen.getByTestId("lotacoes-search");
+    fireEvent.change(searchInput, { target: { value: "fazenda" } });
+
+    expect(screen.getByTestId("lotacao-row-lotacao-001")).toBeInTheDocument();
+    expect(screen.queryByTestId("lotacao-row-lotacao-003")).toBeNull();
+  });
+
+  it("filters lotações by nome with uppercase search term", () => {
+    renderForRole(UserRole.ADMIN);
+
+    const searchInput = screen.getByTestId("lotacoes-search");
+    fireEvent.change(searchInput, { target: { value: "SAÚDE" } });
+
+    expect(screen.getByTestId("lotacao-row-lotacao-003")).toBeInTheDocument();
+    expect(screen.queryByTestId("lotacao-row-lotacao-001")).toBeNull();
+  });
+
+  it("shows all lotações when search is empty", () => {
+    renderForRole(UserRole.ADMIN);
+
+    const searchInput = screen.getByTestId("lotacoes-search");
+    fireEvent.change(searchInput, { target: { value: "fazenda" } });
+    fireEvent.change(searchInput, { target: { value: "" } });
+
+    expect(screen.getByTestId("lotacao-row-lotacao-001")).toBeInTheDocument();
+    expect(screen.getByTestId("lotacao-row-lotacao-003")).toBeInTheDocument();
+  });
+
+  it("combines search with status filter", () => {
+    renderForRole(UserRole.ADMIN);
+
+    // First filter by active
+    fireEvent.click(screen.getByTestId("lotacoes-filter-active"));
+    expect(screen.getByTestId("lotacao-row-lotacao-001")).toBeInTheDocument();
+    expect(screen.queryByTestId("lotacao-row-lotacao-003")).toBeNull();
+
+    // Then search for "fazenda" (should still show only active)
+    const searchInput = screen.getByTestId("lotacoes-search");
+    fireEvent.change(searchInput, { target: { value: "fazenda" } });
+    expect(screen.getByTestId("lotacao-row-lotacao-001")).toBeInTheDocument();
+    expect(screen.queryByTestId("lotacao-row-lotacao-003")).toBeNull();
+
+    // Search for "saúde" (inactive, should show nothing)
+    fireEvent.change(searchInput, { target: { value: "saúde" } });
+    expect(screen.queryByTestId("lotacao-row-lotacao-001")).toBeNull();
+    expect(screen.queryByTestId("lotacao-row-lotacao-003")).toBeNull();
+  });
+
+  it("shows empty state when search returns no results", () => {
+    renderForRole(UserRole.ADMIN);
+
+    const searchInput = screen.getByTestId("lotacoes-search");
+    fireEvent.change(searchInput, { target: { value: "nonexistent" } });
+
+    expect(screen.getByTestId("lotacoes-empty")).toBeInTheDocument();
+    expect(screen.queryByTestId("lotacao-row-lotacao-001")).toBeNull();
+    expect(screen.queryByTestId("lotacao-row-lotacao-003")).toBeNull();
+  });
 });

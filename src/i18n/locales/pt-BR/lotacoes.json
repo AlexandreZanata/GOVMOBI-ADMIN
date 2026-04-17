@@ -19,6 +19,7 @@
   },
   "actions": {
     "create": "Nova lotacao",
+    "view": "Visualizar",
     "edit": "Editar",
     "delete": "Desativar",
     "reativar": "Reativar"
