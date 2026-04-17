@@ -14,12 +14,14 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   async rewrites() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
-    return [
-      {
-        source: "/api/proxy/:path*",
-        destination: `${apiUrl}/:path*`,
-      },
-    ];
+    return {
+      beforeFiles: [
+        {
+          source: "/api/proxy/:path*",
+          destination: `${apiUrl}/:path*`,
+        },
+      ],
+    };
   },
 };
 

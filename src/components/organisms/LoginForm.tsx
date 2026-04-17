@@ -67,9 +67,15 @@ export function LoginForm() {
         return t("errors.invalidCredentials");
       case 429:
         return t("errors.tooManyAttempts");
+      case 500:
+        return t("errors.serverError");
       default:
         if (err.code === "NETWORK_ERROR") {
           return t("errors.networkError");
+        }
+        // Show the actual error message from the server if available
+        if (err.message && err.message !== "REQUEST_FAILED") {
+          return err.message;
         }
         return t("errors.serverError");
     }
