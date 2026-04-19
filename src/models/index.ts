@@ -1,3 +1,4 @@
+export * from "./Auth";
 export * from "./Run";
 export * from "./User";
 export * from "./Permission";
@@ -7,3 +8,4 @@ export * from "./Department";
 export * from "./AuditEntry";
 export * from "./Motorista";
 export * from "./Servidor";
+export * from "./Veiculo";

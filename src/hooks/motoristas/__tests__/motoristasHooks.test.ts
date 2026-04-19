@@ -125,6 +125,7 @@ describe("useCreateMotorista", () => {
     await act(async () => {
       await result.current.mutateAsync({
         servidorId: "servidor-099",
+        municipioId: "f0928929-373e-4614-9273-df3092039402",
         cnhNumero: "55566677788",
         cnhCategoria: "B",
       });
@@ -142,6 +143,7 @@ describe("useCreateMotorista", () => {
       await result.current
         .mutateAsync({
           servidorId: "servidor-099",
+          municipioId: "f0928929-373e-4614-9273-df3092039402",
           cnhNumero: "DUPLICATE_TEST",
           cnhCategoria: "B",
         })
@@ -165,6 +167,7 @@ describe("useCreateMotorista", () => {
       await result.current
         .mutateAsync({
           servidorId: "servidor-099",
+          municipioId: "f0928929-373e-4614-9273-df3092039402",
           cnhNumero: "00000000000",
           cnhCategoria: "B",
         })
@@ -182,6 +185,7 @@ describe("useCreateMotorista", () => {
     await act(async () => {
       created = await result.current.mutateAsync({
         servidorId: "servidor-099",
+        municipioId: "f0928929-373e-4614-9273-df3092039402",
         cnhNumero: "44455566677",
         cnhCategoria: "D",
       });

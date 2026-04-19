@@ -14,6 +14,7 @@ import departmentsEN from "./locales/en/departments.json";
 import auditEN from "./locales/en/audit.json";
 import motoristasEN from "./locales/en/motoristas.json";
 import servidoresEN from "./locales/en/servidores.json";
+import veiculosEN from "./locales/en/veiculos.json";
 
 import commonPTBR from "./locales/pt-BR/common.json";
 import runsPTBR from "./locales/pt-BR/runs.json";
@@ -26,6 +27,7 @@ import departmentsPTBR from "./locales/pt-BR/departments.json";
 import auditPTBR from "./locales/pt-BR/audit.json";
 import motoristasPTBR from "./locales/pt-BR/motoristas.json";
 import servidoresPTBR from "./locales/pt-BR/servidores.json";
+import veiculosPTBR from "./locales/pt-BR/veiculos.json";
 
 /** Available i18n languages in the admin panel. */
 export const SUPPORTED_LANGUAGES = ["pt-BR", "en"] as const;
@@ -92,7 +94,8 @@ if (!i18n.isInitialized) {
       "departments",
       "audit",
       "motoristas",
-      "servidores"
+      "servidores",
+      "veiculos"
     ],
     defaultNS: "common",
     resources: {
@@ -108,6 +111,7 @@ if (!i18n.isInitialized) {
         audit: auditEN,
         motoristas: motoristasEN,
         servidores: servidoresEN,
+        veiculos: veiculosEN,
       },
       "pt-BR": {
         common: commonPTBR,
@@ -121,6 +125,7 @@ if (!i18n.isInitialized) {
         audit: auditPTBR,
         motoristas: motoristasPTBR,
         servidores: servidoresPTBR,
+        veiculos: veiculosPTBR,
       },
     },
     interpolation: { escapeValue: false },

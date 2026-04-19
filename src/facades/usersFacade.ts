@@ -1,3 +1,4 @@
+import { getApiBase } from "@/lib/apiBase";
 import { handleApiResponse } from "@/lib/handleApiResponse";
 import type { User } from "@/models/User";
 import type {
@@ -7,8 +8,9 @@ import type {
   UpdateUserInput,
 } from "@/types/users";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+function baseUrl(): string {
+  return getApiBase();
+}
 
 /**
  * Paginated response shape for list endpoints.
@@ -47,7 +49,7 @@ export const usersFacade = {
 
     const qs = params.toString();
     const response = await fetch(
-      `${BASE_URL}/users${qs ? `?${qs}` : ""}`
+      `${baseUrl()}/users${qs ? `?${qs}` : ""}`
     );
     return handleApiResponse<PaginatedResponse<User>>(response);
   },
@@ -61,7 +63,7 @@ export const usersFacade = {
    * @throws ApiError 422 on validation failure
    */
   async createUser(input: CreateUserInput): Promise<User> {
-    const response = await fetch(`${BASE_URL}/users`, {
+    const response = await fetch(`${baseUrl()}/users`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
@@ -79,7 +81,7 @@ export const usersFacade = {
    * @throws ApiError 422 on validation failure (e.g. demoting last admin)
    */
   async updateUser(id: string, input: UpdateUserInput): Promise<User> {
-    const response = await fetch(`${BASE_URL}/users/${id}`, {
+    const response = await fetch(`${baseUrl()}/users/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
@@ -96,7 +98,7 @@ export const usersFacade = {
    * @throws ApiError 422 when the user has IN_PROGRESS runs (returns affectedRunIds)
    */
   async deactivateUser(id: string): Promise<DeactivateUserResponse> {
-    const response = await fetch(`${BASE_URL}/users/${id}/deactivate`, {
+    const response = await fetch(`${baseUrl()}/users/${id}/deactivate`, {
       method: "POST",
     });
     return handleApiResponse<DeactivateUserResponse>(response);

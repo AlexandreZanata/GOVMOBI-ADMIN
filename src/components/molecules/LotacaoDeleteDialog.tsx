@@ -5,45 +5,52 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/atoms";
 import { useDeleteLotacao } from "@/hooks/lotacoes/useDeleteLotacao";
-import type { Lotacao } from "@/models/Lotacao";
 
 /**
- * Props for the lotacao soft-delete confirmation dialog.
+ * Props for the lotação soft-delete confirmation dialog.
  */
 export interface LotacaoDeleteDialogProps {
   /** Whether the dialog is open. */
   open: boolean;
   /** Called when the dialog should close. */
   onClose: () => void;
-  /** Lotacao to be soft-deleted. */
-  lotacao: Lotacao;
+  /** Identifier of the lotação to deactivate. */
+  lotacaoId: string;
+  /** Display name shown in the confirmation body. */
+  lotacaoNome: string;
   /** Test selector prefix. */
   "data-testid"?: string;
 }
 
 /**
- * Confirmation dialog for soft-deleting a lotação.
+ * Confirmation dialog for soft-deleting (deactivating) a lotação.
+ * Displays the lotação name and a reversibility message.
  * Calls useDeleteLotacao on confirm; closes on success.
  *
- * @param props - Dialog state, target lotacao, and test selector
+ * @param props.open - Whether the dialog is visible
+ * @param props.onClose - Callback to close the dialog
+ * @param props.lotacaoId - ID of the lotação to deactivate
+ * @param props.lotacaoNome - Display name for the confirmation body
+ * @param props.data-testid - Test selector prefix
  * @returns Accessible destructive confirmation dialog
  */
 export function LotacaoDeleteDialog({
   open,
   onClose,
-  lotacao,
+  lotacaoId,
+  lotacaoNome,
   "data-testid": testId,
-}: LotacaoDeleteDialogProps) {
+}: LotacaoDeleteDialogProps): React.ReactElement | null {
   const { t } = useTranslation("lotacoes");
   const headingId = useId();
   const deleteMutation = useDeleteLotacao();
 
   if (!open) return null;
 
-  const handleConfirm = async () => {
+  const handleConfirm = async (): Promise<void> => {
     await deleteMutation.mutateAsync(
-      { id: lotacao.id },
-      { onSuccess: onClose }
+      { id: lotacaoId },
+      { onSuccess: onClose },
     );
   };
 
@@ -66,7 +73,11 @@ export function LotacaoDeleteDialog({
         </h2>
 
         <p className="mt-2 text-sm text-neutral-700">
-          {lotacao.nome}
+          {t("delete.confirmation", { nome: lotacaoNome })}
+        </p>
+
+        <p className="mt-1 text-xs text-neutral-500">
+          {t("delete.reversible")}
         </p>
 
         <div className="mt-5 flex items-center justify-end gap-2">

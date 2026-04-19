@@ -1,111 +1,71 @@
 /**
- * Run lifecycle status values.
+ * Corrida (ride) lifecycle status values matching the real API.
  */
 export enum RunStatus {
-  PENDING = "PENDING",
-  ASSIGNED = "ASSIGNED",
-  IN_PROGRESS = "IN_PROGRESS",
-  COMPLETED = "COMPLETED",
-  CANCELLED = "CANCELLED",
+  SOLICITADA = "solicitada",
+  AGUARDANDO_ACEITE = "aguardando_aceite",
+  ACEITA = "aceita",
+  EM_ROTA = "em_rota",
+  CONCLUIDA = "concluida",
+  CANCELADA = "cancelada",
+  EXPIRADA = "expirada",
 }
 
 /**
- * Supported operation categories for a run.
+ * Geographic coordinate for origin/destination.
  */
-export enum RunType {
-  TRANSPORT = "TRANSPORT",
-  INSPECTION = "INSPECTION",
-  EMERGENCY = "EMERGENCY",
-  MAINTENANCE = "MAINTENANCE",
-  ADMINISTRATIVE = "ADMINISTRATIVE",
-}
-
-/**
- * Operational urgency level for a run.
- */
-export enum RunPriority {
-  LOW = "LOW",
-  MEDIUM = "MEDIUM",
-  HIGH = "HIGH",
-  CRITICAL = "CRITICAL",
-}
-
-/**
- * Geographic location metadata for a run.
- */
-export interface RunLocation {
-  /** Latitude coordinate in decimal degrees. */
+export interface RunCoordinate {
+  /** Latitude in decimal degrees. */
   lat: number;
-  /** Longitude coordinate in decimal degrees. */
+  /** Longitude in decimal degrees. */
   lng: number;
-  /** Human-readable address for the run location. */
-  address: string;
 }
 
 /**
- * Evidence artifact attached to a run.
- */
-export interface RunProof {
-  /** Unique proof identifier. */
-  id: string;
-  /** Public or signed URL of the uploaded file. */
-  fileUrl: string;
-  /** Type of proof attachment. */
-  fileType: "photo" | "document";
-  /** ISO timestamp when the proof was uploaded. */
-  uploadedAt: string;
-  /** Identifier of the user that uploaded the proof. */
-  uploadedBy: string;
-}
-
-/**
- * Core operational run contract.
+ * Core corrida (ride) contract matching the real API response shape.
+ * Endpoint: GET /corridas
  */
 export interface Run {
-  /** Unique run identifier. */
+  /** Unique corrida identifier (UUID v7). */
   id: string;
-  /** Operational category of the run. */
-  type: RunType;
-  /** Current lifecycle status of the run. */
+  /** Current lifecycle status. */
   status: RunStatus;
-  /** Urgency level used for planning and dispatching. */
-  priority: RunPriority;
-  /** Short run title displayed in listings. */
-  title: string;
-  /** Detailed mission context and objectives. */
-  description: string;
-  /** Geographical details for where the run takes place. */
-  location: RunLocation;
-  /** Assigned field agent identifier, if assigned. */
-  assignedAgentId: string | null;
-  /** Dispatcher identifier who created or manages the run. */
-  dispatcherId: string;
-  /** ISO timestamp when the run was created. */
+  /** Passenger (passageiro) identifier. */
+  passageiroId: string;
+  /** Assigned driver (motorista) identifier, or null if not yet assigned. */
+  motoristaId: string | null;
+  /** Assigned vehicle identifier, or null if not yet assigned. */
+  veiculoId: string | null;
+  /** Origin coordinate. */
+  origem: RunCoordinate;
+  /** Destination coordinate. */
+  destino: RunCoordinate;
+  /** Distance in meters, or null if not yet calculated. */
+  distanciaMetros: number | null;
+  /** Duration in seconds, or null if not yet calculated. */
+  duracaoSegundos: number | null;
+  /** ISO 8601 timestamp when the corrida was created. */
   createdAt: string;
-  /** ISO timestamp for the last update to the run. */
+  /** ISO 8601 timestamp of the last update. */
   updatedAt: string;
-  /** ISO timestamp when the run was completed, if applicable. */
-  completedAt: string | null;
-  /** Free-form operational notes attached to the run. */
-  notes: string | null;
-  /** Collection of uploaded proofs related to the run. */
-  proofs: RunProof[];
-  /** Department that owns the run. */
-  departmentId: string;
 }
 
 /**
- * Status transition audit record for a run.
+ * Paginated response from GET /corridas.
  */
-export interface RunTransition {
-  /** Previous run status before the transition. */
-  fromStatus: RunStatus;
-  /** New run status after the transition. */
-  toStatus: RunStatus;
-  /** Identifier of the user who triggered the transition. */
-  triggeredBy: string;
-  /** ISO timestamp when the transition occurred. */
-  timestamp: string;
-  /** Human-readable reason for the status change. */
-  reason: string;
+export interface CorridasPage {
+  data: Run[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+/**
+ * Query filters for GET /corridas.
+ */
+export interface CorridasFilters {
+  page?: number;
+  limit?: number;
+  status?: RunStatus | string;
 }

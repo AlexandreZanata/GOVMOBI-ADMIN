@@ -57,6 +57,7 @@ describe("motoristasFacade", () => {
     it("returns the created motorista with ativo: true and DISPONIVEL status", async () => {
       const result = await motoristasFacade.createMotorista({
         servidorId: "servidor-099",
+        municipioId: "f0928929-373e-4614-9273-df3092039402",
         cnhNumero: "55566677788",
         cnhCategoria: "B",
       });
@@ -72,6 +73,7 @@ describe("motoristasFacade", () => {
       await expect(
         motoristasFacade.createMotorista({
           servidorId: "servidor-099",
+        municipioId: "f0928929-373e-4614-9273-df3092039402",
           cnhNumero: "DUPLICATE_TEST",
           cnhCategoria: "B",
         })
@@ -82,6 +84,7 @@ describe("motoristasFacade", () => {
       const error = await motoristasFacade
         .createMotorista({
           servidorId: "servidor-099",
+        municipioId: "f0928929-373e-4614-9273-df3092039402",
           cnhNumero: "DUPLICATE_TEST",
           cnhCategoria: "B",
         })

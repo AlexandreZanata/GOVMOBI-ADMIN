@@ -1,13 +1,22 @@
+import { Suspense } from "react";
+
+import { VeiculosPageClient } from "@/components/organisms/VeiculosPageClient";
+
 /**
- * Veículos management page — placeholder until the veículos module is implemented.
+ * Vehicles management page — lists, registers, edits, and manages
+ * activation state of fleet vehicles.
  */
 export default function VeiculosPage() {
   return (
-    <div className="rounded-md border border-neutral-200 bg-white p-8 text-center">
-      <h1 className="text-lg font-semibold text-neutral-900">Veículos</h1>
-      <p className="mt-2 text-sm text-neutral-500">
-        This module is under construction.
-      </p>
-    </div>
+    <Suspense
+      fallback={
+        <section className="space-y-3">
+          <div className="h-10 w-full animate-pulse rounded-md bg-neutral-200" />
+          <div className="h-24 w-full animate-pulse rounded-md bg-neutral-200" />
+        </section>
+      }
+    >
+      <VeiculosPageClient />
+    </Suspense>
   );
 }

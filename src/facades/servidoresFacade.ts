@@ -1,4 +1,6 @@
 import { handleEnvelopedResponse } from "@/lib/handleApiResponse";
+import { fetchWithAuth } from "@/facades/authFacade";
+import { getApiBase } from "@/lib/apiBase";
 import type { Servidor } from "@/models/Servidor";
 import type {
   CreateServidorInput,
@@ -6,8 +8,9 @@ import type {
   UpdateServidorInput,
 } from "@/types/servidores";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+function baseUrl(): string {
+  return getApiBase();
+}
 
 /**
  * Facade for servidor-related business actions and API orchestration.
@@ -27,7 +30,7 @@ export const servidoresFacade = {
    * @throws ApiError on non-2xx responses
    */
   async listServidores(): Promise<Servidor[]> {
-    const response = await fetch(`${BASE_URL}/servidores`);
+    const response = await fetchWithAuth(`${baseUrl()}/servidores`);
     return handleEnvelopedResponse<Servidor[]>(response);
   },
 
@@ -39,7 +42,7 @@ export const servidoresFacade = {
    * @throws ApiError 404 when the servidor does not exist
    */
   async getServidorById(input: GetServidorByIdInput): Promise<Servidor> {
-    const response = await fetch(`${BASE_URL}/servidores/${input.id}`);
+    const response = await fetchWithAuth(`${baseUrl()}/servidores/${input.id}`);
     return handleEnvelopedResponse<Servidor>(response);
   },
 
@@ -53,7 +56,7 @@ export const servidoresFacade = {
    * @throws ApiError 409 when CPF or email is already registered
    */
   async createServidor(input: CreateServidorInput): Promise<Servidor> {
-    const response = await fetch(`${BASE_URL}/servidores`, {
+    const response = await fetchWithAuth(`${baseUrl()}/servidores`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
@@ -73,7 +76,7 @@ export const servidoresFacade = {
     id: string,
     input: UpdateServidorInput
   ): Promise<Servidor> {
-    const response = await fetch(`${BASE_URL}/servidores/${id}`, {
+    const response = await fetchWithAuth(`${baseUrl()}/servidores/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
@@ -89,7 +92,7 @@ export const servidoresFacade = {
    * @throws ApiError 404 when the servidor does not exist
    */
   async deleteServidor(id: string): Promise<void> {
-    const response = await fetch(`${BASE_URL}/servidores/${id}`, {
+    const response = await fetchWithAuth(`${baseUrl()}/servidores/${id}`, {
       method: "DELETE",
     });
     if (!response.ok) {
@@ -105,7 +108,7 @@ export const servidoresFacade = {
    * @throws ApiError 404 when the servidor does not exist
    */
   async reativarServidor(id: string): Promise<Servidor> {
-    const response = await fetch(`${BASE_URL}/servidores/${id}/reativar`, {
+    const response = await fetchWithAuth(`${baseUrl()}/servidores/${id}/reativar`, {
       method: "PATCH",
     });
     return handleEnvelopedResponse<Servidor>(response);

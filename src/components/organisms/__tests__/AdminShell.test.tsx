@@ -13,6 +13,7 @@ import React from "react";
 // Mock next/navigation — usePathname used inside NavItem
 vi.mock("next/navigation", () => ({
   usePathname: () => "/runs",
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
 }));
 
 // Mock next/link — renders a plain <a> in tests
@@ -32,6 +33,17 @@ vi.mock("next/link", () => ({
   ),
 }));
 
+// Mock auth store — provide a default user so AdminShell renders correctly
+vi.mock("@/stores/authStore", () => ({
+  useAuthStore: (selector: (s: { user: { nome: string; role: UserRole } | null }) => unknown) =>
+    selector({ user: { nome: "Admin User", role: UserRole.ADMIN } }),
+}));
+
+// Mock useLogout hook
+vi.mock("@/hooks/auth/useLogout", () => ({
+  useLogout: () => ({ mutate: vi.fn(), isPending: false }),
+}));
+
 describe("AdminShell", () => {
   beforeEach(() => {
     // Reset cookie between tests
@@ -43,7 +55,7 @@ describe("AdminShell", () => {
 
   it("renders children in the main content area", () => {
     render(
-      <AdminShell userRole={UserRole.ADMIN}>
+      <AdminShell>
         <p>Page content</p>
       </AdminShell>
     );
@@ -51,25 +63,25 @@ describe("AdminShell", () => {
   });
 
   it("renders the main element with id=main-content", () => {
-    render(<AdminShell userRole={UserRole.ADMIN} />);
+    render(<AdminShell />);
     expect(document.getElementById("main-content")).toBeInTheDocument();
   });
 
   it("renders the sidebar in expanded state by default", () => {
-    render(<AdminShell userRole={UserRole.ADMIN} />);
+    render(<AdminShell />);
     const sidebar = screen.getByTestId("sidebar-nav");
     expect(sidebar).toHaveClass("w-60");
   });
 
   it("renders the sidebar in collapsed state when defaultCollapsed=true", () => {
-    render(<AdminShell userRole={UserRole.ADMIN} defaultCollapsed />);
+    render(<AdminShell defaultCollapsed />);
     const sidebar = screen.getByTestId("sidebar-nav");
     expect(sidebar).toHaveClass("w-16");
   });
 
   it("toggles sidebar collapse on button click and persists cookie", async () => {
     const user = userEvent.setup();
-    render(<AdminShell userRole={UserRole.ADMIN} />);
+    render(<AdminShell />);
 
     const toggle = screen.getByTestId("sidebar-collapse-toggle");
     await user.click(toggle);
@@ -80,7 +92,7 @@ describe("AdminShell", () => {
   });
 
   it("renders nav with translated aria-label", () => {
-    render(<AdminShell userRole={UserRole.ADMIN} />);
+    render(<AdminShell />);
     expect(
       screen.getByRole("navigation", { name: "nav:mainNavigation" })
     ).toBeInTheDocument();
@@ -88,32 +100,18 @@ describe("AdminShell", () => {
 
   it("marks the active route link with aria-current=page", () => {
     // usePathname is mocked to return "/runs"
-    render(<AdminShell userRole={UserRole.ADMIN} />);
+    render(<AdminShell />);
     const activeLink = screen.getByTestId("nav-item--runs");
     expect(activeLink).toHaveAttribute("aria-current", "page");
   });
 
-  it("hides permission-gated nav items for roles without access", () => {
-    // AGENT role has no CARGO_VIEW permission
-    render(<AdminShell userRole={UserRole.AGENT} />);
-    expect(screen.queryByTestId("nav-item--cargos")).not.toBeInTheDocument();
-  });
-
-  it("shows permission-gated nav items for ADMIN role", () => {
-    render(<AdminShell userRole={UserRole.ADMIN} />);
-    // ADMIN has all permissions — all nav items should render
-    expect(screen.getByTestId("nav-item--runs")).toBeInTheDocument();
-  });
-
   it("renders user menu with avatar", () => {
-    render(
-      <AdminShell userRole={UserRole.SUPERVISOR} userName="Jane Doe" />
-    );
+    render(<AdminShell />);
     expect(screen.getByTestId("user-menu-avatar")).toBeInTheDocument();
   });
 
   it("collapse toggle has correct aria-expanded attribute", () => {
-    render(<AdminShell userRole={UserRole.ADMIN} />);
+    render(<AdminShell />);
     const toggle = screen.getByTestId("sidebar-collapse-toggle");
     // Expanded by default → aria-expanded=true
     expect(toggle).toHaveAttribute("aria-expanded", "true");

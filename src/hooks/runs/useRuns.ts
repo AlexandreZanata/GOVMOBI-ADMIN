@@ -1,33 +1,22 @@
-import {
-  useQuery,
-  type QueryObserverResult,
-  type RefetchOptions,
-} from "@tanstack/react-query";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
 
 import { runsFacade } from "@/facades/runsFacade";
 import { runsKeys } from "@/lib/queryKeys/runsKeys";
-import type { Run } from "@/models";
-
-const DEFAULT_STALE_TIME_MS = 30_000;
+import type { CorridasFilters, CorridasPage } from "@/models/Run";
 
 /**
- * Fetches and caches operational runs through the runs facade.
+ * Fetches and caches corridas (rides) with optional filters.
  *
- * @param staleTime - Query freshness window in milliseconds (default: 30000)
- * @returns TanStack Query state slice containing `data`, `isLoading`, `isError`, and `refetch`
+ * @param filters - Optional pagination and status filters
+ * @returns TanStack Query state with `data` (CorridasPage), `isLoading`, `isError`, and `refetch`
  */
-export function useRuns(staleTime = DEFAULT_STALE_TIME_MS): {
-  data: Run[] | undefined;
-  isLoading: boolean;
-  isError: boolean;
-  refetch: (
-    options?: RefetchOptions
-  ) => Promise<QueryObserverResult<Run[], Error>>;
-} {
-  const query = useQuery<Run[], Error>({
-    queryKey: runsKeys.list(),
-    queryFn: () => runsFacade.listRuns(),
-    staleTime,
+export function useRuns(filters: CorridasFilters = {}) {
+  const query = useQuery<CorridasPage, Error>({
+    queryKey: runsKeys.list(filters),
+    queryFn: () => runsFacade.listRuns(filters),
+    staleTime: 30_000,
   });
 
   return {

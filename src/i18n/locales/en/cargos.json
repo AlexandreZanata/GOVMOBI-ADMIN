@@ -19,16 +19,29 @@
     "actions": "Actions"
   },
   "actions": {
+    "view": "View",
     "create": "New Cargo",
     "edit": "Edit",
     "delete": "Deactivate",
     "reativar": "Reactivate"
   },
   "form": {
+    "titleCreate": "New Cargo",
+    "titleEdit": "Edit Cargo",
     "nome": "Name",
     "pesoPrioridade": "Priority Weight",
+    "nomeRequired": "Name is required.",
+    "nomeMaxLength": "Name must be at most 100 characters.",
+    "pesoPrioridadeRequired": "Priority weight is required.",
+    "pesoPrioridadeMin": "Priority weight must be at least 0.",
+    "pesoPrioridadeMax": "Priority weight must be at most 100.",
+    "duplicateName": "A cargo with this name already exists.",
     "submit": "Save",
     "cancel": "Cancel"
+  },
+  "delete": {
+    "confirmation": "Do you want to deactivate the cargo \"{{nome}}\"?",
+    "reversible": "This action can be reversed."
   },
   "status": {
     "active": "Active",

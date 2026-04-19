@@ -1,0 +1,58 @@
+{
+  "page": {
+    "title": "Vehicles",
+    "accessDenied": "You do not have permission to view vehicles.",
+    "empty": {
+      "title": "No vehicles found",
+      "message": "Register the first vehicle to get started."
+    },
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
+  "table": {
+    "placa": "Plate",
+    "modelo": "Model",
+    "ano": "Year",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "actions": {
+    "create": "New Vehicle",
+    "edit": "Edit",
+    "desativar": "Deactivate",
+    "reativar": "Reactivate"
+  },
+  "form": {
+    "titleCreate": "New Vehicle",
+    "titleEdit": "Edit Vehicle",
+    "placa": "License Plate",
+    "placaHint": "Mercosul format: ABC1D23",
+    "modelo": "Model",
+    "ano": "Year",
+    "submit": "Save",
+    "cancel": "Cancel",
+    "placaRequired": "License plate is required.",
+    "modeloRequired": "Model is required.",
+    "anoRequired": "Year is required.",
+    "duplicatePlaca": "A vehicle with this plate already exists."
+  },
+  "delete": {
+    "confirmation": "Do you want to deactivate the vehicle \"{{placa}}\"?",
+    "reversible": "This action can be reversed."
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "toast": {
+    "created": "Vehicle registered successfully.",
+    "updated": "Vehicle updated successfully.",
+    "desativado": "Vehicle deactivated.",
+    "reativado": "Vehicle reactivated.",
+    "duplicatePlaca": "A vehicle with this plate already exists.",
+    "notFound": "Vehicle not found."
+  }
+}

@@ -1,3 +1,5 @@
+import { getApiBase } from "@/lib/apiBase";
+import { fetchWithAuth } from "@/facades/authFacade";
 import { handleEnvelopedResponse } from "@/lib/handleApiResponse";
 import type { Motorista } from "@/models/Motorista";
 import type {
@@ -7,8 +9,9 @@ import type {
   UpdateMotoristaStatusInput,
 } from "@/types/motoristas";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+function baseUrl(): string {
+  return getApiBase();
+}
 
 /**
  * Facade for motorista-related business actions and API orchestration.
@@ -29,7 +32,7 @@ export const motoristasFacade = {
    * @throws ApiError on non-2xx responses
    */
   async listMotoristas(): Promise<Motorista[]> {
-    const response = await fetch(`${BASE_URL}/frota/motoristas`);
+    const response = await fetchWithAuth(`${baseUrl()}/frota/motoristas`);
     return handleEnvelopedResponse<Motorista[]>(response);
   },
 
@@ -42,7 +45,7 @@ export const motoristasFacade = {
    * @throws ApiError 500 when the backend receives an invalid UUID (treat as 404)
    */
   async getMotoristaById(input: GetMotoristaByIdInput): Promise<Motorista> {
-    const response = await fetch(`${BASE_URL}/frota/motoristas/${input.id}`);
+    const response = await fetchWithAuth(`${baseUrl()}/frota/motoristas/${input.id}`);
     return handleEnvelopedResponse<Motorista>(response);
   },
 
@@ -55,7 +58,7 @@ export const motoristasFacade = {
    * @throws ApiError 400 on validation failure
    */
   async createMotorista(input: CreateMotoristaInput): Promise<Motorista> {
-    const response = await fetch(`${BASE_URL}/frota/motoristas`, {
+    const response = await fetchWithAuth(`${baseUrl()}/frota/motoristas`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
@@ -76,7 +79,7 @@ export const motoristasFacade = {
     id: string,
     input: UpdateMotoristaInput
   ): Promise<Motorista> {
-    const response = await fetch(`${BASE_URL}/frota/motoristas/${id}`, {
+    const response = await fetchWithAuth(`${baseUrl()}/frota/motoristas/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
@@ -97,12 +100,13 @@ export const motoristasFacade = {
     id: string,
     input: UpdateMotoristaStatusInput
   ): Promise<Motorista> {
-    const response = await fetch(
-      `${BASE_URL}/frota/motoristas/${id}/status`,
+    const response = await fetchWithAuth(
+      `${baseUrl()}/frota/motoristas/${id}/status`,
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(input),
+        // API expects { status: "DISPONIVEL" } not { statusOperacional: ... }
+        body: JSON.stringify({ status: input.statusOperacional }),
       }
     );
     return handleEnvelopedResponse<Motorista>(response);
@@ -117,7 +121,7 @@ export const motoristasFacade = {
    */
   async desativarMotorista(id: string): Promise<Motorista> {
     const response = await fetch(
-      `${BASE_URL}/frota/motoristas/${id}/desativar`,
+      `${baseUrl()}/frota/motoristas/${id}/desativar`,
       { method: "PATCH" }
     );
     return handleEnvelopedResponse<Motorista>(response);
@@ -132,7 +136,7 @@ export const motoristasFacade = {
    */
   async reativarMotorista(id: string): Promise<Motorista> {
     const response = await fetch(
-      `${BASE_URL}/frota/motoristas/${id}/reativar`,
+      `${baseUrl()}/frota/motoristas/${id}/reativar`,
       { method: "PATCH" }
     );
     return handleEnvelopedResponse<Motorista>(response);

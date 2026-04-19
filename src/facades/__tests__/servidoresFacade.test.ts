@@ -52,6 +52,7 @@ describe("servidoresFacade", () => {
         cargoId: "cargo-001",
         lotacaoId: "lotacao-001",
         papeis: ["USUARIO"],
+        senha: "GovMob@2026",
       });
       expect(result.nome).toBe("Novo Servidor");
       expect(result.ativo).toBe(true);
@@ -68,6 +69,7 @@ describe("servidoresFacade", () => {
           cargoId: "cargo-001",
           lotacaoId: "lotacao-001",
           papeis: ["USUARIO"],
+        senha: "GovMob@2026",
         })
       ).rejects.toMatchObject({ status: 409, code: "CONFLICT" });
     });
@@ -82,6 +84,7 @@ describe("servidoresFacade", () => {
           cargoId: "not-found",
           lotacaoId: "lotacao-001",
           papeis: ["USUARIO"],
+        senha: "GovMob@2026",
         })
       ).rejects.toMatchObject({ status: 404 });
     });
@@ -96,6 +99,7 @@ describe("servidoresFacade", () => {
           cargoId: "cargo-001",
           lotacaoId: "lotacao-001",
           papeis: ["USUARIO"],
+        senha: "GovMob@2026",
         })
         .catch((e: unknown) => e);
       expect(error).toBeInstanceOf(ApiError);

@@ -1,4 +1,6 @@
 import { handleApiResponse, type ApiEnvelope } from "@/lib/handleApiResponse";
+import { fetchWithAuth } from "@/facades/authFacade";
+import { getApiBase } from "@/lib/apiBase";
 import type { Lotacao } from "@/models/Lotacao";
 import type {
   CreateLotacaoInput,
@@ -6,8 +8,9 @@ import type {
   UpdateLotacaoInput,
 } from "@/types/lotacoes";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+function baseUrl(): string {
+  return getApiBase();
+}
 
 interface SuccessEnvelope {
   success: boolean;
@@ -27,7 +30,7 @@ export const lotacoesFacade = {
    * @throws ApiError on non-2xx responses
    */
   async listLotacoes(): Promise<Lotacao[]> {
-    const response = await fetch(`${BASE_URL}/lotacoes`);
+    const response = await fetchWithAuth(`${baseUrl()}/lotacoes`);
     const payload = await handleApiResponse<ApiEnvelope<Lotacao[]>>(response);
     return payload.data;
   },
@@ -40,7 +43,7 @@ export const lotacoesFacade = {
    * @throws ApiError 404 when the lotacao does not exist
    */
   async getLotacaoById(input: GetLotacaoByIdInput): Promise<Lotacao> {
-    const response = await fetch(`${BASE_URL}/lotacoes/${input.id}`);
+    const response = await fetchWithAuth(`${baseUrl()}/lotacoes/${input.id}`);
     const payload = await handleApiResponse<ApiEnvelope<Lotacao>>(response);
     return payload.data;
   },
@@ -53,7 +56,7 @@ export const lotacoesFacade = {
    * @throws ApiError 409 when a lotacao with the same nome already exists
    */
   async createLotacao(input: CreateLotacaoInput): Promise<Lotacao> {
-    const response = await fetch(`${BASE_URL}/lotacoes`, {
+    const response = await fetchWithAuth(`${baseUrl()}/lotacoes`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
@@ -72,7 +75,7 @@ export const lotacoesFacade = {
    * @throws ApiError 409 when the new nome is already in use by another lotacao
    */
   async updateLotacao(id: string, input: UpdateLotacaoInput): Promise<Lotacao> {
-    const response = await fetch(`${BASE_URL}/lotacoes/${id}`, {
+    const response = await fetchWithAuth(`${baseUrl()}/lotacoes/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
@@ -89,7 +92,7 @@ export const lotacoesFacade = {
    * @throws ApiError 404 when the lotacao does not exist
    */
   async deleteLotacao(id: string): Promise<void> {
-    const response = await fetch(`${BASE_URL}/lotacoes/${id}`, {
+    const response = await fetchWithAuth(`${baseUrl()}/lotacoes/${id}`, {
       method: "DELETE",
     });
     const payload = await handleApiResponse<SuccessEnvelope>(response);
@@ -104,7 +107,7 @@ export const lotacoesFacade = {
    * @throws ApiError 404 when the lotacao does not exist
    */
   async reativarLotacao(id: string): Promise<Lotacao> {
-    const response = await fetch(`${BASE_URL}/lotacoes/${id}/reativar`, {
+    const response = await fetchWithAuth(`${baseUrl()}/lotacoes/${id}/reativar`, {
       method: "PATCH",
     });
     const payload = await handleApiResponse<ApiEnvelope<Lotacao>>(response);

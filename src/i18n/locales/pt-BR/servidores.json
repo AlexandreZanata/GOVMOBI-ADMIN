@@ -10,7 +10,8 @@
       "all": "Todos",
       "active": "Ativo",
       "inactive": "Inativo"
-    }
+    },
+    "searchPlaceholder": "Buscar por nome, CPF ou email..."
   },
   "table": {
     "nome": "Nome",
@@ -25,6 +26,7 @@
   "actions": {
     "create": "Novo servidor",
     "edit": "Editar",
+    "view": "Visualizar",
     "delete": "Desativar",
     "reativar": "Reativar"
   },
@@ -39,7 +41,9 @@
     "submit": "Salvar",
     "cancel": "Cancelar",
     "cpfReadOnly": "O CPF nao pode ser alterado apos a criacao",
-    "emailReadOnly": "O email nao pode ser alterado apos a criacao"
+    "emailReadOnly": "O email nao pode ser alterado apos a criacao",
+    "senha": "Senha",
+    "senhaHelper": "Mínimo 8 caracteres"
   },
   "papeis": {
     "USUARIO": "Usuario",
@@ -49,6 +53,10 @@
   "status": {
     "active": "Ativo",
     "inactive": "Inativo"
+  },
+  "delete": {
+    "confirmation": "Deseja desativar o servidor \"{{nome}}\"?",
+    "reversible": "Esta acao pode ser revertida."
   },
   "toast": {
     "created": "Servidor criado com sucesso.",

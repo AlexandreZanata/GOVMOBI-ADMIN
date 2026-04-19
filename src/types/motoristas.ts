@@ -6,6 +6,8 @@ import type { CnhCategoria, MotoristaStatusOperacional } from "@/models/Motorist
 export interface CreateMotoristaInput {
   /** Reference to the associated servidor (civil servant) record. */
   servidorId: string;
+  /** Municipality identifier where the motorista operates. */
+  municipioId: string;
   /** Brazilian CNH (driver's license) number. */
   cnhNumero: string;
   /** CNH category (e.g. B, D, E). */

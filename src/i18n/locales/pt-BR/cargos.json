@@ -19,16 +19,29 @@
     "actions": "Acoes"
   },
   "actions": {
+    "view": "Visualizar",
     "create": "Novo cargo",
     "edit": "Editar",
     "delete": "Desativar",
     "reativar": "Reativar"
   },
   "form": {
+    "titleCreate": "Novo Cargo",
+    "titleEdit": "Editar Cargo",
     "nome": "Nome",
     "pesoPrioridade": "Peso de prioridade",
+    "nomeRequired": "O nome é obrigatório.",
+    "nomeMaxLength": "O nome deve ter no máximo 100 caracteres.",
+    "pesoPrioridadeRequired": "O peso de prioridade é obrigatório.",
+    "pesoPrioridadeMin": "O peso de prioridade deve ser no mínimo 0.",
+    "pesoPrioridadeMax": "O peso de prioridade deve ser no máximo 100.",
+    "duplicateName": "Já existe um cargo com este nome.",
     "submit": "Salvar",
     "cancel": "Cancelar"
+  },
+  "delete": {
+    "confirmation": "Deseja desativar o cargo \"{{nome}}\"?",
+    "reversible": "Esta ação pode ser revertida."
   },
   "status": {
     "active": "Ativo",

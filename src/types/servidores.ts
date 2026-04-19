@@ -18,6 +18,8 @@ export interface CreateServidorInput {
   lotacaoId: string;
   /** System roles to assign. */
   papeis: Papel[];
+  /** Initial password for the servidor account. */
+  senha: string;
 }
 
 /**

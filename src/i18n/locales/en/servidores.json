@@ -10,7 +10,8 @@
       "all": "All",
       "active": "Active",
       "inactive": "Inactive"
-    }
+    },
+    "searchPlaceholder": "Search by name, CPF or email..."
   },
   "table": {
     "nome": "Name",
@@ -25,6 +26,7 @@
   "actions": {
     "create": "New Servidor",
     "edit": "Edit",
+    "view": "View",
     "delete": "Deactivate",
     "reativar": "Reactivate"
   },
@@ -39,7 +41,9 @@
     "submit": "Save",
     "cancel": "Cancel",
     "cpfReadOnly": "CPF cannot be changed after creation",
-    "emailReadOnly": "Email cannot be changed after creation"
+    "emailReadOnly": "Email cannot be changed after creation",
+    "senha": "Password",
+    "senhaHelper": "Minimum 8 characters"
   },
   "papeis": {
     "USUARIO": "Usuário",
@@ -49,6 +53,10 @@
   "status": {
     "active": "Active",
     "inactive": "Inactive"
+  },
+  "delete": {
+    "confirmation": "Do you want to deactivate the servidor \"{{nome}}\"?",
+    "reversible": "This action can be reversed."
   },
   "toast": {
     "created": "Servidor created successfully.",

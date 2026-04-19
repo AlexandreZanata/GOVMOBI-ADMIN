@@ -19,14 +19,24 @@
   },
   "actions": {
     "create": "Nova lotacao",
+    "view": "Visualizar",
     "edit": "Editar",
     "delete": "Desativar",
     "reativar": "Reativar"
   },
   "form": {
+    "titleCreate": "Nova lotacao",
+    "titleEdit": "Editar lotacao",
     "nome": "Nome",
+    "nomeRequired": "Nome e obrigatorio.",
+    "nomeMaxLength": "Nome deve ter no maximo 100 caracteres.",
+    "duplicateName": "Ja existe uma lotacao com este nome.",
     "submit": "Salvar",
     "cancel": "Cancelar"
+  },
+  "delete": {
+    "confirmation": "Deseja desativar a lotacao \"{{nome}}\"?",
+    "reversible": "Esta acao pode ser revertida."
   },
   "status": {
     "active": "Ativo",

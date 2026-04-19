@@ -1,8 +1,10 @@
+import { getApiBase } from "@/lib/apiBase";
 import { handleApiResponse } from "@/lib/handleApiResponse";
 import type { AuditFilters, AuditTrailPage, ListAuditTrailInput } from "@/types";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+function baseUrl(): string {
+  return getApiBase();
+}
 
 /**
  * Facade for audit trail read operations.
@@ -30,7 +32,7 @@ export const auditFacade = {
 
     const queryString = params.toString();
     const response = await fetch(
-      `${BASE_URL}/v1/audit${queryString ? `?${queryString}` : ""}`,
+      `${baseUrl()}/v1/audit${queryString ? `?${queryString}` : ""}`,
       {
         method: "GET",
       }

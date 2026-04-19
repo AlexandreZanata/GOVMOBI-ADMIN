@@ -1,117 +1,119 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import "@/i18n/config";
 
-import { Button, StatusPill } from "@/components/atoms";
-import { ErrorState } from "@/components/molecules/ErrorState";
-import { RunOverrideDialog } from "@/components/molecules/RunOverrideDialog";
 import { Can } from "@/components/auth/Can";
+import { ErrorState } from "@/components/molecules/ErrorState";
 import { useRuns } from "@/hooks/runs/useRuns";
-import { Permission, type Run } from "@/models";
+import { Permission, RunStatus } from "@/models";
+import type { Run } from "@/models/Run";
+
+/** Status badge color mapping for corridas. */
+const STATUS_CLASSES: Record<string, string> = {
+  [RunStatus.SOLICITADA]:       "bg-warning/15 text-warning",
+  [RunStatus.AGUARDANDO_ACEITE]:"bg-info/15 text-info",
+  [RunStatus.ACEITA]:           "bg-info/15 text-info",
+  [RunStatus.EM_ROTA]:          "bg-brand-primary/15 text-brand-primary",
+  [RunStatus.CONCLUIDA]:        "bg-success/15 text-success",
+  [RunStatus.CANCELADA]:        "bg-danger/15 text-danger",
+  [RunStatus.EXPIRADA]:         "bg-neutral-200 text-neutral-700",
+};
+
+const ALL_STATUSES = Object.values(RunStatus);
 
 /**
- * Props for the runs page client organism.
+ * Client-side corridas page renderer.
+ * Consumes GET /corridas with pagination and status filter.
  */
-export interface RunsPageClientProps {
-  /** Optional test selector assigned to the root section. */
-  "data-testid"?: string;
-}
-
-/**
- * Client-side runs page renderer with query state handling and filtering.
- *
- * @param props - Optional root test selector
- * @returns Interactive runs management content
- */
-export function RunsPageClient({ "data-testid": testId }: RunsPageClientProps) {
+export function RunsPageClient() {
   const { t } = useTranslation("runs");
-  const [statusFilter, setStatusFilter] = useState<string>("ALL");
-  const [typeFilter, setTypeFilter] = useState<string>("ALL");
-  const { data, isLoading, isError, refetch } = useRuns();
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [page, setPage] = useState(1);
 
-  const filteredRuns = useMemo(() => {
-    const runs = data ?? [];
+  const { data, isLoading, isError, refetch } = useRuns({
+    page,
+    limit: 25,
+    status: statusFilter || undefined,
+  });
 
-    return runs.filter((run) => {
-      const matchesStatus =
-        statusFilter === "ALL" ? true : run.status === statusFilter;
-      const matchesType = typeFilter === "ALL" ? true : run.type === typeFilter;
-
-      return matchesStatus && matchesType;
-    });
-  }, [data, statusFilter, typeFilter]);
+  const runs = data?.data ?? [];
+  const totalPages = data?.totalPages ?? 1;
 
   let content: ReactNode;
 
   if (isLoading) {
     content = (
       <section data-testid="runs-loading" className="space-y-3">
-        <div className="h-10 w-full animate-pulse rounded-md bg-neutral-200" />
-        <div className="h-24 w-full animate-pulse rounded-md bg-neutral-200" />
-        <div className="h-24 w-full animate-pulse rounded-md bg-neutral-200" />
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="h-14 w-full animate-pulse rounded-md bg-neutral-200" />
+        ))}
       </section>
     );
   } else if (isError) {
     content = <ErrorState data-testid="runs-error" onRetry={() => void refetch()} />;
-  } else if (!filteredRuns.length) {
+  } else if (!runs.length) {
     content = (
-      <section
-        data-testid="runs-empty"
-        className="rounded-md border border-neutral-200 bg-neutral-50 p-6"
-      >
-        <h2 className="text-base font-semibold text-neutral-900">
-          {t("page.empty.title")}
-        </h2>
+      <section data-testid="runs-empty" className="rounded-md border border-neutral-200 bg-neutral-50 p-6">
+        <h2 className="text-base font-semibold text-neutral-900">{t("page.empty.title")}</h2>
         <p className="mt-1 text-sm text-neutral-700">{t("page.empty.message")}</p>
       </section>
     );
   } else {
     content = (
-      <section data-testid={testId} className="space-y-4">
-      <div className="grid gap-3 sm:grid-cols-2">
-        <label className="flex flex-col gap-1 text-sm text-neutral-700">
-          <span>{t("page.filters.status")}</span>
-          <select
-            data-testid="runs-filter-status"
-            className="rounded-md border border-neutral-300 bg-neutral-50 px-3 py-2 text-neutral-900"
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
-          >
-            <option value="ALL">{t("page.filters.all")}</option>
-            <option value="PENDING">{t("status.PENDING")}</option>
-            <option value="ASSIGNED">{t("status.ASSIGNED")}</option>
-            <option value="IN_PROGRESS">{t("status.IN_PROGRESS")}</option>
-            <option value="COMPLETED">{t("status.COMPLETED")}</option>
-            <option value="CANCELLED">{t("status.CANCELLED")}</option>
-          </select>
-        </label>
+      <>
+        <div className="overflow-hidden rounded-md border border-neutral-200">
+          <table className="w-full text-sm">
+            <thead className="bg-neutral-50 text-left text-xs font-medium uppercase text-neutral-500">
+              <tr>
+                <th className="px-4 py-3">{t("table.id")}</th>
+                <th className="px-4 py-3">{t("table.status")}</th>
+                <th className="hidden px-4 py-3 md:table-cell">{t("table.origem")}</th>
+                <th className="hidden px-4 py-3 md:table-cell">{t("table.destino")}</th>
+                <th className="hidden px-4 py-3 lg:table-cell">{t("table.distancia")}</th>
+                <th className="px-4 py-3">{t("table.createdAt")}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-100 bg-white">
+              {runs.map((run) => (
+                <RunRow key={run.id} run={run} />
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-        <label className="flex flex-col gap-1 text-sm text-neutral-700">
-          <span>{t("page.filters.type")}</span>
-          <select
-            data-testid="runs-filter-type"
-            className="rounded-md border border-neutral-300 bg-neutral-50 px-3 py-2 text-neutral-900"
-            value={typeFilter}
-            onChange={(event) => setTypeFilter(event.target.value)}
-          >
-            <option value="ALL">{t("page.filters.all")}</option>
-            <option value="TRANSPORT">{t("page.types.TRANSPORT")}</option>
-            <option value="INSPECTION">{t("page.types.INSPECTION")}</option>
-            <option value="EMERGENCY">{t("page.types.EMERGENCY")}</option>
-            <option value="MAINTENANCE">{t("page.types.MAINTENANCE")}</option>
-            <option value="ADMINISTRATIVE">{t("page.types.ADMINISTRATIVE")}</option>
-          </select>
-        </label>
-      </div>
-
-      <ul data-testid="runs-list" className="space-y-3">
-        {filteredRuns.map((run) => (
-          <RunCard key={run.id} run={run} />
-        ))}
-      </ul>
-      </section>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between gap-2 pt-2">
+            <span className="text-xs text-neutral-500">
+              {t("page.filters.all")} {data?.total ?? 0}
+            </span>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                disabled={page <= 1}
+                onClick={() => setPage((p) => p - 1)}
+                className="rounded-md border border-neutral-300 px-3 py-1 text-xs disabled:opacity-40"
+              >
+                ←
+              </button>
+              <span className="px-2 py-1 text-xs text-neutral-700">
+                {page} / {totalPages}
+              </span>
+              <button
+                type="button"
+                disabled={page >= totalPages}
+                onClick={() => setPage((p) => p + 1)}
+                className="rounded-md border border-neutral-300 px-3 py-1 text-xs disabled:opacity-40"
+              >
+                →
+              </button>
+            </div>
+          </div>
+        )}
+      </>
     );
   }
 
@@ -119,55 +121,89 @@ export function RunsPageClient({ "data-testid": testId }: RunsPageClientProps) {
     <Can
       perform={Permission.VIEW_RUNS}
       fallback={
-        <section
-          data-testid="runs-access-denied"
-          className="rounded-md border border-danger/30 bg-danger/10 p-4"
-        >
+        <section data-testid="runs-access-denied" className="rounded-md border border-danger/30 bg-danger/10 p-4">
           <p className="text-sm font-medium text-danger">{t("page.accessDenied")}</p>
         </section>
       }
     >
-      {content}
+      <div className="space-y-4">
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-lg font-semibold text-neutral-900">{t("page.title")}</h1>
+        </div>
+
+        {/* Status filter */}
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            aria-pressed={statusFilter === ""}
+            onClick={() => { setStatusFilter(""); setPage(1); }}
+            className={[
+              "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-opacity",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
+              statusFilter === "" ? "bg-brand-primary text-white" : "bg-neutral-200 text-neutral-700 hover:opacity-80",
+            ].join(" ")}
+          >
+            {t("page.filters.all")}
+          </button>
+          {ALL_STATUSES.map((s) => (
+            <button
+              key={s}
+              type="button"
+              aria-pressed={statusFilter === s}
+              onClick={() => { setStatusFilter(s); setPage(1); }}
+              className={[
+                "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-opacity",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
+                statusFilter === s ? "bg-brand-primary text-white" : "bg-neutral-200 text-neutral-700 hover:opacity-80",
+              ].join(" ")}
+            >
+              {t(`status.${s}`)}
+            </button>
+          ))}
+        </div>
+
+        {content}
+      </div>
     </Can>
   );
 }
 
-interface RunCardProps {
-  /** Run contract to display. */
-  run: Run;
-}
-
-function RunCard({ run }: RunCardProps) {
+function RunRow({ run }: { run: Run }) {
   const { t } = useTranslation("runs");
+  const statusClass = STATUS_CLASSES[run.status] ?? "bg-neutral-200 text-neutral-700";
+
+  const formatCoord = (c: { lat: number; lng: number }) =>
+    `${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
+
+  const formatDate = (iso: string) =>
+    new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
+
+  const formatDistance = (m: number | null) =>
+    m == null ? "—" : m >= 1000 ? `${(m / 1000).toFixed(1)} km` : `${m} m`;
 
   return (
-    <li
-      data-testid={`run-card-${run.id}`}
-      className="rounded-md border border-neutral-200 bg-white p-4"
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h3 className="text-base font-semibold text-neutral-900">{run.title}</h3>
-          <p className="mt-1 text-sm text-neutral-700">{run.description}</p>
-        </div>
-        <StatusPill data-testid={`run-status-${run.id}`} status={run.status} />
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        <Can perform={Permission.ASSIGN_RUN}>
-          <Button data-testid={`assign-run-${run.id}`} size="sm" variant="secondary">
-            {t("page.actions.assign")}
-          </Button>
-        </Can>
-
-        <Can perform={Permission.UPDATE_STATUS}>
-          <Button data-testid={`update-run-${run.id}`} size="sm" variant="primary">
-            {t("page.actions.updateStatus")}
-          </Button>
-        </Can>
-
-        <RunOverrideDialog data-testid={`override-run-${run.id}`} runId={run.id} />
-      </div>
-    </li>
+    <tr data-testid={`run-row-${run.id}`} className="transition-colors hover:bg-neutral-50">
+      <td className="px-4 py-3 font-mono text-xs text-neutral-500">
+        {run.id.slice(0, 8)}…
+      </td>
+      <td className="px-4 py-3">
+        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusClass}`}>
+          {t(`status.${run.status}`)}
+        </span>
+      </td>
+      <td className="hidden px-4 py-3 text-xs text-neutral-600 md:table-cell">
+        {formatCoord(run.origem)}
+      </td>
+      <td className="hidden px-4 py-3 text-xs text-neutral-600 md:table-cell">
+        {formatCoord(run.destino)}
+      </td>
+      <td className="hidden px-4 py-3 text-xs text-neutral-600 lg:table-cell">
+        {formatDistance(run.distanciaMetros)}
+      </td>
+      <td className="px-4 py-3 text-xs text-neutral-500">
+        {formatDate(run.createdAt)}
+      </td>
+    </tr>
   );
 }

@@ -29,7 +29,7 @@ export async function handleApiResponse<T>(response: Response): Promise<T> {
   throw new ApiError(
     response.status,
     errorPayload?.code ?? "REQUEST_FAILED",
-    errorPayload?.message ?? "REQUEST_FAILED"
+    errorPayload?.message ?? `HTTP ${response.status}: ${response.statusText}`
   );
 }
 

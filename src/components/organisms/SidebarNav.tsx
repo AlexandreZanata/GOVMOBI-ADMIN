@@ -7,6 +7,7 @@ import {
   ClipboardList,
   MapPin,
   ScrollText,
+  Truck,
   UserCheck,
   Users,
   ChevronLeft,
@@ -29,6 +30,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   MapPin,
   UserCheck,
   Car,
+  Truck,
   Users,
   Building2,
   ScrollText,
@@ -47,6 +49,8 @@ export interface SidebarNavProps {
   userRole: UserRole;
   /** Optional avatar URL. */
   userAvatarUrl?: string | null;
+  /** Called when the user clicks the logout button. */
+  onLogout?: () => void;
   /** Test selector. */
   "data-testid"?: string;
 }
@@ -70,6 +74,7 @@ export function SidebarNav({
   userName,
   userRole,
   userAvatarUrl,
+  onLogout,
   "data-testid": testId,
 }: SidebarNavProps) {
   const { t } = useTranslation("nav");
@@ -143,6 +148,7 @@ export function SidebarNav({
           role={userRole}
           avatarUrl={userAvatarUrl}
           isCollapsed={isCollapsed}
+          onLogout={onLogout}
         />
       </div>
 

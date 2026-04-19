@@ -24,9 +24,18 @@
     "reativar": "Reactivate"
   },
   "form": {
+    "titleCreate": "New Lotação",
+    "titleEdit": "Edit Lotação",
     "nome": "Name",
+    "nomeRequired": "Name is required.",
+    "nomeMaxLength": "Name must be at most 100 characters.",
+    "duplicateName": "A lotação with this name already exists.",
     "submit": "Save",
     "cancel": "Cancel"
+  },
+  "delete": {
+    "confirmation": "Do you want to deactivate the lotação \"{{nome}}\"?",
+    "reversible": "This action can be reversed."
   },
   "status": {
     "active": "Active",

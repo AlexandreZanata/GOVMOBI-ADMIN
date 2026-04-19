@@ -27,9 +27,12 @@
     "updateStatus": "Atualizar status"
   },
   "form": {
-    "servidorId": "Servidor",
-    "servidorIdInvalid": "O ID do servidor deve ser um UUID valido.",
-    "cnhNumero": "Numero da CNH",
+    "servidorId": "Servidor (UUID)",
+    "servidorIdInvalid": "O ID do servidor deve ser um UUID válido.",
+    "municipioId": "Município (UUID)",
+    "municipioIdInvalid": "O ID do município deve ser um UUID válido.",
+    "cnhNumero": "Número da CNH",
+    "cnhNumeroRequired": "O número da CNH é obrigatório.",
     "cnhCategoria": "Categoria da CNH",
     "statusOperacional": "Status operacional",
     "submit": "Salvar",
