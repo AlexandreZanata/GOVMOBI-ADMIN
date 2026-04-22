@@ -20,6 +20,11 @@ export interface NavItemConfig {
  */
 export const NAV_ITEMS: NavItemConfig[] = [
   {
+    href: "/dashboard",
+    labelKey: "dashboard",
+    icon: "LayoutDashboard",
+  },
+  {
     href: "/runs",
     labelKey: "runs",
     icon: "ClipboardList",
@@ -54,18 +59,6 @@ export const NAV_ITEMS: NavItemConfig[] = [
     labelKey: "veiculos",
     icon: "Car",
     permission: Permission.VEICULO_VIEW,
-  },
-  {
-    href: "/users",
-    labelKey: "users",
-    icon: "Users",
-    permission: Permission.USER_VIEW,
-  },
-  {
-    href: "/departments",
-    labelKey: "departments",
-    icon: "Building2",
-    permission: Permission.DEPARTMENT_VIEW,
   },
   {
     href: "/audit",
