@@ -427,7 +427,9 @@ function RunRow({ run, showPosition, onView, onCancel }: RunRowProps) {
       </td>
       {showPosition ? (
         <td className="hidden px-5 py-3.5 text-xs text-neutral-600 lg:table-cell">
-          {run.motoristaPosition ? formatCoord(run.motoristaPosition) : "—"}
+          {run.motoristaPosition
+            ? `${run.motoristaPosition.lat.toFixed(4)}, ${run.motoristaPosition.lng.toFixed(4)}`
+            : "—"}
         </td>
       ) : (
         <td className="hidden px-5 py-3.5 text-xs text-neutral-600 lg:table-cell">

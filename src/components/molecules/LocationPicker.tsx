@@ -180,10 +180,7 @@ export function LocationPicker({
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                   </svg>
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-neutral-900">{feature.placeName}</p>
-                    {feature.address !== feature.placeName && (
-                      <p className="truncate text-xs text-neutral-400">{feature.address}</p>
-                    )}
+                    <p className="truncate text-sm text-neutral-900">{feature.placeName}</p>
                   </div>
                 </button>
               </li>

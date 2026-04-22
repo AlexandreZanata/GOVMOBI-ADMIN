@@ -12,6 +12,41 @@ export interface GeocodingFeature {
   lat: number;
 }
 
+/** Extract placeName from any response shape the API might return */
+function extractPlaceName(json: unknown): string | null {
+  if (!json) return null;
+
+  // String directly
+  if (typeof json === "string") return json;
+
+  if (typeof json !== "object") return null;
+  const obj = json as Record<string, unknown>;
+
+  // { placeName: "..." }
+  if (typeof obj.placeName === "string" && obj.placeName) return obj.placeName;
+
+  // { place_name: "..." }  (Mapbox raw)
+  if (typeof obj.place_name === "string" && obj.place_name) return obj.place_name;
+
+  // { address: "..." }
+  if (typeof obj.address === "string" && obj.address) return obj.address;
+
+  // Enveloped: { success, data: { placeName|place_name|address }, timestamp }
+  if (obj.data) {
+    const inner = extractPlaceName(obj.data);
+    if (inner) return inner;
+  }
+
+  // Mapbox features array: { features: [{ place_name }] }
+  if (Array.isArray(obj.features) && obj.features.length > 0) {
+    const first = obj.features[0] as Record<string, unknown>;
+    if (typeof first.place_name === "string") return first.place_name;
+    if (typeof first.placeName === "string") return first.placeName;
+  }
+
+  return null;
+}
+
 /**
  * Facade for the /pesquisa endpoints (Mapbox-backed geocoding).
  */
@@ -54,31 +89,28 @@ export const pesquisaFacade = {
   /**
    * Convert coordinates to a human-readable address.
    * GET /pesquisa/reverse-geocoding?lat=...&lng=...
-   * Returns { placeName: "..." } or enveloped { data: { placeName: "..." } }
    */
   async reverseGeocoding(lat: number, lng: number): Promise<string | null> {
     const params = new URLSearchParams({ lat: String(lat), lng: String(lng) });
 
-    const response = await fetchWithAuth(
-      `${getApiBase()}/pesquisa/reverse-geocoding?${params.toString()}`,
-    );
+    let response: Response;
+    try {
+      response = await fetchWithAuth(
+        `${getApiBase()}/pesquisa/reverse-geocoding?${params.toString()}`,
+      );
+    } catch {
+      return null;
+    }
 
     if (!response.ok) return null;
 
-    const json = await response.json() as unknown;
-    if (!json || typeof json !== "object") return null;
-
-    const obj = json as Record<string, unknown>;
-
-    // Direct: { placeName: "..." }
-    if (typeof obj.placeName === "string") return obj.placeName;
-
-    // Enveloped: { data: { placeName: "..." } }
-    if (obj.data && typeof obj.data === "object") {
-      const inner = obj.data as Record<string, unknown>;
-      if (typeof inner.placeName === "string") return inner.placeName;
+    let json: unknown;
+    try {
+      json = await response.json();
+    } catch {
+      return null;
     }
 
-    return null;
+    return extractPlaceName(json);
   },
 };
