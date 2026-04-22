@@ -28,6 +28,8 @@ export interface Motorista {
   cnhCategoria: CnhCategoria;
   /** Current operational status of the driver. */
   statusOperacional: MotoristaStatusOperacional;
+  /** Currently associated vehicle identifier, or null if none. */
+  veiculoId: string | null;
   /** Whether the motorista record is active. */
   ativo: boolean;
   /** ISO 8601 timestamp when the record was created. */

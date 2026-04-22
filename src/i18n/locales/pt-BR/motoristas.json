@@ -16,6 +16,8 @@
     "cnhNumero": "Numero da CNH",
     "cnhCategoria": "Categoria da CNH",
     "statusOperacional": "Status operacional",
+    "veiculo": "Veículo",
+    "veiculoAssociado": "Associado",
     "status": "Status",
     "actions": "Acoes"
   },
@@ -24,7 +26,10 @@
     "edit": "Editar",
     "desativar": "Desativar",
     "reativar": "Reativar",
-    "updateStatus": "Atualizar status"
+    "updateStatus": "Atualizar status",
+    "gerenciarVeiculo": "Gerenciar veículo",
+    "associarVeiculo": "Associar veículo",
+    "desassociarVeiculo": "Remover veículo"
   },
   "form": {
     "servidorId": "Servidor",
@@ -36,6 +41,10 @@
     "cnhNumeroRequired": "O número da CNH é obrigatório.",
     "cnhCategoria": "Categoria da CNH",
     "statusOperacional": "Status operacional",
+    "veiculo": "Veículo associado",
+    "veiculoAtual": "Veículo atual",
+    "selecionarVeiculo": "Selecionar novo veículo",
+    "veiculoPlaceholder": "Selecione um veículo...",
     "submit": "Salvar",
     "cancel": "Cancelar"
   },
@@ -53,6 +62,9 @@
     "statusUpdated": "Status operacional atualizado.",
     "desativado": "Motorista desativado.",
     "reativado": "Motorista reativado.",
+    "veiculoAssociado": "Veículo associado com sucesso.",
+    "veiculoDesassociado": "Veículo removido.",
+    "veiculoJaAssociado": "Motorista já possui um veículo associado.",
     "duplicateCnh": "Ja existe um motorista com este numero de CNH.",
     "notFound": "Motorista nao encontrado.",
     "invalidData": "Dados invalidos. Revise o formulario."
