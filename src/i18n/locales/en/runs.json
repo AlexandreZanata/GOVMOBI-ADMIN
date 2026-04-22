@@ -1,34 +1,54 @@
 {
   "status": {
-    "PENDING": "Pending",
-    "ASSIGNED": "Assigned",
-    "IN_PROGRESS": "In Progress",
-    "COMPLETED": "Completed",
-    "CANCELLED": "Cancelled"
+    "solicitada": "Requested",
+    "aguardando_aceite": "Awaiting acceptance",
+    "aceita": "Accepted",
+    "em_rota": "En route",
+    "concluida": "Completed",
+    "avaliada": "Rated",
+    "cancelada": "Cancelled",
+    "expirada": "Expired"
   },
   "page": {
+    "title": "Runs",
     "accessDenied": "Access denied",
+    "searchPlaceholder": "Search by run ID...",
+    "totalRuns": "runs",
+    "tabs": {
+      "all": "All",
+      "ativas": "Active"
+    },
     "empty": {
       "title": "No runs found",
       "message": "There are no runs for the selected filters."
     },
+    "emptyAtivas": {
+      "title": "No active runs",
+      "message": "There are no runs in progress at the moment."
+    },
     "filters": {
       "status": "Status",
-      "type": "Type",
       "all": "All"
     },
-    "types": {
-      "TRANSPORT": "Transport",
-      "INSPECTION": "Inspection",
-      "EMERGENCY": "Emergency",
-      "MAINTENANCE": "Maintenance",
-      "ADMINISTRATIVE": "Administrative"
-    },
     "actions": {
-      "assign": "Assign",
-      "updateStatus": "Update Status",
+      "createRun": "Request run",
+      "view": "View run",
+      "cancel": "Cancel",
       "override": "Override"
     }
+  },
+  "table": {
+    "id": "ID",
+    "status": "Status",
+    "passageiro": "Passenger",
+    "motorista": "Driver",
+    "origem": "Origin",
+    "destino": "Destination",
+    "distancia": "Distance",
+    "duracao": "Duration",
+    "createdAt": "Created at",
+    "posicao": "Driver position",
+    "actions": "Actions"
   },
   "dialogs": {
     "override": {
@@ -38,6 +58,72 @@
       "reasonLabel": "Override reason",
       "confirm": "Confirm override",
       "cancel": "Cancel"
+    },
+    "cancel": {
+      "title": "Cancel run",
+      "description": "Please provide a reason for cancellation. This action cannot be undone.",
+      "motivoLabel": "Reason",
+      "confirm": "Confirm cancellation",
+      "cancel": "Go back"
+    },
+    "createRun": {
+      "title": "Request run",
+      "passageiroId": "Passenger",
+      "origem": "Origin location",
+      "destino": "Destination location",
+      "origemLat": "Origin latitude",
+      "origemLng": "Origin longitude",
+      "destinoLat": "Destination latitude",
+      "destinoLng": "Destination longitude",
+      "motivoServico": "Service reason",
+      "observacoes": "Observations (optional)",
+      "confirm": "Request",
+      "cancel": "Cancel",
+      "passageiroIdRequired": "Please select a passenger.",
+      "passageiroIdInvalid": "Passenger ID must be a valid UUID.",
+      "origemRequired": "Please select an origin location.",
+      "destinoRequired": "Please select a destination location.",
+      "origemLatRequired": "Origin latitude is required.",
+      "origemLngRequired": "Origin longitude is required.",
+      "destinoLatRequired": "Destination latitude is required.",
+      "destinoLngRequired": "Destination longitude is required.",
+      "motivoServicoRequired": "Service reason is required.",
+      "locationPlaceholder": "Type an address or location..."
     }
+  },
+  "view": {
+    "title": "Run",
+    "rota": "Route",
+    "origem": "Origin location",
+    "destino": "Destination location",
+    "distancia": "Distance",
+    "duracao": "Estimated duration",
+    "participantes": "Participants",
+    "passageiroId": "Passenger ID",
+    "motoristaId": "Driver ID",
+    "veiculoId": "Vehicle ID",
+    "servico": "Service data",
+    "motivoServico": "Service reason",
+    "observacoes": "Observations",
+    "cancelamento": "Cancellation",
+    "cancelMotivo": "Reason",
+    "cancelTipo": "Requester type",
+    "cancelSolicitante": "Requester ID",
+    "posicaoMotorista": "Driver position",
+    "posicaoAtual": "Current location",
+    "posicaoAtualizada": "Updated at",
+    "identificacao": "Record identification",
+    "auditoria": "Audit",
+    "criadoEm": "Created at",
+    "atualizadoEm": "Updated at"
+  },
+  "toast": {
+    "created": "Run requested successfully.",
+    "cancelled": "Run cancelled.",
+    "cannotCancel": "Cannot cancel a run that has already ended.",
+    "cancelError": "Error cancelling the run.",
+    "createError": "Error requesting the run.",
+    "alreadyActive": "Servidor already has an active run.",
+    "forbidden": "Access denied."
   }
 }
