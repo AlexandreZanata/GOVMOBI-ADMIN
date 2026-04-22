@@ -422,22 +422,16 @@ function RunRow({ run, showPosition, onView, onCancel }: RunRowProps) {
       <td className="hidden px-5 py-3.5 text-xs text-neutral-600 md:table-cell">
         <AddressCell lat={run.destino.lat} lng={run.destino.lng} />
       </td>
-      {showPosition ? (
-        <td className="hidden px-5 py-3.5 text-xs text-neutral-600 lg:table-cell">
-          {run.motoristaPosition
-            ? `${run.motoristaPosition.lat.toFixed(4)}, ${run.motoristaPosition.lng.toFixed(4)}`
-            : "—"}
-        </td>
-      ) : (
-        <td className="hidden px-5 py-3.5 text-xs text-neutral-600 lg:table-cell">
-          {formatDistance(run.distanciaMetros)}
-        </td>
-      )}
-      {!showPosition && (
-        <td className="px-5 py-3.5 text-xs text-neutral-500">
-          {formatDate(run.createdAt)}
-        </td>
-      )}
+      <td className="hidden px-5 py-3.5 text-xs text-neutral-600 lg:table-cell">
+        {showPosition
+          ? (run.motoristaPosition
+              ? `${run.motoristaPosition.lat.toFixed(4)}, ${run.motoristaPosition.lng.toFixed(4)}`
+              : "—")
+          : formatDistance(run.distanciaMetros)}
+      </td>
+      <td className="px-5 py-3.5 text-xs text-neutral-500">
+        {showPosition ? "—" : formatDate(run.createdAt)}
+      </td>
       <td className="px-5 py-3.5">
         <div className="flex items-center justify-end gap-1">
           {/* View */}
@@ -457,20 +451,18 @@ function RunRow({ run, showPosition, onView, onCancel }: RunRowProps) {
 
           {/* Cancel (active runs only) */}
           {onCancel && (
-            <Can perform={Permission.OVERRIDE_ACTION}>
-              <button
-                type="button"
-                data-testid={`run-cancel-${run.id}`}
-                aria-label={t("page.actions.cancel")}
-                title={t("page.actions.cancel")}
-                onClick={() => onCancel(run)}
-                className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-danger/10 hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger"
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                </svg>
-              </button>
-            </Can>
+            <button
+              type="button"
+              data-testid={`run-cancel-${run.id}`}
+              aria-label={t("page.actions.cancel")}
+              title={t("page.actions.cancel")}
+              onClick={() => onCancel(run)}
+              className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-danger/10 hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+              </svg>
+            </button>
           )}
         </div>
       </td>
