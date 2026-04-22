@@ -15,6 +15,7 @@ import { RunViewModal } from "@/components/molecules/RunViewModal";
 import { useActiveRuns } from "@/hooks/runs/useActiveRuns";
 import { useRuns } from "@/hooks/runs/useRuns";
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
+import { useReverseGeocoding } from "@/hooks/pesquisa/useReverseGeocoding";
 import { Permission, RunStatus } from "@/models";
 import type { Run } from "@/models/Run";
 
@@ -390,9 +391,6 @@ function RunRow({ run, showPosition, onView, onCancel }: RunRowProps) {
   const { t } = useTranslation("runs");
   const statusClass = STATUS_CLASSES[run.status] ?? "bg-neutral-200 text-neutral-700";
 
-  const formatCoord = (c: { lat: number; lng: number }) =>
-    `${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
-
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString("pt-BR", {
       day: "2-digit", month: "2-digit", year: "2-digit",
@@ -422,10 +420,10 @@ function RunRow({ run, showPosition, onView, onCancel }: RunRowProps) {
         </span>
       </td>
       <td className="hidden px-5 py-3.5 text-xs text-neutral-600 md:table-cell">
-        {formatCoord(run.origem)}
+        <AddressCell lat={run.origem.lat} lng={run.origem.lng} />
       </td>
       <td className="hidden px-5 py-3.5 text-xs text-neutral-600 md:table-cell">
-        {formatCoord(run.destino)}
+        <AddressCell lat={run.destino.lat} lng={run.destino.lng} />
       </td>
       {showPosition ? (
         <td className="hidden px-5 py-3.5 text-xs text-neutral-600 lg:table-cell">
@@ -478,5 +476,26 @@ function RunRow({ run, showPosition, onView, onCancel }: RunRowProps) {
         </div>
       </td>
     </tr>
+  );
+}
+
+// ── AddressCell ───────────────────────────────────────────────────────────────
+
+/**
+ * Resolves lat/lng to a human-readable address via reverse-geocoding.
+ * Falls back to truncated coordinates while loading or on error.
+ */
+function AddressCell({ lat, lng }: { lat: number; lng: number }) {
+  const { data, isLoading } = useReverseGeocoding(lat, lng);
+  const coordFallback = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+
+  if (isLoading) {
+    return <span className="inline-block h-3 w-32 animate-pulse rounded bg-neutral-100" />;
+  }
+
+  return (
+    <span title={coordFallback} className="line-clamp-1 max-w-[180px]">
+      {data ?? coordFallback}
+    </span>
   );
 }

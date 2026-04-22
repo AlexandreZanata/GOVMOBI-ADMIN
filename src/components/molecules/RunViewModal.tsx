@@ -56,7 +56,7 @@ function AddressField({ label, lat, lng }: { label: string; lat: number; lng: nu
           <span className="inline-block h-4 w-48 animate-pulse rounded bg-neutral-100" />
         ) : (
           <span title={coordFallback}>
-            {data?.place_name ?? coordFallback}
+            {data ?? coordFallback}
           </span>
         )
       }

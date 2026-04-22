@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import "@/i18n/config";
 
 import { pesquisaFacade } from "@/facades/pesquisaFacade";
-import type { GeocodingResult } from "@/facades/pesquisaFacade";
+import type { GeocodingFeature } from "@/facades/pesquisaFacade";
 
 export interface LocationValue {
   lat: number;
@@ -36,7 +36,7 @@ export function LocationPicker({
 }: LocationPickerProps): React.ReactElement {
   const { t } = useTranslation("runs");
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<GeocodingResult[]>([]);
+  const [results, setResults] = useState<GeocodingFeature[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -68,9 +68,9 @@ export function LocationPicker({
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        const res = await pesquisaFacade.geocoding(q.trim());
-        setResults(res.features ?? []);
-        setOpen((res.features ?? []).length > 0);
+        const features = await pesquisaFacade.geocoding(q.trim());
+        setResults(features);
+        setOpen(features.length > 0);
       } catch {
         setResults([]);
         setOpen(false);
@@ -80,7 +80,7 @@ export function LocationPicker({
     }, 350);
   };
 
-  const handleSelect = (feature: GeocodingResult) => {
+  const handleSelect = (feature: GeocodingFeature) => {
     const [lng, lat] = feature.center;
     onChange({ lat, lng, label: feature.place_name });
     setQuery(feature.place_name);
