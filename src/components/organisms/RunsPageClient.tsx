@@ -491,10 +491,6 @@ function AddressCell({ lat, lng }: { lat: number; lng: number }) {
   const { data, isLoading } = useReverseGeocoding(lat, lng);
   const coordFallback = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
 
-  if (process.env.NODE_ENV === "development" && !isLoading) {
-    console.log(`[AddressCell] lat=${lat} lng=${lng} → data="${data ?? "null"}"`);
-  }
-
   if (isLoading) {
     return <span className="inline-block h-3 w-32 animate-pulse rounded bg-neutral-100" />;
   }

@@ -19,6 +19,12 @@ function extractPlaceName(json: unknown): string | null {
   // String directly
   if (typeof json === "string") return json;
 
+  // ARRAY: [{ placeName, lng, lat }] — reverse-geocoding returns an array
+  if (Array.isArray(json)) {
+    if (json.length === 0) return null;
+    return extractPlaceName(json[0]);
+  }
+
   if (typeof json !== "object") return null;
   const obj = json as Record<string, unknown>;
 
@@ -109,11 +115,6 @@ export const pesquisaFacade = {
       json = await response.json();
     } catch {
       return null;
-    }
-
-    // Log raw response in development to diagnose format issues
-    if (process.env.NODE_ENV === "development") {
-      console.log("[pesquisaFacade.reverseGeocoding] raw response:", JSON.stringify(json));
     }
 
     return extractPlaceName(json);
