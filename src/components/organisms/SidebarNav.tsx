@@ -5,6 +5,7 @@ import {
   Building2,
   Car,
   ClipboardList,
+  LayoutDashboard,
   MapPin,
   ScrollText,
   Truck,
@@ -34,6 +35,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Users,
   Building2,
   ScrollText,
+  LayoutDashboard,
 };
 
 export interface SidebarNavProps {
