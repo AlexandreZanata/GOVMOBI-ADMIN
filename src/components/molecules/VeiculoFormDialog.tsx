@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "@/i18n/config";
 
-import { Button, Input } from "@/components/atoms";
+import { Input } from "@/components/atoms";
+import { Modal } from "@/components/molecules/Modal";
 import { useCreateVeiculo } from "@/hooks/veiculos/useCreateVeiculo";
 import { useUpdateVeiculo } from "@/hooks/veiculos/useUpdateVeiculo";
 import type { Veiculo } from "@/models/Veiculo";
@@ -22,10 +23,6 @@ export interface VeiculoFormDialogProps {
 
 const CURRENT_YEAR = new Date().getFullYear();
 
-/**
- * Modal form dialog for creating or editing a vehicle.
- * Closes on success; stays open and shows inline error on HTTP 409 (duplicate plate).
- */
 export function VeiculoFormDialog({
   open,
   onClose,
@@ -34,7 +31,6 @@ export function VeiculoFormDialog({
   "data-testid": testId,
 }: VeiculoFormDialogProps): React.ReactElement | null {
   const { t } = useTranslation("veiculos");
-  const headingId = useId();
 
   const [placa, setPlaca] = useState(veiculo?.placa ?? "");
   const [modelo, setModelo] = useState(veiculo?.modelo ?? "");
@@ -61,18 +57,9 @@ export function VeiculoFormDialog({
     }
   }, [open, mode]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKeyDown = (e: KeyboardEvent) => { if (e.key === "Escape") { e.preventDefault(); onClose(); } };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open, onClose]);
-
   const createMutation = useCreateVeiculo();
   const updateMutation = useUpdateVeiculo();
   const isPending = createMutation.isPending || updateMutation.isPending;
-
-  if (!open) return null;
 
   const validate = (): boolean => {
     let valid = true;
@@ -103,40 +90,71 @@ export function VeiculoFormDialog({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 p-4" data-testid={testId}>
-      <section role="dialog" aria-modal="true" aria-labelledby={headingId}
-        className="w-full max-w-md rounded-lg border border-neutral-300 bg-white p-5 shadow-sm">
-        <h2 id={headingId} className="text-base font-semibold text-neutral-900">
-          {mode === "create" ? t("form.titleCreate") : t("form.titleEdit")}
-        </h2>
-        <form onSubmit={(e) => void handleSubmit(e)} className="mt-4 space-y-4" noValidate>
-          {mode === "create" && (
-            <div className="flex flex-col gap-1">
-              <Input label={t("form.placa")} value={placa}
-                onChange={(e) => setPlaca(e.target.value.toUpperCase())}
-                error={placaError} data-testid="veiculo-form-placa"
-                aria-required="true" autoFocus maxLength={8} />
-              <p className="text-xs text-neutral-500">{t("form.placaHint")}</p>
-            </div>
-          )}
-          <Input label={t("form.modelo")} value={modelo}
-            onChange={(e) => setModelo(e.target.value)}
-            error={modeloError} data-testid="veiculo-form-modelo"
-            aria-required="true" autoFocus={mode === "edit"} />
-          <Input label={t("form.ano")} type="number" value={ano}
-            onChange={(e) => setAno(e.target.value)}
-            error={anoError} data-testid="veiculo-form-ano"
-            aria-required="true" min={1900} max={CURRENT_YEAR + 1} />
-          <div className="flex items-center justify-end gap-2">
-            <Button type="button" variant="ghost" onClick={onClose} data-testid="veiculo-form-cancel">
-              {t("form.cancel")}
-            </Button>
-            <Button type="submit" variant="primary" isLoading={isPending} disabled={isPending} data-testid="veiculo-form-submit">
-              {t("form.submit")}
-            </Button>
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={mode === "create" ? t("form.titleCreate") : t("form.titleEdit")}
+      maxWidth="max-w-2xl"
+      data-testid={testId}
+      footer={
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex items-center justify-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+            data-testid="veiculo-form-cancel"
+          >
+            {t("form.cancel")}
+          </button>
+          <button
+            type="submit"
+            form="veiculo-form"
+            disabled={isPending}
+            className="inline-flex items-center justify-center gap-2 rounded-md bg-brand-primary px-3 py-1.5 text-sm font-medium text-white transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary disabled:pointer-events-none disabled:opacity-50"
+            data-testid="veiculo-form-submit"
+          >
+            {isPending ? "…" : t("form.submit")}
+          </button>
+        </div>
+      }
+    >
+      <form id="veiculo-form" onSubmit={(e) => void handleSubmit(e)} className="grid gap-4 sm:grid-cols-2" noValidate>
+        {mode === "create" && (
+          <div className="flex flex-col gap-1 sm:col-span-2">
+            <Input
+              label={t("form.placa")}
+              value={placa}
+              onChange={(e) => setPlaca(e.target.value.toUpperCase())}
+              error={placaError}
+              data-testid="veiculo-form-placa"
+              aria-required="true"
+              autoFocus
+              maxLength={8}
+            />
+            <p className="text-xs text-neutral-500">{t("form.placaHint")}</p>
           </div>
-        </form>
-      </section>
-    </div>
+        )}
+        <Input
+          label={t("form.modelo")}
+          value={modelo}
+          onChange={(e) => setModelo(e.target.value)}
+          error={modeloError}
+          data-testid="veiculo-form-modelo"
+          aria-required="true"
+          autoFocus={mode === "edit"}
+        />
+        <Input
+          label={t("form.ano")}
+          type="number"
+          value={ano}
+          onChange={(e) => setAno(e.target.value)}
+          error={anoError}
+          data-testid="veiculo-form-ano"
+          aria-required="true"
+          min={1900}
+          max={CURRENT_YEAR + 1}
+        />
+      </form>
+    </Modal>
   );
 }

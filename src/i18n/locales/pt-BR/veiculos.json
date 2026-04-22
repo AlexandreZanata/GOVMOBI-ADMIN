@@ -2,6 +2,7 @@
   "page": {
     "title": "Veículos",
     "accessDenied": "Você não tem permissão para visualizar veículos.",
+    "searchPlaceholder": "Buscar por placa, modelo ou ano...",
     "empty": {
       "title": "Nenhum veículo encontrado",
       "message": "Cadastre o primeiro veículo para começar."
@@ -21,9 +22,18 @@
   },
   "actions": {
     "create": "Novo Veículo",
+    "view": "Visualizar",
     "edit": "Editar",
     "desativar": "Desativar",
     "reativar": "Reativar"
+  },
+  "view": {
+    "dadosVeiculo": "Dados do Veículo",
+    "identificacao": "Identificação do registro",
+    "auditoria": "Auditoria",
+    "criadoEm": "Criado em",
+    "atualizadoEm": "Atualizado em",
+    "excluidoEm": "Excluído em"
   },
   "form": {
     "titleCreate": "Novo Veículo",
