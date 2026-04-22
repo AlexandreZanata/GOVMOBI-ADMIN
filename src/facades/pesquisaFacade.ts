@@ -53,10 +53,37 @@ function extractPlaceName(json: unknown): string | null {
   return null;
 }
 
+export interface PesquisaConfig {
+  mapboxToken?: string;
+  municipioLat?: number;
+  municipioLng?: number;
+  [key: string]: unknown;
+}
+
 /**
  * Facade for the /pesquisa endpoints (Mapbox-backed geocoding).
  */
 export const pesquisaFacade = {
+  /**
+   * Get map configuration including municipality coordinates.
+   * GET /pesquisa/config
+   */
+  async getConfig(): Promise<PesquisaConfig> {
+    try {
+      const response = await fetchWithAuth(`${getApiBase()}/pesquisa/config`);
+      if (!response.ok) return {};
+      const json = await response.json() as unknown;
+      if (json && typeof json === "object") {
+        const obj = json as Record<string, unknown>;
+        // Handle envelope
+        if (obj.data && typeof obj.data === "object") return obj.data as PesquisaConfig;
+        return obj as PesquisaConfig;
+      }
+      return {};
+    } catch {
+      return {};
+    }
+  },
   /**
    * Search for an address/place and return a list of results.
    * GET /pesquisa/geocoding?q=...

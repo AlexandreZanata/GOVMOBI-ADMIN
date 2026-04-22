@@ -19,6 +19,8 @@ export interface LocationPickerProps {
   onChange: (value: LocationValue | null) => void;
   error?: string;
   required?: boolean;
+  /** Optional proximity hint to bias results toward a specific location */
+  proximity?: { lat: number; lng: number };
   "data-testid"?: string;
 }
 
@@ -32,6 +34,7 @@ export function LocationPicker({
   onChange,
   error,
   required,
+  proximity,
   "data-testid": testId,
 }: LocationPickerProps): React.ReactElement {
   const { t } = useTranslation("runs");
@@ -69,7 +72,7 @@ export function LocationPicker({
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        const features = await pesquisaFacade.geocoding(q.trim());
+        const features = await pesquisaFacade.geocoding(q.trim(), proximity);
         setResults(features);
         setOpen(features.length > 0);
       } catch {

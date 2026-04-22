@@ -8,6 +8,7 @@ import { LocationPicker } from "@/components/molecules/LocationPicker";
 import { Modal } from "@/components/molecules/Modal";
 import { ServidorPicker } from "@/components/molecules/ServidorPicker";
 import { useCreateAdminRun } from "@/hooks/runs/useCreateAdminRun";
+import { usePesquisaConfig } from "@/hooks/pesquisa/usePesquisaConfig";
 import type { LocationValue } from "@/components/molecules/LocationPicker";
 
 export interface RunCreateAdminDialogProps {
@@ -28,6 +29,12 @@ export function RunCreateAdminDialog({
 }: RunCreateAdminDialogProps): React.ReactElement | null {
   const { t } = useTranslation("runs");
   const createMutation = useCreateAdminRun();
+  const { data: pesquisaConfig } = usePesquisaConfig();
+
+  // Use municipality coordinates as proximity bias for geocoding
+  const proximity = pesquisaConfig?.municipioLat && pesquisaConfig?.municipioLng
+    ? { lat: pesquisaConfig.municipioLat, lng: pesquisaConfig.municipioLng }
+    : undefined;
 
   const [passageiroId, setPassageiroId] = useState("");
   const [origem, setOrigem] = useState<LocationValue | null>(null);
@@ -125,6 +132,7 @@ export function RunCreateAdminDialog({
           value={origem}
           onChange={setOrigem}
           error={errors.origem}
+          proximity={proximity}
           required
         />
 
@@ -135,6 +143,7 @@ export function RunCreateAdminDialog({
           value={destino}
           onChange={setDestino}
           error={errors.destino}
+          proximity={proximity}
           required
         />
 
