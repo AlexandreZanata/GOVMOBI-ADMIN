@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import "@/i18n/config";
 
 import { Modal } from "@/components/molecules/Modal";
-import { useReverseGeocoding } from "@/hooks/pesquisa/useReverseGeocoding";
 import type { Run } from "@/models/Run";
 import { RunStatus } from "@/models/Run";
 
@@ -41,26 +40,6 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
       <dt className="text-xs font-semibold text-neutral-900">{label}</dt>
       <dd className="break-all text-sm text-neutral-400">{value || "—"}</dd>
     </div>
-  );
-}
-
-function AddressField({ label, lat, lng }: { label: string; lat: number; lng: number }) {
-  const { data, isLoading } = useReverseGeocoding(lat, lng);
-  const coordFallback = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-
-  return (
-    <Field
-      label={label}
-      value={
-        isLoading ? (
-          <span className="inline-block h-4 w-48 animate-pulse rounded bg-neutral-100" />
-        ) : (
-          <span title={coordFallback}>
-            {data ?? coordFallback}
-          </span>
-        )
-      }
-    />
   );
 }
 
@@ -121,8 +100,22 @@ export function RunViewModal({
         {/* Rota */}
         <Section title={t("view.rota")}>
           <div className="grid grid-cols-1 gap-x-10 gap-y-5 sm:grid-cols-2">
-            <AddressField label={t("view.origem")} lat={run.origem.lat} lng={run.origem.lng} />
-            <AddressField label={t("view.destino")} lat={run.destino.lat} lng={run.destino.lng} />
+            <Field
+              label={t("view.origem")}
+              value={
+                <span title={`${run.origem.lat.toFixed(6)}, ${run.origem.lng.toFixed(6)}`}>
+                  {run.origem.endereco ?? `${run.origem.lat.toFixed(6)}, ${run.origem.lng.toFixed(6)}`}
+                </span>
+              }
+            />
+            <Field
+              label={t("view.destino")}
+              value={
+                <span title={`${run.destino.lat.toFixed(6)}, ${run.destino.lng.toFixed(6)}`}>
+                  {run.destino.endereco ?? `${run.destino.lat.toFixed(6)}, ${run.destino.lng.toFixed(6)}`}
+                </span>
+              }
+            />
             <Field label={t("view.distancia")} value={formatDistance(run.distanciaMetros)} />
             <Field label={t("view.duracao")} value={formatDuration(run.duracaoSegundos)} />
           </div>
@@ -134,6 +127,18 @@ export function RunViewModal({
             <Field label={t("view.passageiroId")} value={run.passageiroId} />
             <Field label={t("view.motoristaId")} value={run.motoristaId ?? "—"} />
             <Field label={t("view.veiculoId")} value={run.veiculoId ?? "—"} />
+            {run.motorista && (
+              <Field
+                label={t("view.notaMotorista")}
+                value={run.motorista.notaMedia != null ? `${run.motorista.notaMedia} ★ (${run.motorista.totalAvaliacoes})` : "—"}
+              />
+            )}
+            {run.veiculo && (
+              <Field
+                label={t("view.veiculo")}
+                value={`${run.veiculo.modelo} ${run.veiculo.ano} — ${run.veiculo.placa}`}
+              />
+            )}
           </div>
         </Section>
 
@@ -151,13 +156,35 @@ export function RunViewModal({
           </Section>
         )}
 
-        {/* Cancelamento (only if cancelled) */}
-        {run.cancelamento && (
+        {/* Avaliação */}
+        {run.avaliacao && (
+          <Section title={t("view.avaliacao")}>
+            <div className="grid grid-cols-1 gap-x-10 gap-y-5 sm:grid-cols-2">
+              <Field label={t("view.avaliacaoNota")} value={`${run.avaliacao.nota} ★`} />
+              {run.avaliacao.comentario && (
+                <Field label={t("view.avaliacaoComentario")} value={run.avaliacao.comentario} />
+              )}
+            </div>
+          </Section>
+        )}
+
+        {/* Cancelamento */}
+        {(run.cancelamento || run.motivoCancelamento) && (
           <Section title={t("view.cancelamento")}>
             <div className="grid grid-cols-1 gap-x-10 gap-y-5 sm:grid-cols-2">
-              <Field label={t("view.cancelMotivo")} value={run.cancelamento.motivo} />
-              <Field label={t("view.cancelTipo")} value={run.cancelamento.tipoSolicitante} />
-              <Field label={t("view.cancelSolicitante")} value={run.cancelamento.solicitanteId} />
+              <Field
+                label={t("view.cancelMotivo")}
+                value={run.cancelamento?.motivo ?? run.motivoCancelamento ?? "—"}
+              />
+              {run.cancelamento?.tipoSolicitante && (
+                <Field label={t("view.cancelTipo")} value={run.cancelamento.tipoSolicitante} />
+              )}
+              {(run.cancelamento?.solicitanteId ?? run.canceladoPor) && (
+                <Field
+                  label={t("view.cancelSolicitante")}
+                  value={run.cancelamento?.solicitanteId ?? run.canceladoPor ?? "—"}
+                />
+              )}
             </div>
           </Section>
         )}
@@ -166,10 +193,9 @@ export function RunViewModal({
         {run.motoristaPosition && (
           <Section title={t("view.posicaoMotorista")}>
             <div className="grid grid-cols-1 gap-x-10 gap-y-5 sm:grid-cols-2">
-              <AddressField
+              <Field
                 label={t("view.posicaoAtual")}
-                lat={run.motoristaPosition.lat}
-                lng={run.motoristaPosition.lng}
+                value={`${run.motoristaPosition.lat.toFixed(6)}, ${run.motoristaPosition.lng.toFixed(6)}`}
               />
               <Field label={t("view.posicaoAtualizada")} value={safeDate(run.motoristaPosition.updatedAt)} />
             </div>

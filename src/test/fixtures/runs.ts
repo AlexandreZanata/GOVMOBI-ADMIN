@@ -1,125 +1,161 @@
+import type { Run, RunStatus } from "@/models/Run";
+
 /**
  * Offset-based paginated response contract used by list endpoints.
  */
 export interface PaginatedResponse<TItem> {
   /** Items returned for current page. */
-  items: TItem[];
+  data: TItem[];
   /** Total number of matching items. */
   total: number;
   /** Current page number (1-indexed). */
   page: number;
   /** Number of items requested per page. */
-  pageSize: number;
-  /** Indicates whether a next page exists. */
-  hasMore: boolean;
+  limit: number;
+  /** Total number of pages. */
+  totalPages: number;
 }
 
 /**
- * Run summary item shape from `GET /v1/runs`.
+ * Run summary item shape from `GET /corridas` - uses Run model directly.
  */
-export interface RunListItem {
-  /** Unique run identifier. */
-  id: string;
-  /** Display title for the run. */
-  title: string;
-  /** Operational description. */
-  description: string;
-  /** Lifecycle status. */
-  status: "PENDING" | "ASSIGNED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
-  /** Priority level. */
-  priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-  /** Department owner identifier. */
-  departmentId: string;
-  /** Assigned agent identifier. */
-  agentId: string | null;
-  /** User id who created the run. */
-  createdBy: string;
-  /** Creation timestamp in ISO UTC format. */
-  createdAt: string;
-  /** Last update timestamp in ISO UTC format. */
-  updatedAt: string;
-  /** Optional scheduled execution timestamp. */
-  scheduledAt: string | null;
-}
+export type RunListItem = Run;
 
 /**
- * Status history record for a run.
+ * Full run detail response shape from `GET /corridas/:id` - uses Run model directly.
  */
-export interface RunHistoryItem {
-  /** Status recorded for the transition. */
-  status: "PENDING" | "ASSIGNED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
-  /** Event timestamp in ISO UTC format. */
-  timestamp: string;
-  /** Actor identifier responsible for the event. */
-  actorId: string;
-  /** Role of the actor when event occurred. */
-  actorRole: "AGENT" | "DISPATCHER" | "SUPERVISOR" | "ADMIN";
-  /** Optional note attached to the event. */
-  note: string | null;
-  /** Optional override flag when transition was elevated. */
-  isOverride?: boolean;
-}
+export type RunDetail = Run;
 
 /**
- * Full run detail response shape from `GET /v1/runs/:id`.
- */
-export interface RunDetail {
-  /** Unique run identifier. */
-  id: string;
-  /** Display title for the run. */
-  title: string;
-  /** Lifecycle status. */
-  status: "PENDING" | "ASSIGNED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
-  /** Department owner identifier. */
-  departmentId: string;
-  /** Assigned agent identifier. */
-  agentId: string | null;
-  /** Full status transition history. */
-  history: RunHistoryItem[];
-}
-
-/**
- * Fixture dataset used by run MSW handlers.
+ * Fixture dataset used by run MSW handlers - aligned with new API structure.
  */
 export const runsFixture: RunListItem[] = [
   {
-    id: "run-001",
-    title: "Inspection Route A",
-    description: "Weekly inspection of Zone 3",
-    status: "PENDING",
-    priority: "HIGH",
-    departmentId: "dept-001",
-    agentId: null,
-    createdBy: "user-001",
-    createdAt: "2026-04-15T08:00:00Z",
-    updatedAt: "2026-04-15T08:00:00Z",
-    scheduledAt: null,
+    id: "019db6ea-3ce3-7101-bbd5-0ae8a798ff44",
+    status: RunStatus.EM_ROTA,
+    passageiroId: "019db503-d53e-73c3-ad1a-5792f378bb11",
+    motoristaId: "019db519-e90f-707a-a846-270683043600",
+    veiculoId: "019db567-56b8-72af-bb30-8a4ef1c44258",
+    origem: {
+      lat: -12.5448043,
+      lng: -55.7273902,
+      endereco: "Rua Eurico Dutra 52, Sorriso - Mato Grosso, 78890-000, Brasil",
+    },
+    destino: {
+      lat: -12.554074,
+      lng: -55.737994,
+      endereco: "Rua das Palmeiras 492, Jardim Aurora, Sorriso - Mato Grosso, 78892-128, Brasil",
+    },
+    motivoServico: "Transporte para reunião",
+    distanciaMetros: null,
+    duracaoSegundos: null,
+    canceladoPor: null,
+    motivoCancelamento: null,
+    timestamps: {
+      solicitadaEm: "2026-04-22T20:38:17.571Z",
+      aceitaEm: "2026-04-22T20:38:21.967Z",
+      iniciadaEm: "2026-04-22T20:38:28.968Z",
+    },
+    createdAt: "2026-04-22T20:38:17.571Z",
+    updatedAt: "2026-04-22T20:39:05.128Z",
+    motorista: {
+      id: "019db519-e90f-707a-a846-270683043600",
+      servidorId: "019db515-2d1a-75fa-9015-563c933cf793",
+      cnhCategoria: "AB",
+      statusOperacional: "EM_CORRIDA",
+      notaMedia: 5,
+      totalAvaliacoes: 6,
+    },
+    veiculo: {
+      id: "019db567-56b8-72af-bb30-8a4ef1c44258",
+      placa: "VEI0C90",
+      modelo: "Gol g5",
+      ano: 2024,
+      tipo: "sedan",
+    },
+    avaliacao: null,
   },
   {
-    id: "run-002",
-    title: "Emergency Transfer",
-    description: "Immediate transport to medical facility",
-    status: "ASSIGNED",
-    priority: "CRITICAL",
-    departmentId: "dept-002",
-    agentId: "agent-002",
-    createdBy: "user-002",
-    createdAt: "2026-04-15T09:10:00Z",
-    updatedAt: "2026-04-15T09:20:00Z",
-    scheduledAt: "2026-04-15T10:00:00Z",
+    id: "019db6c2-6cca-77e6-b05f-c178a4e414c6",
+    status: RunStatus.AVALIADA,
+    passageiroId: "019db503-d53e-73c3-ad1a-5792f378bb11",
+    motoristaId: "019db519-e90f-707a-a846-270683043600",
+    veiculoId: "019db567-56b8-72af-bb30-8a4ef1c44258",
+    origem: {
+      lat: -12.544812,
+      lng: -55.7273934,
+      endereco: "Prefeitura Municipal, Sorriso - MT",
+    },
+    destino: {
+      lat: -12.554074,
+      lng: -55.737994,
+      endereco: "Hospital Municipal, Sorriso - MT",
+    },
+    motivoServico: "Transporte médico",
+    distanciaMetros: 1200,
+    duracaoSegundos: 636,
+    canceladoPor: null,
+    motivoCancelamento: null,
+    timestamps: {
+      solicitadaEm: "2026-04-22T19:54:48.394Z",
+      aceitaEm: "2026-04-22T19:54:50.697Z",
+      embarqueEm: "2026-04-22T20:00:54.347Z",
+      iniciadaEm: "2026-04-22T19:58:23.457Z",
+      concluidaEm: "2026-04-22T20:11:31.244Z",
+    },
+    createdAt: "2026-04-22T19:54:48.394Z",
+    updatedAt: "2026-04-22T20:11:37.874Z",
+    motorista: {
+      id: "019db519-e90f-707a-a846-270683043600",
+      servidorId: "019db515-2d1a-75fa-9015-563c933cf793",
+      cnhCategoria: "AB",
+      statusOperacional: "DISPONIVEL",
+      notaMedia: 5,
+      totalAvaliacoes: 6,
+    },
+    veiculo: {
+      id: "019db567-56b8-72af-bb30-8a4ef1c44258",
+      placa: "VEI0C90",
+      modelo: "Gol g5",
+      ano: 2024,
+      tipo: "sedan",
+    },
+    avaliacao: {
+      nota: 5,
+      comentario: "Excelente serviço",
+      createdAt: "2026-04-22T20:11:37.854Z",
+    },
   },
   {
-    id: "run-003",
-    title: "Vehicle Maintenance Check",
-    description: "Preventive maintenance verification",
-    status: "IN_PROGRESS",
-    priority: "MEDIUM",
-    departmentId: "dept-001",
-    agentId: "agent-003",
-    createdBy: "user-003",
-    createdAt: "2026-04-14T16:00:00Z",
-    updatedAt: "2026-04-15T07:30:00Z",
-    scheduledAt: null,
+    id: "019db667-1052-772c-9454-5a01c2995056",
+    status: RunStatus.CANCELADA,
+    passageiroId: "019db503-d53e-73c3-ad1a-5792f378bb11",
+    motoristaId: null,
+    veiculoId: null,
+    origem: {
+      lat: -12.544812,
+      lng: -55.7273934,
+      endereco: "Secretaria de Educação, Sorriso - MT",
+    },
+    destino: {
+      lat: -12.554074,
+      lng: -55.737994,
+      endereco: "Escola Municipal, Sorriso - MT",
+    },
+    motivoServico: "Visita técnica",
+    distanciaMetros: null,
+    duracaoSegundos: null,
+    canceladoPor: "019db503-d53e-73c3-ad1a-5792f378bb11",
+    motivoCancelamento: "Reunião cancelada",
+    timestamps: {
+      solicitadaEm: "2026-04-22T18:15:00.946Z",
+      canceladaEm: "2026-04-22T18:40:48.527Z",
+    },
+    createdAt: "2026-04-22T18:15:00.946Z",
+    updatedAt: "2026-04-22T18:40:48.527Z",
+    motorista: null,
+    veiculo: null,
+    avaliacao: null,
   },
 ];
 
@@ -130,30 +166,10 @@ export const runsFixture: RunListItem[] = [
  * @returns Run detail payload
  */
 export function makeRunDetail(runId: string): RunDetail {
-  const base = runsFixture.find((item) => item.id === runId) ?? runsFixture[0];
-
-  return {
-    id: runId,
-    title: base.title,
-    status: base.status,
-    departmentId: base.departmentId,
-    agentId: base.agentId,
-    history: [
-      {
-        status: "PENDING",
-        timestamp: "2026-04-15T08:00:00Z",
-        actorId: base.createdBy,
-        actorRole: "DISPATCHER",
-        note: null,
-      },
-      {
-        status: base.status,
-        timestamp: base.updatedAt,
-        actorId: "user-supervisor",
-        actorRole: "SUPERVISOR",
-        note: null,
-        isOverride: false,
-      },
-    ],
-  };
+  const base = runsFixture.find((item) => item.id === runId);
+  if (!base) {
+    // Return first fixture as fallback
+    return runsFixture[0];
+  }
+  return base;
 }

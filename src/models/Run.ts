@@ -6,6 +6,7 @@ export enum RunStatus {
   AGUARDANDO_ACEITE = "aguardando_aceite",
   ACEITA = "aceita",
   EM_ROTA = "em_rota",
+  PASSAGEIRO_A_BORDO = "passageiro_a_bordo",
   CONCLUIDA = "concluida",
   AVALIADA = "avaliada",
   CANCELADA = "cancelada",
@@ -14,12 +15,15 @@ export enum RunStatus {
 
 /**
  * Geographic coordinate for origin/destination.
+ * The API now returns the resolved address string alongside coordinates.
  */
 export interface RunCoordinate {
   /** Latitude in decimal degrees. */
   lat: number;
   /** Longitude in decimal degrees. */
   lng: number;
+  /** Human-readable address resolved by the backend, or null if not yet available. */
+  endereco: string | null;
 }
 
 /**
@@ -29,6 +33,50 @@ export interface MotoristaPosition {
   lat: number;
   lng: number;
   updatedAt: string;
+}
+
+/**
+ * Embedded motorista summary returned inside a corrida.
+ */
+export interface RunMotorista {
+  id: string;
+  servidorId: string;
+  cnhCategoria: string;
+  statusOperacional: string;
+  notaMedia: number | null;
+  totalAvaliacoes: number;
+}
+
+/**
+ * Embedded vehicle summary returned inside a corrida.
+ */
+export interface RunVeiculo {
+  id: string;
+  placa: string;
+  modelo: string;
+  ano: number;
+  tipo: string;
+}
+
+/**
+ * Embedded rating (avaliação) returned inside a corrida.
+ */
+export interface RunAvaliacao {
+  nota: number;
+  comentario: string | null;
+  createdAt: string;
+}
+
+/**
+ * Lifecycle timestamps for a corrida.
+ */
+export interface RunTimestamps {
+  solicitadaEm?: string | null;
+  aceitaEm?: string | null;
+  embarqueEm?: string | null;
+  iniciadaEm?: string | null;
+  concluidaEm?: string | null;
+  canceladaEm?: string | null;
 }
 
 /**
@@ -46,9 +94,9 @@ export interface Run {
   motoristaId: string | null;
   /** Assigned vehicle identifier, or null if not yet assigned. */
   veiculoId: string | null;
-  /** Origin coordinate. */
+  /** Origin coordinate with resolved address. */
   origem: RunCoordinate;
-  /** Destination coordinate. */
+  /** Destination coordinate with resolved address. */
   destino: RunCoordinate;
   /** Distance in meters, or null if not yet calculated. */
   distanciaMetros: number | null;
@@ -58,12 +106,24 @@ export interface Run {
   motivoServico?: string | null;
   /** Additional observations (admin-created runs). */
   observacoes?: string | null;
-  /** Cancellation info, present when status is CANCELADA. */
+  /** ID of who cancelled the run, or null. */
+  canceladoPor?: string | null;
+  /** Cancellation reason, or null. */
+  motivoCancelamento?: string | null;
+  /** Legacy cancellation info shape (kept for backward compat). */
   cancelamento?: {
     motivo: string;
     tipoSolicitante: string;
     solicitanteId: string;
   } | null;
+  /** Lifecycle timestamps. */
+  timestamps?: RunTimestamps | null;
+  /** Embedded motorista summary, or null if not yet assigned. */
+  motorista?: RunMotorista | null;
+  /** Embedded vehicle summary, or null if not yet assigned. */
+  veiculo?: RunVeiculo | null;
+  /** Embedded rating, or null if not yet rated. */
+  avaliacao?: RunAvaliacao | null;
   /** Current motorista position (active runs only). */
   motoristaPosition?: MotoristaPosition | null;
   /** ISO 8601 timestamp when the corrida was created. */

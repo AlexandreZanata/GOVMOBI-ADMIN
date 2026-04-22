@@ -15,7 +15,6 @@ import { RunViewModal } from "@/components/molecules/RunViewModal";
 import { useActiveRuns } from "@/hooks/runs/useActiveRuns";
 import { useRuns } from "@/hooks/runs/useRuns";
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
-import { useReverseGeocoding } from "@/hooks/pesquisa/useReverseGeocoding";
 import { Permission, RunStatus } from "@/models";
 import type { Run } from "@/models/Run";
 
@@ -420,10 +419,14 @@ function RunRow({ run, showPosition, onView, onCancel }: RunRowProps) {
         </span>
       </td>
       <td className="hidden px-5 py-3.5 text-xs text-neutral-600 md:table-cell">
-        <AddressCell lat={run.origem.lat} lng={run.origem.lng} />
+        <span className="line-clamp-1 max-w-[180px]" title={`${run.origem.lat.toFixed(4)}, ${run.origem.lng.toFixed(4)}`}>
+          {run.origem.endereco ?? `${run.origem.lat.toFixed(4)}, ${run.origem.lng.toFixed(4)}`}
+        </span>
       </td>
       <td className="hidden px-5 py-3.5 text-xs text-neutral-600 md:table-cell">
-        <AddressCell lat={run.destino.lat} lng={run.destino.lng} />
+        <span className="line-clamp-1 max-w-[180px]" title={`${run.destino.lat.toFixed(4)}, ${run.destino.lng.toFixed(4)}`}>
+          {run.destino.endereco ?? `${run.destino.lat.toFixed(4)}, ${run.destino.lng.toFixed(4)}`}
+        </span>
       </td>
       <td className="hidden px-5 py-3.5 text-xs text-neutral-600 lg:table-cell">
         {showPosition
@@ -473,23 +476,3 @@ function RunRow({ run, showPosition, onView, onCancel }: RunRowProps) {
   );
 }
 
-// ── AddressCell ───────────────────────────────────────────────────────────────
-
-/**
- * Resolves lat/lng to a human-readable address via reverse-geocoding.
- * Falls back to truncated coordinates while loading or on error.
- */
-function AddressCell({ lat, lng }: { lat: number; lng: number }) {
-  const { data, isLoading } = useReverseGeocoding(lat, lng);
-  const coordFallback = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-
-  if (isLoading) {
-    return <span className="inline-block h-3 w-32 animate-pulse rounded bg-neutral-100" />;
-  }
-
-  return (
-    <span title={coordFallback} className="line-clamp-1 max-w-[180px]">
-      {data ?? coordFallback}
-    </span>
-  );
-}

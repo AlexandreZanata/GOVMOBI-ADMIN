@@ -11,26 +11,10 @@ import {
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
 
-interface CreateRunBody {
-  title?: string;
-  description?: string;
-  departmentId?: string;
-  priority?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-  agentId?: string | null;
-  scheduledAt?: string | null;
-}
-
-interface AssignRunBody {
-  agentId?: string;
-}
-
 interface CancelRunBody {
-  reason?: string;
-}
-
-interface OverrideRunBody {
-  targetStatus?: "PENDING" | "ASSIGNED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
-  reason?: string;
+  solicitanteId: string;
+  tipoSolicitante: "PASSAGEIRO" | "MOTORISTA" | "ADMIN";
+  motivoCancelamento: string;
 }
 
 function getLatencyMs(): number {
@@ -73,7 +57,7 @@ function applyScenario(url: URL) {
       422,
       "VALIDATION_ERROR",
       "Validation failed for request payload",
-      "reason"
+      "motivoCancelamento"
     );
   }
 
@@ -84,24 +68,24 @@ function applyScenario(url: URL) {
   return null;
 }
 
-function paginate(items: RunListItem[], page: number, pageSize: number): PaginatedResponse<RunListItem> {
-  const start = (page - 1) * pageSize;
-  const pageItems = items.slice(start, start + pageSize);
+function paginate(items: RunListItem[], page: number, limit: number): PaginatedResponse<RunListItem> {
+  const start = (page - 1) * limit;
+  const pageItems = items.slice(start, start + limit);
 
   return {
-    items: pageItems,
+    data: pageItems,
     total: items.length,
     page,
-    pageSize,
-    hasMore: start + pageSize < items.length,
+    limit,
+    totalPages: Math.ceil(items.length / limit),
   };
 }
 
 /**
- * MSW handlers for run-related endpoints.
+ * MSW handlers for run-related endpoints - aligned with new API structure.
  */
 export const runsHandlers = [
-  http.get(`${BASE_URL}/v1/runs`, async ({ request }) => {
+  http.get(`${BASE_URL}/corridas`, async ({ request }) => {
     await delay(getLatencyMs());
 
     const url = new URL(request.url);
@@ -111,23 +95,18 @@ export const runsHandlers = [
     }
 
     const status = url.searchParams.get("status");
-    const departmentId = url.searchParams.get("departmentId");
-    const agentId = url.searchParams.get("agentId");
     const page = Number(url.searchParams.get("page") ?? "1");
-    const pageSize = Number(url.searchParams.get("pageSize") ?? "25");
+    const limit = Number(url.searchParams.get("limit") ?? "10");
 
     const filtered = runsFixture.filter((run) => {
       const matchesStatus = status ? run.status === status : true;
-      const matchesDepartment = departmentId ? run.departmentId === departmentId : true;
-      const matchesAgent = agentId ? run.agentId === agentId : true;
-
-      return matchesStatus && matchesDepartment && matchesAgent;
+      return matchesStatus;
     });
 
-    return HttpResponse.json(paginate(filtered, page, pageSize), { status: 200 });
+    return HttpResponse.json(paginate(filtered, page, limit), { status: 200 });
   }),
 
-  http.get(`${BASE_URL}/v1/runs/:id`, async ({ params, request }) => {
+  http.get(`${BASE_URL}/corridas/:id`, async ({ params, request }) => {
     await delay(getLatencyMs());
 
     const url = new URL(request.url);
@@ -137,89 +116,15 @@ export const runsHandlers = [
     }
 
     const runId = String(params.id);
-    const fixtureExists = runsFixture.some((run) => run.id === runId);
-    if (!fixtureExists) {
+    const run = makeRunDetail(runId);
+    if (!run) {
       return errorResponse(404, "NOT_FOUND", "Run not found");
     }
 
-    return HttpResponse.json(makeRunDetail(runId), { status: 200 });
+    return HttpResponse.json(run, { status: 200 });
   }),
 
-  http.post(`${BASE_URL}/v1/runs`, async ({ request }) => {
-    await delay(getLatencyMs());
-
-    const url = new URL(request.url);
-    const scenarioResult = applyScenario(url);
-    if (scenarioResult) {
-      return scenarioResult;
-    }
-
-    const body = (await request.json()) as CreateRunBody;
-    if (!body.title?.trim()) {
-      return errorResponse(
-        422,
-        "VALIDATION_ERROR",
-        "Title is required",
-        "title"
-      );
-    }
-
-    const created: RunDetail = {
-      id: "run-created",
-      title: body.title,
-      status: "PENDING",
-      departmentId: body.departmentId ?? "dept-001",
-      agentId: body.agentId ?? null,
-      history: [
-        {
-          status: "PENDING",
-          timestamp: new Date().toISOString(),
-          actorId: "user-dispatcher",
-          actorRole: "DISPATCHER",
-          note: null,
-        },
-      ],
-    };
-
-    return HttpResponse.json(created, { status: 201 });
-  }),
-
-  http.post(`${BASE_URL}/v1/runs/:id/assign`, async ({ params, request }) => {
-    await delay(getLatencyMs());
-
-    const url = new URL(request.url);
-    const scenarioResult = applyScenario(url);
-    if (scenarioResult) {
-      return scenarioResult;
-    }
-
-    const body = (await request.json()) as AssignRunBody;
-    if (!body.agentId?.trim()) {
-      return errorResponse(
-        422,
-        "VALIDATION_ERROR",
-        "Agent id is required",
-        "agentId"
-      );
-    }
-
-    const runId = String(params.id);
-    const base = runsFixture.find((run) => run.id === runId);
-    if (!base) {
-      return errorResponse(404, "NOT_FOUND", "Run not found");
-    }
-
-    return HttpResponse.json(
-      {
-        ...makeRunDetail(runId),
-        status: "ASSIGNED",
-        agentId: body.agentId,
-      },
-      { status: 200 }
-    );
-  }),
-
-  http.post(`${BASE_URL}/v1/runs/:id/cancel`, async ({ params, request }) => {
+  http.post(`${BASE_URL}/corridas/:id/cancelar`, async ({ params, request }) => {
     await delay(getLatencyMs());
 
     const url = new URL(request.url);
@@ -229,12 +134,30 @@ export const runsHandlers = [
     }
 
     const body = (await request.json()) as CancelRunBody;
-    if (!body.reason?.trim()) {
+    if (!body.motivoCancelamento?.trim()) {
       return errorResponse(
         422,
         "VALIDATION_ERROR",
-        "Reason is required for cancellation",
-        "reason"
+        "Motivo de cancelamento é obrigatório",
+        "motivoCancelamento"
+      );
+    }
+
+    if (!body.solicitanteId?.trim()) {
+      return errorResponse(
+        422,
+        "VALIDATION_ERROR",
+        "ID do solicitante é obrigatório",
+        "solicitanteId"
+      );
+    }
+
+    if (!body.tipoSolicitante) {
+      return errorResponse(
+        422,
+        "VALIDATION_ERROR",
+        "Tipo de solicitante é obrigatório",
+        "tipoSolicitante"
       );
     }
 
@@ -247,105 +170,13 @@ export const runsHandlers = [
     return HttpResponse.json(
       {
         ...makeRunDetail(runId),
-        status: "CANCELLED",
-      },
-      { status: 200 }
-    );
-  }),
-
-  http.post(`${BASE_URL}/v1/runs/:id/override`, async ({ params, request }) => {
-    await delay(getLatencyMs());
-
-    const url = new URL(request.url);
-    const scenarioResult = applyScenario(url);
-    if (scenarioResult) {
-      return scenarioResult;
-    }
-
-    const body = (await request.json()) as OverrideRunBody;
-    if (!body.reason?.trim()) {
-      return errorResponse(
-        422,
-        "VALIDATION_ERROR",
-        "Reason is required for override",
-        "reason"
-      );
-    }
-
-    if (!body.targetStatus) {
-      return errorResponse(
-        422,
-        "VALIDATION_ERROR",
-        "Target status is required",
-        "targetStatus"
-      );
-    }
-
-    const runId = String(params.id);
-    const base = runsFixture.find((run) => run.id === runId);
-    if (!base) {
-      return errorResponse(404, "NOT_FOUND", "Run not found");
-    }
-
-    return HttpResponse.json(
-      {
-        ...makeRunDetail(runId),
-        status: body.targetStatus,
-        history: [
-          ...makeRunDetail(runId).history,
-          {
-            status: body.targetStatus,
-            timestamp: new Date().toISOString(),
-            actorId: "user-supervisor",
-            actorRole: "SUPERVISOR",
-            note: body.reason,
-            isOverride: true,
-          },
-        ],
-      },
-      { status: 200 }
-    );
-  }),
-
-  http.patch(`${BASE_URL}/v1/runs/:id/override`, async ({ params, request }) => {
-    await delay(getLatencyMs());
-
-    const url = new URL(request.url);
-    const scenarioResult = applyScenario(url);
-    if (scenarioResult) {
-      return scenarioResult;
-    }
-
-    const body = (await request.json()) as OverrideRunBody;
-    if (!body.reason?.trim()) {
-      return errorResponse(
-        422,
-        "VALIDATION_ERROR",
-        "Reason is required for override",
-        "reason"
-      );
-    }
-
-    const runId = String(params.id);
-    const base = runsFixture.find((run) => run.id === runId);
-    if (!base) {
-      return errorResponse(404, "NOT_FOUND", "Run not found");
-    }
-
-    return HttpResponse.json(
-      {
-        ...makeRunDetail(runId),
-        history: [
-          ...makeRunDetail(runId).history,
-          {
-            status: makeRunDetail(runId).status,
-            timestamp: new Date().toISOString(),
-            actorId: "user-supervisor",
-            actorRole: "SUPERVISOR",
-            note: body.reason,
-            isOverride: true,
-          },
-        ],
+        status: "cancelada",
+        canceladoPor: body.solicitanteId,
+        motivoCancelamento: body.motivoCancelamento,
+        timestamps: {
+          ...base.timestamps,
+          canceladaEm: new Date().toISOString(),
+        },
       },
       { status: 200 }
     );
