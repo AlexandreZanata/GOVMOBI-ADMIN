@@ -12,6 +12,8 @@
   "page": {
     "title": "Corridas",
     "accessDenied": "Acesso negado",
+    "searchPlaceholder": "Buscar por ID da corrida...",
+    "totalRuns": "corridas",
     "tabs": {
       "all": "Todas",
       "ativas": "Ativas"
@@ -44,7 +46,8 @@
     "distancia": "Distância",
     "duracao": "Duração",
     "createdAt": "Criada em",
-    "posicao": "Posição motorista"
+    "posicao": "Posição motorista",
+    "actions": "Ações"
   },
   "dialogs": {
     "override": {
