@@ -14,6 +14,7 @@ import { MotoristaStatusDialog } from "@/components/molecules/MotoristaStatusDia
 import { MotoristaVeiculoDialog } from "@/components/molecules/MotoristaVeiculoDialog";
 import { MotoristaViewModal } from "@/components/molecules/MotoristaViewModal";
 import { useMotoristas } from "@/hooks/motoristas/useMotoristas";
+import { useServidores } from "@/hooks/servidores/useServidores";
 import { filterByAtivo } from "@/lib/filterByAtivo";
 import type { AtivoFilter } from "@/lib/filterByAtivo";
 import { Permission } from "@/models";
@@ -31,6 +32,14 @@ const STATUS_CLASSES: Record<string, string> = {
 export function MotoristasPageClient() {
   const { t } = useTranslation("motoristas");
   const { data, isLoading, isError, refetch } = useMotoristas();
+  const { data: servidores = [] } = useServidores();
+
+  // Build a fast id→nome lookup
+  const servidorNomeMap = useMemo(() => {
+    const map = new Map<string, string>();
+    servidores.forEach((s) => map.set(s.id, s.nome));
+    return map;
+  }, [servidores]);
 
   const [filter, setFilter] = useState<AtivoFilter>("all");
   const [search, setSearch] = useState("");
@@ -49,9 +58,9 @@ export function MotoristasPageClient() {
     return byStatus.filter((m) =>
       m.cnhNumero.toLowerCase().includes(term) ||
       m.cnhCategoria.toLowerCase().includes(term) ||
-      m.servidorId.toLowerCase().includes(term)
+      (servidorNomeMap.get(m.servidorId) ?? "").toLowerCase().includes(term)
     );
-  }, [byStatus, search]);
+  }, [byStatus, search, servidorNomeMap]);
 
   const handleOpenCreate = () => { setEditTarget(undefined); setFormOpen(true); };
   const handleOpenEdit = (m: Motorista) => { setEditTarget(m); setFormOpen(true); };
@@ -82,6 +91,7 @@ export function MotoristasPageClient() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-neutral-100 bg-neutral-50">
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("table.servidor")}</th>
               <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("table.cnhNumero")}</th>
               <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("table.cnhCategoria")}</th>
               <th className="hidden px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500 md:table-cell">{t("table.statusOperacional")}</th>
@@ -95,6 +105,7 @@ export function MotoristasPageClient() {
               <MotoristaRow
                 key={motorista.id}
                 motorista={motorista}
+                servidorNome={servidorNomeMap.get(motorista.servidorId)}
                 onView={setViewTarget}
                 onEdit={handleOpenEdit}
                 onUpdateStatus={setStatusTarget}
@@ -144,7 +155,7 @@ export function MotoristasPageClient() {
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por CNH ou categoria..."
+              placeholder="Buscar por nome, CNH ou categoria..."
               aria-label="Buscar motoristas"
               className="h-9 w-full rounded-lg border border-neutral-200 bg-neutral-50 pl-9 pr-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-brand-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
             />
@@ -222,6 +233,7 @@ export function MotoristasPageClient() {
 
 interface MotoristaRowProps {
   motorista: Motorista;
+  servidorNome: string | undefined;
   onView: (m: Motorista) => void;
   onEdit: (m: Motorista) => void;
   onUpdateStatus: (m: Motorista) => void;
@@ -229,13 +241,20 @@ interface MotoristaRowProps {
   onVeiculo: (m: Motorista) => void;
 }
 
-function MotoristaRow({ motorista, onView, onEdit, onUpdateStatus, onDesativar, onVeiculo }: MotoristaRowProps) {
+function MotoristaRow({ motorista, servidorNome, onView, onEdit, onUpdateStatus, onDesativar, onVeiculo }: MotoristaRowProps) {
   const { t } = useTranslation("motoristas");
   const opStatusClass = STATUS_CLASSES[motorista.statusOperacional] ?? "bg-neutral-100 text-neutral-500";
 
   return (
     <tr data-testid={`motorista-row-${motorista.id}`} className="transition-colors hover:bg-neutral-50/60">
-      <td className="px-5 py-3.5 font-medium text-neutral-900">{motorista.cnhNumero}</td>
+      {/* Servidor name — first column */}
+      <td className="px-5 py-3.5">
+        <p className="font-medium text-neutral-900">
+          {servidorNome ?? <span className="text-neutral-400">—</span>}
+        </p>
+      </td>
+
+      <td className="px-5 py-3.5 text-neutral-700">{motorista.cnhNumero}</td>
 
       <td className="px-5 py-3.5">
         <span className="inline-flex items-center rounded-md bg-neutral-100 px-2 py-0.5 text-xs font-semibold text-neutral-700">

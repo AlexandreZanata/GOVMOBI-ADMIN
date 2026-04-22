@@ -13,6 +13,7 @@
     }
   },
   "table": {
+    "servidor": "Servidor",
     "cnhNumero": "Numero da CNH",
     "cnhCategoria": "Categoria da CNH",
     "statusOperacional": "Status operacional",
