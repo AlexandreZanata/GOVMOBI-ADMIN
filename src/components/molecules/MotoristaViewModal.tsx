@@ -15,11 +15,9 @@ export interface MotoristaViewModalProps {
 }
 
 const OP_STATUS_CLASSES: Record<string, string> = {
-  DISPONIVEL:   "bg-success/10 text-success ring-1 ring-success/20",
-  EM_SERVICO:   "bg-info/10 text-info ring-1 ring-info/20",
-  INDISPONIVEL: "bg-warning/10 text-warning ring-1 ring-warning/20",
-  AFASTADO:     "bg-neutral-100 text-neutral-500 ring-1 ring-neutral-200",
-  OFFLINE:      "bg-neutral-100 text-neutral-500 ring-1 ring-neutral-200",
+  DISPONIVEL:  "bg-success/10 text-success ring-1 ring-success/20",
+  EM_CORRIDA:  "bg-brand-primary/10 text-brand-primary ring-1 ring-brand-primary/20",
+  OFFLINE:     "bg-neutral-100 text-neutral-500 ring-1 ring-neutral-200",
 };
 
 /**

@@ -6,13 +6,13 @@ export type CnhCategoria = "A" | "B" | "AB" | "C" | "D" | "E";
 
 /**
  * Operational status of a motorista (driver).
- * The API may return additional values not listed here — use string as fallback.
+ * - DISPONIVEL: in shift, ready to receive rides
+ * - EM_CORRIDA: executing an active ride — managed exclusively by the system
+ * - OFFLINE: off shift or disconnected by inactivity
  */
 export type MotoristaStatusOperacional =
   | "DISPONIVEL"
-  | "EM_SERVICO"
-  | "INDISPONIVEL"
-  | "AFASTADO"
+  | "EM_CORRIDA"
   | "OFFLINE"
   | (string & Record<never, never>); // allow unknown values without breaking TS
 

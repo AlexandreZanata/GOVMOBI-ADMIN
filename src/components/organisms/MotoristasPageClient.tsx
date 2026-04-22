@@ -20,10 +20,9 @@ import { Permission } from "@/models";
 import type { Motorista } from "@/models/Motorista";
 
 const STATUS_CLASSES: Record<string, string> = {
-  DISPONIVEL:   "bg-success/10 text-success",
-  EM_SERVICO:   "bg-info/10 text-info",
-  INDISPONIVEL: "bg-warning/10 text-warning",
-  AFASTADO:     "bg-neutral-100 text-neutral-500",
+  DISPONIVEL:  "bg-success/10 text-success",
+  EM_CORRIDA:  "bg-brand-primary/10 text-brand-primary",
+  OFFLINE:     "bg-neutral-100 text-neutral-500",
 };
 
 /**

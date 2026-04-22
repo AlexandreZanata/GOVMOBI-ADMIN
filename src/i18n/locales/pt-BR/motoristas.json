@@ -53,9 +53,7 @@
     "active": "Ativo",
     "inactive": "Inativo",
     "DISPONIVEL": "Disponível",
-    "EM_SERVICO": "Em serviço",
-    "INDISPONIVEL": "Indisponível",
-    "AFASTADO": "Afastado",
+    "EM_CORRIDA": "Em corrida",
     "OFFLINE": "Offline"
   },
   "toast": {
