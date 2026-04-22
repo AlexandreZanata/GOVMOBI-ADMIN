@@ -67,7 +67,10 @@ export function MotoristaDesativarDialog({
         </div>
       }
     >
-      <p className="text-sm text-neutral-700">{motorista.cnhNumero}</p>
+      <p className="text-sm text-neutral-700">
+        {t(isActive ? "delete.confirmation" : "delete.reativarConfirmation", { cnhNumero: motorista.cnhNumero })}
+      </p>
+      <p className="mt-1 text-xs text-neutral-500">{t("delete.reversible")}</p>
     </Modal>
   );
 }

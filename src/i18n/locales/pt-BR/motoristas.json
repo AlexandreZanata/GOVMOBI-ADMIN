@@ -57,6 +57,11 @@
     "EM_CORRIDA": "Em corrida",
     "OFFLINE": "Offline"
   },
+  "delete": {
+    "confirmation": "Deseja desativar o motorista com CNH \"{{cnhNumero}}\"?",
+    "reativarConfirmation": "Deseja reativar o motorista com CNH \"{{cnhNumero}}\"?",
+    "reversible": "Esta ação pode ser revertida."
+  },
   "toast": {
     "created": "Motorista cadastrado com sucesso.",
     "updated": "Motorista atualizado com sucesso.",
