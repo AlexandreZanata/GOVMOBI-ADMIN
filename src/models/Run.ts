@@ -114,9 +114,11 @@ export interface CreateAdminRunResponse {
 
 /**
  * Input for POST /corridas/{id}/cancelar.
- * The backend resolves solicitante and tipoSolicitante from the JWT.
+ * Backend DTO requires solicitanteId, motivo and tipoSolicitante.
  */
 export interface CancelRunInput {
   id: string;
+  solicitanteId: string;
   motivo: string;
+  tipoSolicitante: "passageiro" | "motorista" | "admin";
 }

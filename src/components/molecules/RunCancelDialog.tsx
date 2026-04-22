@@ -11,18 +11,20 @@ export interface RunCancelDialogProps {
   open: boolean;
   onClose: () => void;
   runId: string;
+  /** ID of the admin user performing the cancellation (sent as solicitanteId). */
+  solicitanteId: string;
   "data-testid"?: string;
 }
 
 /**
  * Confirmation dialog for cancelling an active corrida.
  * POST /corridas/{id}/cancelar
- * The backend resolves the solicitante from the JWT — only motivo is required.
  */
 export function RunCancelDialog({
   open,
   onClose,
   runId,
+  solicitanteId,
   "data-testid": testId,
 }: RunCancelDialogProps): React.ReactElement | null {
   const { t } = useTranslation("runs");
@@ -32,7 +34,12 @@ export function RunCancelDialog({
   const handleConfirm = async (): Promise<void> => {
     if (!motivo.trim()) return;
     await cancelMutation.mutateAsync(
-      { id: runId, motivo: motivo.trim() },
+      {
+        id: runId,
+        solicitanteId,
+        motivo: motivo.trim(),
+        tipoSolicitante: "passageiro", // admin uses passageiro as tipoSolicitante
+      },
       {
         onSuccess: () => {
           setMotivo("");

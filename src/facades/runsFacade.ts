@@ -46,14 +46,14 @@ export const runsFacade = {
   /**
    * Cancels an active corrida.
    * POST /corridas/{id}/cancelar
-   * Admin sends only { motivo } — the system resolves the solicitante from JWT.
+   * Backend DTO requires solicitanteId (UUID) and tipoSolicitante.
    */
   async cancelRun(input: CancelRunInput): Promise<void> {
-    const { id, motivo } = input;
+    const { id, solicitanteId, motivo, tipoSolicitante } = input;
     const response = await fetchWithAuth(`${baseUrl()}/corridas/${id}/cancelar`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ motivo }),
+      body: JSON.stringify({ solicitanteId, motivo, tipoSolicitante }),
     });
     if (!response.ok) {
       await handleApiResponse<never>(response);
