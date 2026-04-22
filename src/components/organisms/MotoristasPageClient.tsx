@@ -12,6 +12,7 @@ import { MotoristaDesativarDialog } from "@/components/molecules/MotoristaDesati
 import { MotoristaFormDialog } from "@/components/molecules/MotoristaFormDialog";
 import { MotoristaStatusDialog } from "@/components/molecules/MotoristaStatusDialog";
 import { MotoristaVeiculoDialog } from "@/components/molecules/MotoristaVeiculoDialog";
+import { MotoristaViewModal } from "@/components/molecules/MotoristaViewModal";
 import { useMotoristas } from "@/hooks/motoristas/useMotoristas";
 import { filterByAtivo } from "@/lib/filterByAtivo";
 import type { AtivoFilter } from "@/lib/filterByAtivo";
@@ -39,6 +40,7 @@ export function MotoristasPageClient() {
   const [statusTarget, setStatusTarget] = useState<Motorista | undefined>();
   const [desativarTarget, setDesativarTarget] = useState<Motorista | undefined>();
   const [veiculoTarget, setVeiculoTarget] = useState<Motorista | undefined>();
+  const [viewTarget, setViewTarget] = useState<Motorista | undefined>();
 
   const byStatus = useMemo(() => filterByAtivo(data ?? [], filter), [data, filter]);
 
@@ -94,6 +96,7 @@ export function MotoristasPageClient() {
               <MotoristaRow
                 key={motorista.id}
                 motorista={motorista}
+                onView={setViewTarget}
                 onEdit={handleOpenEdit}
                 onUpdateStatus={setStatusTarget}
                 onDesativar={setDesativarTarget}
@@ -205,6 +208,13 @@ export function MotoristasPageClient() {
           motorista={veiculoTarget}
         />
       )}
+
+      <MotoristaViewModal
+        data-testid="motorista-view-modal"
+        open={!!viewTarget}
+        onClose={() => setViewTarget(undefined)}
+        motorista={viewTarget}
+      />
     </Can>
   );
 }
@@ -213,13 +223,14 @@ export function MotoristasPageClient() {
 
 interface MotoristaRowProps {
   motorista: Motorista;
+  onView: (m: Motorista) => void;
   onEdit: (m: Motorista) => void;
   onUpdateStatus: (m: Motorista) => void;
   onDesativar: (m: Motorista) => void;
   onVeiculo: (m: Motorista) => void;
 }
 
-function MotoristaRow({ motorista, onEdit, onUpdateStatus, onDesativar, onVeiculo }: MotoristaRowProps) {
+function MotoristaRow({ motorista, onView, onEdit, onUpdateStatus, onDesativar, onVeiculo }: MotoristaRowProps) {
   const { t } = useTranslation("motoristas");
   const opStatusClass = STATUS_CLASSES[motorista.statusOperacional] ?? "bg-neutral-100 text-neutral-500";
 
@@ -268,6 +279,21 @@ function MotoristaRow({ motorista, onEdit, onUpdateStatus, onDesativar, onVeicul
 
       <td className="px-5 py-3.5">
         <div className="flex items-center justify-end gap-1">
+          {/* View */}
+          <button
+            type="button"
+            data-testid={`motorista-view-${motorista.id}`}
+            aria-label={t("actions.view")}
+            title={t("actions.view")}
+            onClick={() => onView(motorista)}
+            className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
+
           {/* Edit CNH */}
           <Can perform={Permission.MOTORISTA_EDIT}>
             <button
