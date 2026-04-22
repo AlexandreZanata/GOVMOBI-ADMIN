@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button, Input } from "@/components/atoms";
+import { LocationPicker } from "@/components/molecules/LocationPicker";
 import { Modal } from "@/components/molecules/Modal";
 import { ServidorPicker } from "@/components/molecules/ServidorPicker";
 import { useCreateAdminRun } from "@/hooks/runs/useCreateAdminRun";
+import type { LocationValue } from "@/components/molecules/LocationPicker";
 
 export interface RunCreateAdminDialogProps {
   open: boolean;
@@ -14,11 +16,10 @@ export interface RunCreateAdminDialogProps {
   "data-testid"?: string;
 }
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 /**
  * Admin dialog for creating a corrida on behalf of a servidor.
  * POST /admin/corridas
+ * Uses LocationPicker for origin/destination instead of raw lat/lng inputs.
  */
 export function RunCreateAdminDialog({
   open,
@@ -29,27 +30,26 @@ export function RunCreateAdminDialog({
   const createMutation = useCreateAdminRun();
 
   const [passageiroId, setPassageiroId] = useState("");
-  const [origemLat, setOrigemLat] = useState("");
-  const [origemLng, setOrigemLng] = useState("");
-  const [destinoLat, setDestinoLat] = useState("");
-  const [destinoLng, setDestinoLng] = useState("");
+  const [origem, setOrigem] = useState<LocationValue | null>(null);
+  const [destino, setDestino] = useState<LocationValue | null>(null);
   const [motivoServico, setMotivoServico] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const reset = () => {
-    setPassageiroId(""); setOrigemLat(""); setOrigemLng("");
-    setDestinoLat(""); setDestinoLng(""); setMotivoServico(""); setObservacoes("");
+    setPassageiroId("");
+    setOrigem(null);
+    setDestino(null);
+    setMotivoServico("");
+    setObservacoes("");
     setErrors({});
   };
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
     if (!passageiroId.trim()) errs.passageiroId = t("dialogs.createRun.passageiroIdRequired");
-    if (!origemLat.trim() || isNaN(Number(origemLat))) errs.origemLat = t("dialogs.createRun.origemLatRequired");
-    if (!origemLng.trim() || isNaN(Number(origemLng))) errs.origemLng = t("dialogs.createRun.origemLngRequired");
-    if (!destinoLat.trim() || isNaN(Number(destinoLat))) errs.destinoLat = t("dialogs.createRun.destinoLatRequired");
-    if (!destinoLng.trim() || isNaN(Number(destinoLng))) errs.destinoLng = t("dialogs.createRun.destinoLngRequired");
+    if (!origem) errs.origem = t("dialogs.createRun.origemRequired");
+    if (!destino) errs.destino = t("dialogs.createRun.destinoRequired");
     if (!motivoServico.trim()) errs.motivoServico = t("dialogs.createRun.motivoServicoRequired");
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -57,14 +57,14 @@ export function RunCreateAdminDialog({
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate() || !origem || !destino) return;
     await createMutation.mutateAsync(
       {
         passageiroId: passageiroId.trim(),
-        origemLat: Number(origemLat),
-        origemLng: Number(origemLng),
-        destinoLat: Number(destinoLat),
-        destinoLng: Number(destinoLng),
+        origemLat: origem.lat,
+        origemLng: origem.lng,
+        destinoLat: destino.lat,
+        destinoLng: destino.lng,
         motivoServico: motivoServico.trim(),
         observacoes: observacoes.trim() || undefined,
       },
@@ -105,73 +105,56 @@ export function RunCreateAdminDialog({
       <form
         id="run-create-admin-form"
         onSubmit={(e) => void handleSubmit(e)}
-        className="grid gap-4 sm:grid-cols-2"
+        className="flex flex-col gap-4"
         noValidate
       >
-        <div className="sm:col-span-2">
-          <ServidorPicker
-            data-testid={testId ? `${testId}-passageiroId` : "run-create-admin-passageiroId"}
-            label={t("dialogs.createRun.passageiroId")}
-            value={passageiroId}
-            onChange={setPassageiroId}
-            error={errors.passageiroId}
-            required
-          />
-        </div>
+        {/* Passageiro */}
+        <ServidorPicker
+          data-testid={testId ? `${testId}-passageiroId` : "run-create-admin-passageiroId"}
+          label={t("dialogs.createRun.passageiroId")}
+          value={passageiroId}
+          onChange={setPassageiroId}
+          error={errors.passageiroId}
+          required
+        />
+
+        {/* Origem */}
+        <LocationPicker
+          data-testid={testId ? `${testId}-origem` : "run-create-admin-origem"}
+          label={t("dialogs.createRun.origem")}
+          value={origem}
+          onChange={setOrigem}
+          error={errors.origem}
+          required
+        />
+
+        {/* Destino */}
+        <LocationPicker
+          data-testid={testId ? `${testId}-destino` : "run-create-admin-destino"}
+          label={t("dialogs.createRun.destino")}
+          value={destino}
+          onChange={setDestino}
+          error={errors.destino}
+          required
+        />
+
+        {/* Motivo */}
         <Input
-          data-testid={testId ? `${testId}-origemLat` : "run-create-admin-origemLat"}
-          label={t("dialogs.createRun.origemLat")}
-          type="number"
-          value={origemLat}
-          onChange={(e) => setOrigemLat(e.target.value)}
-          error={errors.origemLat}
+          data-testid={testId ? `${testId}-motivoServico` : "run-create-admin-motivoServico"}
+          label={t("dialogs.createRun.motivoServico")}
+          value={motivoServico}
+          onChange={(e) => setMotivoServico(e.target.value)}
+          error={errors.motivoServico}
           aria-required="true"
         />
+
+        {/* Observações */}
         <Input
-          data-testid={testId ? `${testId}-origemLng` : "run-create-admin-origemLng"}
-          label={t("dialogs.createRun.origemLng")}
-          type="number"
-          value={origemLng}
-          onChange={(e) => setOrigemLng(e.target.value)}
-          error={errors.origemLng}
-          aria-required="true"
+          data-testid={testId ? `${testId}-observacoes` : "run-create-admin-observacoes"}
+          label={t("dialogs.createRun.observacoes")}
+          value={observacoes}
+          onChange={(e) => setObservacoes(e.target.value)}
         />
-        <Input
-          data-testid={testId ? `${testId}-destinoLat` : "run-create-admin-destinoLat"}
-          label={t("dialogs.createRun.destinoLat")}
-          type="number"
-          value={destinoLat}
-          onChange={(e) => setDestinoLat(e.target.value)}
-          error={errors.destinoLat}
-          aria-required="true"
-        />
-        <Input
-          data-testid={testId ? `${testId}-destinoLng` : "run-create-admin-destinoLng"}
-          label={t("dialogs.createRun.destinoLng")}
-          type="number"
-          value={destinoLng}
-          onChange={(e) => setDestinoLng(e.target.value)}
-          error={errors.destinoLng}
-          aria-required="true"
-        />
-        <div className="sm:col-span-2">
-          <Input
-            data-testid={testId ? `${testId}-motivoServico` : "run-create-admin-motivoServico"}
-            label={t("dialogs.createRun.motivoServico")}
-            value={motivoServico}
-            onChange={(e) => setMotivoServico(e.target.value)}
-            error={errors.motivoServico}
-            aria-required="true"
-          />
-        </div>
-        <div className="sm:col-span-2">
-          <Input
-            data-testid={testId ? `${testId}-observacoes` : "run-create-admin-observacoes"}
-            label={t("dialogs.createRun.observacoes")}
-            value={observacoes}
-            onChange={(e) => setObservacoes(e.target.value)}
-          />
-        </div>
       </form>
     </Modal>
   );

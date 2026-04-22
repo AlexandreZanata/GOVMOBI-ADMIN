@@ -32,6 +32,7 @@
     },
     "actions": {
       "createRun": "Solicitar corrida",
+      "view": "Visualizar corrida",
       "cancel": "Cancelar",
       "override": "Sobrescrever"
     }
@@ -68,6 +69,8 @@
     "createRun": {
       "title": "Solicitar corrida",
       "passageiroId": "Passageiro",
+      "origem": "Local de origem",
+      "destino": "Local de destino",
       "origemLat": "Latitude de origem",
       "origemLng": "Longitude de origem",
       "destinoLat": "Latitude de destino",
@@ -78,12 +81,41 @@
       "cancel": "Cancelar",
       "passageiroIdRequired": "Selecione um passageiro.",
       "passageiroIdInvalid": "ID do passageiro deve ser um UUID válido.",
+      "origemRequired": "Selecione o local de origem.",
+      "destinoRequired": "Selecione o local de destino.",
       "origemLatRequired": "Latitude de origem é obrigatória.",
       "origemLngRequired": "Longitude de origem é obrigatória.",
       "destinoLatRequired": "Latitude de destino é obrigatória.",
       "destinoLngRequired": "Longitude de destino é obrigatória.",
-      "motivoServicoRequired": "Motivo do serviço é obrigatório."
+      "motivoServicoRequired": "Motivo do serviço é obrigatório.",
+      "locationPlaceholder": "Digite um endereço ou local..."
     }
+  },
+  "view": {
+    "title": "Corrida",
+    "rota": "Rota",
+    "origem": "Local de origem",
+    "destino": "Local de destino",
+    "distancia": "Distância",
+    "duracao": "Duração estimada",
+    "participantes": "Participantes",
+    "passageiroId": "ID do passageiro",
+    "motoristaId": "ID do motorista",
+    "veiculoId": "ID do veículo",
+    "servico": "Dados do serviço",
+    "motivoServico": "Motivo do serviço",
+    "observacoes": "Observações",
+    "cancelamento": "Cancelamento",
+    "cancelMotivo": "Motivo",
+    "cancelTipo": "Solicitante",
+    "cancelSolicitante": "ID do solicitante",
+    "posicaoMotorista": "Posição do motorista",
+    "posicaoAtual": "Localização atual",
+    "posicaoAtualizada": "Atualizado em",
+    "identificacao": "Identificação do registro",
+    "auditoria": "Auditoria",
+    "criadoEm": "Criada em",
+    "atualizadoEm": "Atualizada em"
   },
   "toast": {
     "created": "Corrida solicitada com sucesso.",
