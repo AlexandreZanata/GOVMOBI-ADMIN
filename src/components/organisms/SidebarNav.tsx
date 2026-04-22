@@ -10,6 +10,7 @@ import {
   ScrollText,
   Truck,
   UserCheck,
+  UserRound,
   Users,
   ChevronLeft,
   ChevronRight,
@@ -36,6 +37,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Building2,
   ScrollText,
   LayoutDashboard,
+  UserRound,
 };
 
 export interface SidebarNavProps {

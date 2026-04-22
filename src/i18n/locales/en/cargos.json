@@ -15,6 +15,7 @@
   "table": {
     "nome": "Name",
     "pesoPrioridade": "Priority Weight",
+    "nivelHierarquia": "Hierarchy Level",
     "status": "Status",
     "actions": "Actions"
   },
@@ -30,11 +31,14 @@
     "titleEdit": "Edit Cargo",
     "nome": "Name",
     "pesoPrioridade": "Priority Weight",
+    "nivelHierarquia": "Hierarchy Level",
     "nomeRequired": "Name is required.",
     "nomeMaxLength": "Name must be at most 100 characters.",
     "pesoPrioridadeRequired": "Priority weight is required.",
     "pesoPrioridadeMin": "Priority weight must be at least 0.",
     "pesoPrioridadeMax": "Priority weight must be at most 100.",
+    "nivelHierarquiaRequired": "Hierarchy level is required.",
+    "nivelHierarquiaMin": "Hierarchy level must be a positive integer.",
     "duplicateName": "A cargo with this name already exists.",
     "submit": "Save",
     "cancel": "Cancel"

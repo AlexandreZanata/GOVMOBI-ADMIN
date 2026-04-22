@@ -13,25 +13,40 @@
     }
   },
   "table": {
+    "servidor": "Servidor",
     "cnhNumero": "CNH Number",
     "cnhCategoria": "CNH Category",
     "statusOperacional": "Operational Status",
+    "veiculo": "Vehicle",
+    "veiculoAssociado": "Associated",
     "status": "Status",
     "actions": "Actions"
   },
   "actions": {
+    "view": "View",
     "create": "New Motorista",
     "edit": "Edit",
     "desativar": "Deactivate",
     "reativar": "Reactivate",
-    "updateStatus": "Update Status"
+    "updateStatus": "Update Status",
+    "gerenciarVeiculo": "Manage Vehicle",
+    "associarVeiculo": "Associate Vehicle",
+    "desassociarVeiculo": "Remove Vehicle"
   },
   "form": {
     "servidorId": "Servidor",
+    "servidorIdRequired": "Please select a servidor.",
     "servidorIdInvalid": "Servidor ID must be a valid UUID.",
+    "municipioId": "Municipality (UUID)",
+    "municipioIdInvalid": "Municipality ID must be a valid UUID.",
     "cnhNumero": "CNH Number",
+    "cnhNumeroRequired": "CNH number is required.",
     "cnhCategoria": "CNH Category",
     "statusOperacional": "Operational Status",
+    "veiculo": "Associated Vehicle",
+    "veiculoAtual": "Current Vehicle",
+    "selecionarVeiculo": "Select new vehicle",
+    "veiculoPlaceholder": "Select a vehicle...",
     "submit": "Save",
     "cancel": "Cancel"
   },
@@ -39,9 +54,16 @@
     "active": "Active",
     "inactive": "Inactive",
     "DISPONIVEL": "Available",
+    "EM_CORRIDA": "On a Run",
     "EM_SERVICO": "In Service",
+    "OFFLINE": "Offline",
     "INDISPONIVEL": "Unavailable",
     "AFASTADO": "On Leave"
+  },
+  "delete": {
+    "confirmation": "Do you want to deactivate the motorista with CNH \"{{cnhNumero}}\"?",
+    "reativarConfirmation": "Do you want to reactivate the motorista with CNH \"{{cnhNumero}}\"?",
+    "reversible": "This action can be reversed."
   },
   "toast": {
     "created": "Motorista registered successfully.",
@@ -49,6 +71,9 @@
     "statusUpdated": "Operational status updated.",
     "desativado": "Motorista deactivated.",
     "reativado": "Motorista reactivated.",
+    "veiculoAssociado": "Vehicle associated successfully.",
+    "veiculoDesassociado": "Vehicle removed.",
+    "veiculoJaAssociado": "Motorista already has an associated vehicle.",
     "duplicateCnh": "A motorista with this CNH number already exists.",
     "notFound": "Motorista not found.",
     "invalidData": "Invalid data. Please review the form."

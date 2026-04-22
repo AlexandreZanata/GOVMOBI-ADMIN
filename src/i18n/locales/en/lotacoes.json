@@ -19,6 +19,7 @@
   },
   "actions": {
     "create": "New Lotação",
+    "view": "View",
     "edit": "Edit",
     "delete": "Deactivate",
     "reativar": "Reactivate"
