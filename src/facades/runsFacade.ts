@@ -46,13 +46,14 @@ export const runsFacade = {
   /**
    * Cancels an active corrida.
    * POST /corridas/{id}/cancelar
+   * Admin sends only { motivo } — the system resolves the solicitante from JWT.
    */
   async cancelRun(input: CancelRunInput): Promise<void> {
-    const { id, ...body } = input;
+    const { id, motivo } = input;
     const response = await fetchWithAuth(`${baseUrl()}/corridas/${id}/cancelar`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ motivo }),
     });
     if (!response.ok) {
       await handleApiResponse<never>(response);

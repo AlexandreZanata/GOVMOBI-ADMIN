@@ -14,7 +14,6 @@ import { RunCreateAdminDialog } from "@/components/molecules/RunCreateAdminDialo
 import { RunViewModal } from "@/components/molecules/RunViewModal";
 import { useActiveRuns } from "@/hooks/runs/useActiveRuns";
 import { useRuns } from "@/hooks/runs/useRuns";
-import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
 import { useReverseGeocoding } from "@/hooks/pesquisa/useReverseGeocoding";
 import { Permission, RunStatus } from "@/models";
 import type { Run } from "@/models/Run";
@@ -44,7 +43,6 @@ type Tab = "all" | "ativas";
 
 export function RunsPageClient() {
   const { t } = useTranslation("runs");
-  const { data: currentUser } = useCurrentUser();
 
   const [tab, setTab] = useState<Tab>("all");
   const [statusFilter, setStatusFilter] = useState<string>("");
@@ -363,7 +361,6 @@ export function RunsPageClient() {
           open={!!cancelTarget}
           onClose={() => setCancelTarget(undefined)}
           runId={cancelTarget.id}
-          solicitanteId={currentUser?.id ?? ""}
         />
       )}
 
