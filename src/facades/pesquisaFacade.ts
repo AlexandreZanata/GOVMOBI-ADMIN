@@ -111,6 +111,11 @@ export const pesquisaFacade = {
       return null;
     }
 
+    // Log raw response in development to diagnose format issues
+    if (process.env.NODE_ENV === "development") {
+      console.log("[pesquisaFacade.reverseGeocoding] raw response:", JSON.stringify(json));
+    }
+
     return extractPlaceName(json);
   },
 };
