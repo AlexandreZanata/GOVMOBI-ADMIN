@@ -24,7 +24,7 @@ export interface LocationPickerProps {
 
 /**
  * Address search input backed by GET /pesquisa/geocoding.
- * Displays a dropdown of suggestions; on selection emits { lat, lng, label }.
+ * API returns: [{ address, placeName, lat, lng }, ...]
  */
 export function LocationPicker({
   label,
@@ -59,7 +59,8 @@ export function LocationPicker({
     if (value) onChange(null); // clear selection when user types again
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!q.trim() || q.trim().length < 3) {
+
+    if (!q.trim() || q.trim().length < 2) {
       setResults([]);
       setOpen(false);
       return;
@@ -81,9 +82,9 @@ export function LocationPicker({
   };
 
   const handleSelect = (feature: GeocodingFeature) => {
-    const [lng, lat] = feature.center;
-    onChange({ lat, lng, label: feature.place_name });
-    setQuery(feature.place_name);
+    // API returns lat/lng directly (not a center array)
+    onChange({ lat: feature.lat, lng: feature.lng, label: feature.placeName });
+    setQuery(feature.placeName);
     setResults([]);
     setOpen(false);
   };
@@ -96,8 +97,8 @@ export function LocationPicker({
     inputRef.current?.focus();
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape") { setOpen(false); }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Escape") setOpen(false);
   };
 
   const displayValue = value ? value.label : query;
@@ -140,7 +141,7 @@ export function LocationPicker({
           ].join(" ")}
         />
 
-        {/* Clear / loading indicator */}
+        {/* Loading spinner / clear button */}
         {loading ? (
           <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
             <svg className="h-4 w-4 animate-spin text-neutral-400" fill="none" viewBox="0 0 24 24">
@@ -165,20 +166,25 @@ export function LocationPicker({
         {open && results.length > 0 && (
           <ul
             role="listbox"
-            className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-neutral-200 bg-white py-1 shadow-lg"
+            className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-xl border border-neutral-200 bg-white py-1 shadow-lg"
           >
             {results.map((feature, idx) => (
               <li key={idx} role="option" aria-selected={false}>
                 <button
                   type="button"
-                  className="flex w-full items-start gap-2 px-3 py-2 text-left text-sm text-neutral-700 hover:bg-neutral-50 focus-visible:bg-neutral-50 focus-visible:outline-none"
+                  className="flex w-full items-start gap-2 px-3 py-2.5 text-left text-sm text-neutral-700 hover:bg-neutral-50 focus-visible:bg-neutral-50 focus-visible:outline-none"
                   onClick={() => handleSelect(feature)}
                 >
                   <svg className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                   </svg>
-                  <span className="line-clamp-2">{feature.place_name}</span>
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-neutral-900">{feature.placeName}</p>
+                    {feature.address !== feature.placeName && (
+                      <p className="truncate text-xs text-neutral-400">{feature.address}</p>
+                    )}
+                  </div>
                 </button>
               </li>
             ))}
@@ -186,7 +192,7 @@ export function LocationPicker({
         )}
       </div>
 
-      {/* Selected coords chip */}
+      {/* Selected coords */}
       {value && (
         <p className="text-xs text-neutral-400">
           {value.lat.toFixed(6)}, {value.lng.toFixed(6)}
