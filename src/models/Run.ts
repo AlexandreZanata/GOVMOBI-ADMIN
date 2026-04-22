@@ -7,6 +7,7 @@ export enum RunStatus {
   ACEITA = "aceita",
   EM_ROTA = "em_rota",
   CONCLUIDA = "concluida",
+  AVALIADA = "avaliada",
   CANCELADA = "cancelada",
   EXPIRADA = "expirada",
 }
@@ -19,6 +20,15 @@ export interface RunCoordinate {
   lat: number;
   /** Longitude in decimal degrees. */
   lng: number;
+}
+
+/**
+ * Motorista position included in active runs response.
+ */
+export interface MotoristaPosition {
+  lat: number;
+  lng: number;
+  updatedAt: string;
 }
 
 /**
@@ -44,6 +54,18 @@ export interface Run {
   distanciaMetros: number | null;
   /** Duration in seconds, or null if not yet calculated. */
   duracaoSegundos: number | null;
+  /** Service reason (admin-created runs). */
+  motivoServico?: string | null;
+  /** Additional observations (admin-created runs). */
+  observacoes?: string | null;
+  /** Cancellation info, present when status is CANCELADA. */
+  cancelamento?: {
+    motivo: string;
+    tipoSolicitante: string;
+    solicitanteId: string;
+  } | null;
+  /** Current motorista position (active runs only). */
+  motoristaPosition?: MotoristaPosition | null;
   /** ISO 8601 timestamp when the corrida was created. */
   createdAt: string;
   /** ISO 8601 timestamp of the last update. */
@@ -68,4 +90,34 @@ export interface CorridasFilters {
   page?: number;
   limit?: number;
   status?: RunStatus | string;
+}
+
+/**
+ * Input for POST /admin/corridas — admin-initiated run.
+ */
+export interface CreateAdminRunInput {
+  passageiroId: string;
+  origemLat: number;
+  origemLng: number;
+  destinoLat: number;
+  destinoLng: number;
+  motivoServico: string;
+  observacoes?: string;
+}
+
+/**
+ * Response from POST /admin/corridas.
+ */
+export interface CreateAdminRunResponse {
+  corridaId: string;
+}
+
+/**
+ * Input for POST /corridas/{id}/cancelar.
+ */
+export interface CancelRunInput {
+  id: string;
+  solicitanteId: string;
+  motivo: string;
+  tipoSolicitante: "passageiro" | "motorista" | "admin";
 }
