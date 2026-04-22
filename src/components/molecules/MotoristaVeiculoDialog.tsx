@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Search, X, Car } from "lucide-react";
+import { Search, X, Car, AlertTriangle } from "lucide-react";
 
 import { Button } from "@/components/atoms";
 import { Modal } from "@/components/molecules/Modal";
@@ -10,6 +10,7 @@ import { useAssociarVeiculo } from "@/hooks/motoristas/useAssociarVeiculo";
 import { useDesassociarVeiculo } from "@/hooks/motoristas/useDesassociarVeiculo";
 import { useVeiculoDoMotorista } from "@/hooks/motoristas/useVeiculoDoMotorista";
 import { useVeiculos } from "@/hooks/veiculos/useVeiculos";
+import { ApiError } from "@/types";
 import type { Motorista } from "@/models/Motorista";
 import type { Veiculo } from "@/models/Veiculo";
 
@@ -20,15 +21,6 @@ export interface MotoristaVeiculoDialogProps {
   "data-testid"?: string;
 }
 
-/**
- * Dialog for associating or removing a vehicle from a motorista.
- * Features:
- * - Pre-selects the currently associated vehicle
- * - Searchable list filtered by placa or modelo
- * - Keyboard navigation (↑↓ Enter Escape)
- * POST /frota/motoristas/{id}/veiculo
- * DELETE /frota/motoristas/{id}/veiculo
- */
 export function MotoristaVeiculoDialog({
   open,
   onClose,
@@ -40,21 +32,18 @@ export function MotoristaVeiculoDialog({
   const associarMutation = useAssociarVeiculo();
   const desassociarMutation = useDesassociarVeiculo();
 
-  // Fetch the actual associated vehicle from the dedicated endpoint
   const { data: currentVeiculo } = useVeiculoDoMotorista(open ? motorista.id : null);
 
   const listboxId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Selected vehicle — pre-populate with current association
   const [selectedVeiculo, setSelectedVeiculo] = useState<Veiculo | null>(null);
   const [query, setQuery] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [inlineError, setInlineError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Sync pre-selection when motorista or veiculos list changes
-  // Use the dedicated endpoint result (currentVeiculo) as source of truth
   useEffect(() => {
     if (currentVeiculo) {
       setSelectedVeiculo(currentVeiculo);
@@ -66,7 +55,11 @@ export function MotoristaVeiculoDialog({
     }
   }, [currentVeiculo, motorista.veiculoId, veiculos]);
 
-  // Close dropdown on outside click
+  // Reset error when dialog opens/closes
+  useEffect(() => {
+    if (open) setInlineError(null);
+  }, [open]);
+
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -79,14 +72,13 @@ export function MotoristaVeiculoDialog({
 
   const activeVeiculos = veiculos.filter((v) => v.ativo);
 
-  const candidates = activeVeiculos.filter((v) => {
-    if (!query.trim()) return true;
-    const q = query.trim().toLowerCase();
-    return (
-      v.placa.toLowerCase().includes(q) ||
-      v.modelo.toLowerCase().includes(q)
-    );
-  });
+  // Only show candidates when user has typed something
+  const candidates = query.trim()
+    ? activeVeiculos.filter((v) => {
+        const q = query.trim().toLowerCase();
+        return v.placa.toLowerCase().includes(q) || v.modelo.toLowerCase().includes(q);
+      })
+    : [];
 
   const isPending = associarMutation.isPending || desassociarMutation.isPending;
   const hasCurrentVeiculo = !!(currentVeiculo ?? motorista.veiculoId);
@@ -97,6 +89,7 @@ export function MotoristaVeiculoDialog({
     setQuery("");
     setDropdownOpen(false);
     setActiveIndex(-1);
+    setInlineError(null);
   };
 
   const handleClear = () => {
@@ -106,13 +99,10 @@ export function MotoristaVeiculoDialog({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!dropdownOpen && (e.key === "ArrowDown" || e.key === "Enter")) {
-      setDropdownOpen(true);
-      return;
-    }
     if (e.key === "Escape") { setDropdownOpen(false); return; }
     if (e.key === "ArrowDown") {
       e.preventDefault();
+      setDropdownOpen(true);
       setActiveIndex((i) => Math.min(i + 1, candidates.length - 1));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
@@ -126,21 +116,32 @@ export function MotoristaVeiculoDialog({
 
   const handleAssociar = async (): Promise<void> => {
     if (!selectedVeiculo) return;
-    await associarMutation.mutateAsync(
-      {
+    setInlineError(null);
+    try {
+      await associarMutation.mutateAsync({
         motoristaId: motorista.id,
         veiculoId: selectedVeiculo.id,
         forceReplace: hasCurrentVeiculo,
-      },
-      { onSuccess: onClose }
-    );
+      });
+      onClose();
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setInlineError(err.message);
+      }
+    }
   };
 
   const handleDesassociar = async (): Promise<void> => {
-    await desassociarMutation.mutateAsync(
-      { motoristaId: motorista.id },
-      { onSuccess: onClose }
-    );
+    setInlineError(null);
+    try {
+      await desassociarMutation.mutateAsync({ motoristaId: motorista.id });
+      onClose();
+    } catch (err) {
+      if (err instanceof ApiError) {
+        // Surface the API message directly — e.g. "Não é possível desassociar o veículo enquanto o motorista está em corrida"
+        setInlineError(err.message);
+      }
+    }
   };
 
   return (
@@ -186,7 +187,16 @@ export function MotoristaVeiculoDialog({
       }
     >
       <div className="space-y-4" style={{ minHeight: "320px" }}>
-        {/* Current vehicle info — from dedicated endpoint */}
+
+        {/* Inline error from API */}
+        {inlineError && (
+          <div className="flex items-start gap-2 rounded-xl border border-danger/20 bg-danger/5 px-4 py-3">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-danger" aria-hidden="true" />
+            <p role="alert" className="text-sm text-danger">{inlineError}</p>
+          </div>
+        )}
+
+        {/* Current vehicle info */}
         {hasCurrentVeiculo && (
           <div className="flex items-center gap-3 rounded-xl border border-brand-primary/20 bg-brand-primary/5 px-4 py-3">
             <Car className="h-5 w-5 shrink-0 text-brand-primary" aria-hidden="true" />
@@ -247,15 +257,20 @@ export function MotoristaVeiculoDialog({
                 aria-activedescendant={activeIndex >= 0 ? `${listboxId}-opt-${activeIndex}` : undefined}
                 data-testid={testId ? `${testId}-search` : "motorista-veiculo-search"}
                 value={query}
-                onChange={(e) => { setQuery(e.target.value); setDropdownOpen(true); setActiveIndex(-1); }}
-                onFocus={() => setDropdownOpen(true)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setQuery(val);
+                  // Only open dropdown when there's text
+                  setDropdownOpen(val.trim().length > 0);
+                  setActiveIndex(-1);
+                }}
                 onKeyDown={handleKeyDown}
                 placeholder="Buscar por placa ou modelo..."
                 className="h-10 w-full rounded-lg border border-neutral-200 bg-neutral-50 pl-9 pr-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-brand-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
                 autoFocus
               />
 
-              {dropdownOpen && (
+              {dropdownOpen && query.trim().length > 0 && (
                 <ul
                   id={listboxId}
                   role="listbox"
