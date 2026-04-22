@@ -6,6 +6,7 @@ import { cargosHandlers } from "./cargosHandlers";
 import { departmentsHandlers } from "./departmentsHandlers";
 import { lotacoesHandlers } from "./lotacoesHandlers";
 import { motoristasHandlers } from "./motoristasHandlers";
+import { pesquisaHandlers } from "./pesquisaHandlers";
 import { runsHandlers } from "./runsHandlers";
 import { usersHandlers } from "./usersHandlers";
 
@@ -22,6 +23,7 @@ export const worker = setupWorker(
   ...departmentsHandlers,
   ...lotacoesHandlers,
   ...motoristasHandlers,
+  ...pesquisaHandlers,
   ...runsHandlers,
   ...servidoresHandlers,
   ...usersHandlers
