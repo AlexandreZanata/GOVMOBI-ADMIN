@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { Button, Input } from "@/components/atoms";
 import { Modal } from "@/components/molecules/Modal";
+import { ServidorPicker } from "@/components/molecules/ServidorPicker";
 import { useCreateAdminRun } from "@/hooks/runs/useCreateAdminRun";
 
 export interface RunCreateAdminDialogProps {
@@ -44,7 +45,7 @@ export function RunCreateAdminDialog({
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
-    if (!UUID_RE.test(passageiroId.trim())) errs.passageiroId = t("dialogs.createRun.passageiroIdInvalid");
+    if (!passageiroId.trim()) errs.passageiroId = t("dialogs.createRun.passageiroIdRequired");
     if (!origemLat.trim() || isNaN(Number(origemLat))) errs.origemLat = t("dialogs.createRun.origemLatRequired");
     if (!origemLng.trim() || isNaN(Number(origemLng))) errs.origemLng = t("dialogs.createRun.origemLngRequired");
     if (!destinoLat.trim() || isNaN(Number(destinoLat))) errs.destinoLat = t("dialogs.createRun.destinoLatRequired");
@@ -108,15 +109,13 @@ export function RunCreateAdminDialog({
         noValidate
       >
         <div className="sm:col-span-2">
-          <Input
+          <ServidorPicker
             data-testid={testId ? `${testId}-passageiroId` : "run-create-admin-passageiroId"}
             label={t("dialogs.createRun.passageiroId")}
             value={passageiroId}
-            onChange={(e) => setPassageiroId(e.target.value)}
+            onChange={setPassageiroId}
             error={errors.passageiroId}
-            placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-            aria-required="true"
-            autoFocus
+            required
           />
         </div>
         <Input

@@ -27,7 +27,8 @@
     "updateStatus": "Atualizar status"
   },
   "form": {
-    "servidorId": "Servidor (UUID)",
+    "servidorId": "Servidor",
+    "servidorIdRequired": "Selecione um servidor.",
     "servidorIdInvalid": "O ID do servidor deve ser um UUID válido.",
     "municipioId": "Município (UUID)",
     "municipioIdInvalid": "O ID do município deve ser um UUID válido.",

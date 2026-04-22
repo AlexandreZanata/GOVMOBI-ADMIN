@@ -4,6 +4,7 @@ import React, { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button, Input } from "@/components/atoms";
+import { ServidorPicker } from "@/components/molecules/ServidorPicker";
 import { useCreateMotorista } from "@/hooks/motoristas/useCreateMotorista";
 import { useUpdateMotorista } from "@/hooks/motoristas/useUpdateMotorista";
 import type { CnhCategoria, Motorista } from "@/models/Motorista";
@@ -72,7 +73,7 @@ export function MotoristaFormDialog({
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
     if (mode === "create") {
-      if (!UUID_RE.test(servidorId.trim())) errs.servidorId = t("form.servidorIdInvalid");
+      if (!servidorId.trim()) errs.servidorId = t("form.servidorIdRequired");
       if (!UUID_RE.test(municipioId.trim())) errs.municipioId = t("form.municipioIdInvalid");
     }
     if (!cnhNumero.trim()) errs.cnhNumero = t("form.cnhNumeroRequired");
@@ -143,15 +144,13 @@ export function MotoristaFormDialog({
         >
           {mode === "create" && (
             <>
-              <Input
+              <ServidorPicker
                 data-testid="motorista-form-servidorId"
                 label={t("form.servidorId")}
-                placeholder="UUID do servidor"
                 value={servidorId}
-                onChange={(e) => setServidorId(e.target.value)}
+                onChange={setServidorId}
                 error={errors.servidorId}
-                aria-required="true"
-                autoFocus
+                required
               />
               <Input
                 data-testid="motorista-form-municipioId"

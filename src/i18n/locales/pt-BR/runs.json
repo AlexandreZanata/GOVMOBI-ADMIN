@@ -64,7 +64,7 @@
     },
     "createRun": {
       "title": "Solicitar corrida",
-      "passageiroId": "ID do passageiro (UUID)",
+      "passageiroId": "Passageiro",
       "origemLat": "Latitude de origem",
       "origemLng": "Longitude de origem",
       "destinoLat": "Latitude de destino",
@@ -73,7 +73,7 @@
       "observacoes": "Observações (opcional)",
       "confirm": "Solicitar",
       "cancel": "Cancelar",
-      "passageiroIdRequired": "ID do passageiro é obrigatório.",
+      "passageiroIdRequired": "Selecione um passageiro.",
       "passageiroIdInvalid": "ID do passageiro deve ser um UUID válido.",
       "origemLatRequired": "Latitude de origem é obrigatória.",
       "origemLngRequired": "Longitude de origem é obrigatória.",
