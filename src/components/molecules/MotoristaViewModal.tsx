@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import "@/i18n/config";
 
 import { Modal } from "@/components/molecules/Modal";
-import { useVeiculos } from "@/hooks/veiculos/useVeiculos";
+import { useVeiculoDoMotorista } from "@/hooks/motoristas/useVeiculoDoMotorista";
 import type { Motorista } from "@/models/Motorista";
 
 export interface MotoristaViewModalProps {
@@ -14,16 +14,18 @@ export interface MotoristaViewModalProps {
   "data-testid"?: string;
 }
 
-const STATUS_CLASSES: Record<string, string> = {
+const OP_STATUS_CLASSES: Record<string, string> = {
   DISPONIVEL:   "bg-success/10 text-success ring-1 ring-success/20",
   EM_SERVICO:   "bg-info/10 text-info ring-1 ring-info/20",
   INDISPONIVEL: "bg-warning/10 text-warning ring-1 ring-warning/20",
   AFASTADO:     "bg-neutral-100 text-neutral-500 ring-1 ring-neutral-200",
+  OFFLINE:      "bg-neutral-100 text-neutral-500 ring-1 ring-neutral-200",
 };
 
 /**
  * Read-only detail modal for a motorista.
- * Displays CNH data, operational status, associated vehicle, and audit timestamps.
+ * Fetches the associated vehicle via GET /frota/motoristas/{id}/veiculo
+ * so it works even when the list response doesn't include veiculoId.
  */
 export function MotoristaViewModal({
   open,
@@ -32,13 +34,12 @@ export function MotoristaViewModal({
   "data-testid": testId,
 }: MotoristaViewModalProps): React.ReactElement | null {
   const { t } = useTranslation("motoristas");
-  const { data: veiculos = [] } = useVeiculos();
+
+  // Fetch the associated vehicle directly — the list endpoint may not return veiculoId
+  const { data: associatedVeiculo, isLoading: veiculoLoading } =
+    useVeiculoDoMotorista(open ? motorista?.id : null);
 
   if (!motorista) return null;
-
-  const associatedVeiculo = motorista.veiculoId
-    ? veiculos.find((v) => v.id === motorista.veiculoId)
-    : null;
 
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleString("pt-BR", {
@@ -55,8 +56,15 @@ export function MotoristaViewModal({
     try { return formatDate(iso); } catch { return iso; }
   };
 
+  // Safe status label — fall back to raw value if not in i18n
+  const opStatusKey = `status.${motorista.statusOperacional}`;
+  const opStatusLabel = t(opStatusKey) === opStatusKey
+    ? motorista.statusOperacional
+    : t(opStatusKey);
+
   const opStatusClass =
-    STATUS_CLASSES[motorista.statusOperacional] ?? "bg-neutral-100 text-neutral-500 ring-1 ring-neutral-200";
+    OP_STATUS_CLASSES[motorista.statusOperacional] ??
+    "bg-neutral-100 text-neutral-500 ring-1 ring-neutral-200";
 
   return (
     <Modal
@@ -71,7 +79,6 @@ export function MotoristaViewModal({
 
         {/* Status badges */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Ativo/Inativo */}
           <span
             className={[
               "inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium",
@@ -87,13 +94,11 @@ export function MotoristaViewModal({
             {motorista.ativo ? t("status.active") : t("status.inactive")}
           </span>
 
-          {/* Status operacional */}
           <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${opStatusClass}`}>
             <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
-            {t(`status.${motorista.statusOperacional}`)}
+            {opStatusLabel}
           </span>
 
-          {/* Desativado badge */}
           {motorista.deletedAt && (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-danger/10 px-3 py-1 text-xs font-medium text-danger ring-1 ring-danger/20">
               Desativado em {formatDate(motorista.deletedAt)}
@@ -109,14 +114,23 @@ export function MotoristaViewModal({
           </div>
         </Section>
 
-        {/* Veículo associado */}
+        {/* Veículo associado — fetched from dedicated endpoint */}
         <Section title="Veículo Associado">
-          {associatedVeiculo ? (
+          {veiculoLoading ? (
+            <div className="space-y-2">
+              <div className="h-4 w-1/3 animate-pulse rounded bg-neutral-200" />
+              <div className="h-4 w-1/2 animate-pulse rounded bg-neutral-200" />
+            </div>
+          ) : associatedVeiculo ? (
             <div className="grid grid-cols-2 gap-x-10 gap-y-5 sm:grid-cols-3">
               <Field label="Placa" value={associatedVeiculo.placa} />
               <Field label="Modelo" value={associatedVeiculo.modelo} />
               <Field label="Ano" value={associatedVeiculo.ano.toString()} />
               <Field label="ID do Veículo" value={associatedVeiculo.id} />
+              <Field
+                label="Status"
+                value={associatedVeiculo.ativo ? "Ativo" : "Inativo"}
+              />
             </div>
           ) : (
             <p className="text-sm text-neutral-400">Nenhum veículo associado.</p>
@@ -144,8 +158,6 @@ export function MotoristaViewModal({
     </Modal>
   );
 }
-
-// ── Sub-components ────────────────────────────────────────────────────────────
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (

@@ -13,10 +13,13 @@ import { ApiError } from "@/types";
 export interface AssociarVeiculoInput {
   motoristaId: string;
   veiculoId: string;
+  /** If true, desassocia o veículo atual antes de associar o novo. */
+  forceReplace?: boolean;
 }
 
 /**
  * Mutation hook for associating a vehicle to a motorista.
+ * When forceReplace=true, desassocia o atual antes de associar o novo.
  * POST /frota/motoristas/{id}/veiculo
  */
 export function useAssociarVeiculo() {
@@ -24,12 +27,22 @@ export function useAssociarVeiculo() {
   const { t } = useTranslation(["motoristas", "common"]);
 
   return useMutation<Motorista, ApiError, AssociarVeiculoInput>({
-    mutationFn: ({ motoristaId, veiculoId }) =>
-      motoristasFacade.associarVeiculo(motoristaId, veiculoId),
+    mutationFn: async ({ motoristaId, veiculoId, forceReplace }) => {
+      if (forceReplace) {
+        // Desassocia o atual silenciosamente antes de associar o novo
+        try {
+          await motoristasFacade.desassociarVeiculo(motoristaId);
+        } catch {
+          // ignore — may not have one
+        }
+      }
+      return motoristasFacade.associarVeiculo(motoristaId, veiculoId);
+    },
 
     onSuccess: (_, { motoristaId }) => {
       void queryClient.invalidateQueries({ queryKey: motoristasKeys.list() });
       void queryClient.invalidateQueries({ queryKey: motoristasKeys.detail(motoristaId) });
+      void queryClient.invalidateQueries({ queryKey: [...motoristasKeys.detail(motoristaId), "veiculo"] });
       toast.success(t("toast.veiculoAssociado"));
     },
 

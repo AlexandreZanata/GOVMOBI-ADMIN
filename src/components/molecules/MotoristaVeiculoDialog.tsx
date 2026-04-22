@@ -8,6 +8,7 @@ import { Button } from "@/components/atoms";
 import { Modal } from "@/components/molecules/Modal";
 import { useAssociarVeiculo } from "@/hooks/motoristas/useAssociarVeiculo";
 import { useDesassociarVeiculo } from "@/hooks/motoristas/useDesassociarVeiculo";
+import { useVeiculoDoMotorista } from "@/hooks/motoristas/useVeiculoDoMotorista";
 import { useVeiculos } from "@/hooks/veiculos/useVeiculos";
 import type { Motorista } from "@/models/Motorista";
 import type { Veiculo } from "@/models/Veiculo";
@@ -39,6 +40,9 @@ export function MotoristaVeiculoDialog({
   const associarMutation = useAssociarVeiculo();
   const desassociarMutation = useDesassociarVeiculo();
 
+  // Fetch the actual associated vehicle from the dedicated endpoint
+  const { data: currentVeiculo } = useVeiculoDoMotorista(open ? motorista.id : null);
+
   const listboxId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -50,14 +54,17 @@ export function MotoristaVeiculoDialog({
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Sync pre-selection when motorista or veiculos list changes
+  // Use the dedicated endpoint result (currentVeiculo) as source of truth
   useEffect(() => {
-    if (motorista.veiculoId && veiculos.length > 0) {
-      const current = veiculos.find((v) => v.id === motorista.veiculoId) ?? null;
-      setSelectedVeiculo(current);
+    if (currentVeiculo) {
+      setSelectedVeiculo(currentVeiculo);
+    } else if (motorista.veiculoId && veiculos.length > 0) {
+      const found = veiculos.find((v) => v.id === motorista.veiculoId) ?? null;
+      setSelectedVeiculo(found);
     } else {
       setSelectedVeiculo(null);
     }
-  }, [motorista.veiculoId, veiculos]);
+  }, [currentVeiculo, motorista.veiculoId, veiculos]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -82,8 +89,8 @@ export function MotoristaVeiculoDialog({
   });
 
   const isPending = associarMutation.isPending || desassociarMutation.isPending;
-  const hasCurrentVeiculo = !!motorista.veiculoId;
-  const isDirty = selectedVeiculo?.id !== (motorista.veiculoId ?? undefined);
+  const hasCurrentVeiculo = !!(currentVeiculo ?? motorista.veiculoId);
+  const isDirty = selectedVeiculo?.id !== (currentVeiculo?.id ?? motorista.veiculoId ?? undefined);
 
   const handleSelect = (v: Veiculo) => {
     setSelectedVeiculo(v);
@@ -120,7 +127,11 @@ export function MotoristaVeiculoDialog({
   const handleAssociar = async (): Promise<void> => {
     if (!selectedVeiculo) return;
     await associarMutation.mutateAsync(
-      { motoristaId: motorista.id, veiculoId: selectedVeiculo.id },
+      {
+        motoristaId: motorista.id,
+        veiculoId: selectedVeiculo.id,
+        forceReplace: hasCurrentVeiculo,
+      },
       { onSuccess: onClose }
     );
   };
@@ -137,7 +148,7 @@ export function MotoristaVeiculoDialog({
       open={open}
       onClose={onClose}
       title={t("form.veiculo")}
-      maxWidth="max-w-lg"
+      maxWidth="max-w-2xl"
       data-testid={testId}
       footer={
         <div className="flex items-center justify-between gap-2">
@@ -174,21 +185,23 @@ export function MotoristaVeiculoDialog({
         </div>
       }
     >
-      <div className="space-y-4">
-        {/* Current vehicle info */}
-        {hasCurrentVeiculo && motorista.veiculoId && (
+      <div className="space-y-4" style={{ minHeight: "320px" }}>
+        {/* Current vehicle info — from dedicated endpoint */}
+        {hasCurrentVeiculo && (
           <div className="flex items-center gap-3 rounded-xl border border-brand-primary/20 bg-brand-primary/5 px-4 py-3">
             <Car className="h-5 w-5 shrink-0 text-brand-primary" aria-hidden="true" />
             <div className="min-w-0 flex-1">
-              {selectedVeiculo ? (
+              {currentVeiculo ? (
                 <>
                   <p className="truncate text-sm font-medium text-neutral-900">
-                    {selectedVeiculo.placa} — {selectedVeiculo.modelo} ({selectedVeiculo.ano})
+                    {currentVeiculo.placa} — {currentVeiculo.modelo} ({currentVeiculo.ano})
                   </p>
                   <p className="text-xs text-neutral-500">{t("form.veiculoAtual")}</p>
                 </>
               ) : (
-                <p className="text-xs text-neutral-500">ID: {motorista.veiculoId}</p>
+                <p className="text-xs text-neutral-500">
+                  {motorista.veiculoId ? `ID: ${motorista.veiculoId}` : t("form.veiculoAtual")}
+                </p>
               )}
             </div>
           </div>
@@ -278,7 +291,7 @@ export function MotoristaVeiculoDialog({
                           <p className="truncate font-medium">{v.placa}</p>
                           <p className="text-xs text-neutral-400">{v.modelo} · {v.ano}</p>
                         </div>
-                        {v.id === motorista.veiculoId && (
+                        {v.id === (currentVeiculo?.id ?? motorista.veiculoId) && (
                           <span className="shrink-0 rounded-full bg-brand-primary/10 px-2 py-0.5 text-xs text-brand-primary">
                             atual
                           </span>

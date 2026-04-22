@@ -6,13 +6,15 @@ export type CnhCategoria = "A" | "B" | "AB" | "C" | "D" | "E";
 
 /**
  * Operational status of a motorista (driver).
- * @todo Sync final values from Swagger once the /motoristas endpoint is published.
+ * The API may return additional values not listed here — use string as fallback.
  */
 export type MotoristaStatusOperacional =
   | "DISPONIVEL"
   | "EM_SERVICO"
   | "INDISPONIVEL"
-  | "AFASTADO";
+  | "AFASTADO"
+  | "OFFLINE"
+  | (string & Record<never, never>); // allow unknown values without breaking TS
 
 /**
  * Core motorista (driver) contract matching the real API response shape.

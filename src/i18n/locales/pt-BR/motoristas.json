@@ -52,10 +52,11 @@
   "status": {
     "active": "Ativo",
     "inactive": "Inativo",
-    "DISPONIVEL": "Disponivel",
-    "EM_SERVICO": "Em servico",
-    "INDISPONIVEL": "Indisponivel",
-    "AFASTADO": "Afastado"
+    "DISPONIVEL": "Disponível",
+    "EM_SERVICO": "Em serviço",
+    "INDISPONIVEL": "Indisponível",
+    "AFASTADO": "Afastado",
+    "OFFLINE": "Offline"
   },
   "toast": {
     "created": "Motorista cadastrado com sucesso.",

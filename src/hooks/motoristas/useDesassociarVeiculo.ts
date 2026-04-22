@@ -24,6 +24,7 @@ export function useDesassociarVeiculo() {
     onSuccess: (_, { motoristaId }) => {
       void queryClient.invalidateQueries({ queryKey: motoristasKeys.list() });
       void queryClient.invalidateQueries({ queryKey: motoristasKeys.detail(motoristaId) });
+      void queryClient.invalidateQueries({ queryKey: [...motoristasKeys.detail(motoristaId), "veiculo"] });
       toast.success(t("toast.veiculoDesassociado"));
     },
 
