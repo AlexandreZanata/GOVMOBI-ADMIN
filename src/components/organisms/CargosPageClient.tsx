@@ -114,6 +114,7 @@ export function CargosPageClient({
             <tr>
               <th className="px-4 py-3">{t("table.nome")}</th>
               <th className="px-4 py-3">{t("table.pesoPrioridade")}</th>
+              <th className="hidden px-4 py-3 md:table-cell">{t("table.nivelHierarquia")}</th>
               <th className="px-4 py-3">{t("table.status")}</th>
               <th className="px-4 py-3 text-right">{t("table.actions")}</th>
             </tr>
@@ -267,6 +268,7 @@ function CargoRow({ cargo, onView, onEdit, onDelete }: CargoRowProps) {
     >
       <td className="px-4 py-3 font-medium text-neutral-900">{cargo.nome}</td>
       <td className="px-4 py-3 text-neutral-700">{cargo.pesoPrioridade}</td>
+      <td className="hidden px-4 py-3 text-neutral-700 md:table-cell">{cargo.nivelHierarquia ?? "—"}</td>
 
       <td className="px-4 py-3">
         <span

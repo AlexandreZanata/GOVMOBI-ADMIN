@@ -77,6 +77,7 @@ export function CargoViewModal({
           <div className="grid grid-cols-2 gap-x-10 gap-y-5">
             <Field label={t("form.nome")} value={cargo.nome} />
             <Field label={t("form.pesoPrioridade")} value={cargo.pesoPrioridade.toString()} />
+            <Field label={t("form.nivelHierarquia")} value={cargo.nivelHierarquia?.toString() ?? "—"} />
           </div>
         </Section>
 

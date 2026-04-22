@@ -8,6 +8,8 @@ export interface Cargo {
   nome: string;
   /** Priority weight used for dispatch ordering (0–100). */
   pesoPrioridade: number;
+  /** Hierarchical level of the cargo. */
+  nivelHierarquia: number;
   /** Whether the cargo is currently active. */
   ativo: boolean;
   /** ISO 8601 timestamp when the cargo was created. */

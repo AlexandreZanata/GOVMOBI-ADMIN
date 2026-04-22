@@ -37,6 +37,8 @@ const NOME_MAX_LENGTH = 100;
 const PESO_MIN = 0;
 /** Maximum allowed value for the priority weight field. */
 const PESO_MAX = 100;
+/** Minimum allowed value for the hierarchy level field. */
+const NIVEL_MIN = 1;
 
 /**
  * Modal form dialog for creating or editing a cargo.
@@ -63,8 +65,12 @@ export function CargoFormDialog({
   const [pesoPrioridade, setPesoPrioridade] = useState<string>(
     cargo?.pesoPrioridade?.toString() ?? ""
   );
+  const [nivelHierarquia, setNivelHierarquia] = useState<string>(
+    cargo?.nivelHierarquia?.toString() ?? ""
+  );
   const [nomeError, setNomeError] = useState<string | undefined>();
   const [pesoError, setPesoError] = useState<string | undefined>();
+  const [nivelError, setNivelError] = useState<string | undefined>();
   const prevCargoId = useRef(cargo?.id);
 
   const createMutation = useCreateCargo();
@@ -76,8 +82,10 @@ export function CargoFormDialog({
     prevCargoId.current = cargo?.id;
     setNome(cargo?.nome ?? "");
     setPesoPrioridade(cargo?.pesoPrioridade?.toString() ?? "");
+    setNivelHierarquia(cargo?.nivelHierarquia?.toString() ?? "");
     setNomeError(undefined);
     setPesoError(undefined);
+    setNivelError(undefined);
   }
 
   // Reset form when dialog opens in create mode
@@ -85,8 +93,10 @@ export function CargoFormDialog({
     if (open && mode === "create") {
       setNome("");
       setPesoPrioridade("");
+      setNivelHierarquia("");
       setNomeError(undefined);
       setPesoError(undefined);
+      setNivelError(undefined);
     }
   }, [open, mode]);
 
@@ -118,6 +128,17 @@ export function CargoFormDialog({
       setPesoError(undefined);
     }
 
+    const nivelNum = Number(nivelHierarquia);
+    if (nivelHierarquia.trim() === "" || Number.isNaN(nivelNum)) {
+      setNivelError(t("form.nivelHierarquiaRequired"));
+      valid = false;
+    } else if (nivelNum < NIVEL_MIN || !Number.isInteger(nivelNum)) {
+      setNivelError(t("form.nivelHierarquiaMin"));
+      valid = false;
+    } else {
+      setNivelError(undefined);
+    }
+
     return valid;
   };
 
@@ -128,18 +149,21 @@ export function CargoFormDialog({
 
     const trimmedNome = nome.trim();
     const pesoNum = Number(pesoPrioridade);
+    const nivelNum = Number(nivelHierarquia);
 
     try {
       if (mode === "create") {
         await createMutation.mutateAsync({
           nome: trimmedNome,
           pesoPrioridade: pesoNum,
+          nivelHierarquia: nivelNum,
         });
       } else if (cargo) {
         await updateMutation.mutateAsync({
           id: cargo.id,
           nome: trimmedNome,
           pesoPrioridade: pesoNum,
+          nivelHierarquia: nivelNum,
         });
       }
       onClose();
@@ -212,6 +236,19 @@ export function CargoFormDialog({
           error={pesoError}
           min={PESO_MIN}
           max={PESO_MAX}
+          aria-required="true"
+        />
+
+        <Input
+          data-testid={
+            testId ? `${testId}-nivelHierarquia` : "cargo-form-nivelHierarquia"
+          }
+          label={t("form.nivelHierarquia")}
+          type="number"
+          value={nivelHierarquia}
+          onChange={(e) => setNivelHierarquia(e.target.value)}
+          error={nivelError}
+          min={NIVEL_MIN}
           aria-required="true"
         />
       </form>
