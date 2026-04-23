@@ -54,12 +54,12 @@ export function useMotoristaLocation(
         ? sessionStorage.getItem("govmobile.access_token")
         : null;
 
-    const wsUrl =
-      process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
-
-    const socket = io(wsUrl, {
-      path: "/despacho",
-      transports: ["websocket"],
+    // Connect through the Next.js API proxy route (/api/ws) to avoid CORS.
+    // This route forwards both HTTP polling and WebSocket upgrade requests
+    // to the backend's /despacho socket.io namespace.
+    const socket = io(window.location.origin, {
+      path: "/api/ws",
+      transports: ["polling", "websocket"],
       auth: token ? { token } : undefined,
     });
 
