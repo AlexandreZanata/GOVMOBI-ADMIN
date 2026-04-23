@@ -1,10 +1,10 @@
 {
   "page": {
-    "title": "Servidores",
-    "accessDenied": "You do not have permission to view servidores.",
+    "title": "Employees",
+    "accessDenied": "You do not have permission to view employees.",
     "empty": {
-      "title": "No servidores found",
-      "message": "Create the first servidor to get started."
+      "title": "No employees found",
+      "message": "Create the first employee to get started."
     },
     "filters": {
       "all": "All",
@@ -17,14 +17,14 @@
     "nome": "Name",
     "cpf": "CPF",
     "email": "Email",
-    "cargo": "Cargo",
-    "lotacao": "Lotação",
+    "cargo": "Position",
+    "lotacao": "Department",
     "papeis": "Roles",
     "status": "Status",
     "actions": "Actions"
   },
   "actions": {
-    "create": "New Servidor",
+    "create": "New Employee",
     "edit": "Edit",
     "view": "View",
     "delete": "Deactivate",
@@ -35,8 +35,8 @@
     "cpf": "CPF",
     "email": "Email",
     "telefone": "Phone",
-    "cargoId": "Cargo",
-    "lotacaoId": "Lotação",
+    "cargoId": "Position",
+    "lotacaoId": "Department",
     "papeis": "Roles",
     "submit": "Save",
     "cancel": "Cancel",
@@ -46,26 +46,26 @@
     "senhaHelper": "Minimum 8 characters"
   },
   "papeis": {
-    "USUARIO": "Usuário",
+    "USUARIO": "User",
     "ADMIN": "Admin",
-    "MOTORISTA": "Motorista"
+    "MOTORISTA": "Driver"
   },
   "status": {
     "active": "Active",
     "inactive": "Inactive"
   },
   "delete": {
-    "confirmation": "Do you want to deactivate the servidor \"{{nome}}\"?",
+    "confirmation": "Do you want to deactivate the employee \"{{nome}}\"?",
     "reversible": "This action can be reversed."
   },
   "toast": {
-    "created": "Servidor created successfully.",
-    "updated": "Servidor updated successfully.",
-    "deleted": "Servidor deactivated.",
-    "reativado": "Servidor reactivated.",
+    "created": "Employee created successfully.",
+    "updated": "Employee updated successfully.",
+    "deleted": "Employee deactivated.",
+    "reativado": "Employee reactivated.",
     "duplicate": "CPF or email already registered.",
     "invalidData": "Invalid data — check CPF, email, and roles.",
-    "dependencyNotFound": "Cargo or Lotação not found."
+    "dependencyNotFound": "Position or Department not found."
   },
   "timestamps": {
     "createdAt": "Created at",

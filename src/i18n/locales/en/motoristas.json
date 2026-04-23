@@ -1,10 +1,10 @@
 {
   "page": {
-    "title": "Motoristas",
-    "accessDenied": "You do not have permission to view motoristas.",
+    "title": "Drivers",
+    "accessDenied": "You do not have permission to view drivers.",
     "empty": {
-      "title": "No motoristas found",
-      "message": "Register the first motorista to get started."
+      "title": "No drivers found",
+      "message": "Register the first driver to get started."
     },
     "filters": {
       "all": "All",
@@ -13,7 +13,7 @@
     }
   },
   "table": {
-    "servidor": "Servidor",
+    "servidor": "Employee",
     "cnhNumero": "CNH Number",
     "cnhCategoria": "CNH Category",
     "statusOperacional": "Operational Status",
@@ -25,7 +25,7 @@
   },
   "actions": {
     "view": "View",
-    "create": "New Motorista",
+    "create": "New Driver",
     "edit": "Edit",
     "desativar": "Deactivate",
     "reativar": "Reactivate",
@@ -35,9 +35,9 @@
     "desassociarVeiculo": "Remove Vehicle"
   },
   "form": {
-    "servidorId": "Servidor",
-    "servidorIdRequired": "Please select a servidor.",
-    "servidorIdInvalid": "Servidor ID must be a valid UUID.",
+    "servidorId": "Employee",
+    "servidorIdRequired": "Please select an employee.",
+    "servidorIdInvalid": "Employee ID must be a valid UUID.",
     "municipioId": "Municipality (UUID)",
     "municipioIdInvalid": "Municipality ID must be a valid UUID.",
     "cnhNumero": "CNH Number",
@@ -62,21 +62,21 @@
     "AFASTADO": "On Leave"
   },
   "delete": {
-    "confirmation": "Do you want to deactivate the motorista with CNH \"{{cnhNumero}}\"?",
-    "reativarConfirmation": "Do you want to reactivate the motorista with CNH \"{{cnhNumero}}\"?",
+    "confirmation": "Do you want to deactivate the driver with CNH \"{{cnhNumero}}\"?",
+    "reativarConfirmation": "Do you want to reactivate the driver with CNH \"{{cnhNumero}}\"?",
     "reversible": "This action can be reversed."
   },
   "toast": {
-    "created": "Motorista registered successfully.",
-    "updated": "Motorista updated successfully.",
+    "created": "Driver registered successfully.",
+    "updated": "Driver updated successfully.",
     "statusUpdated": "Operational status updated.",
-    "desativado": "Motorista deactivated.",
-    "reativado": "Motorista reactivated.",
+    "desativado": "Driver deactivated.",
+    "reativado": "Driver reactivated.",
     "veiculoAssociado": "Vehicle associated successfully.",
     "veiculoDesassociado": "Vehicle removed.",
-    "veiculoJaAssociado": "Motorista already has an associated vehicle.",
-    "duplicateCnh": "A motorista with this CNH number already exists.",
-    "notFound": "Motorista not found.",
+    "veiculoJaAssociado": "Driver already has an associated vehicle.",
+    "duplicateCnh": "A driver with this CNH number already exists.",
+    "notFound": "Driver not found.",
     "invalidData": "Invalid data. Please review the form."
   }
 }
