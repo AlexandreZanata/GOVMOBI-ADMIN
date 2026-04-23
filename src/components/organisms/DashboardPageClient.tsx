@@ -25,6 +25,7 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; bar: string }> =
   [RunStatus.AGUARDANDO_ACEITE]: { bg: "bg-info/10",          text: "text-info",          bar: "bg-info" },
   [RunStatus.ACEITA]:            { bg: "bg-info/10",          text: "text-info",          bar: "bg-info" },
   [RunStatus.EM_ROTA]:           { bg: "bg-brand-primary/10", text: "text-brand-primary", bar: "bg-brand-primary" },
+  [RunStatus.PASSAGEIRO_A_BORDO]: { bg: "bg-brand-primary/10", text: "text-brand-primary", bar: "bg-brand-primary" },
   [RunStatus.CONCLUIDA]:         { bg: "bg-success/10",       text: "text-success",       bar: "bg-success" },
   [RunStatus.AVALIADA]:          { bg: "bg-success/10",       text: "text-success",       bar: "bg-success" },
   [RunStatus.CANCELADA]:         { bg: "bg-danger/10",        text: "text-danger",        bar: "bg-danger" },
