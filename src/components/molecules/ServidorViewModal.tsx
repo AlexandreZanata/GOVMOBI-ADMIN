@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import "@/i18n/config";
 
@@ -7,6 +8,8 @@ import { Badge } from "@/components/atoms";
 import { Modal } from "@/components/molecules/Modal";
 import { formatCpf } from "@/lib/formatCpf";
 import type { Papel, Servidor } from "@/models/Servidor";
+import type { Cargo } from "@/models/Cargo";
+import type { Lotacao } from "@/models/Lotacao";
 
 const papelVariant: Record<Papel, "danger" | "info" | "neutral"> = {
   ADMIN: "danger",
@@ -18,20 +21,36 @@ export interface ServidorViewModalProps {
   open: boolean;
   onClose: () => void;
   servidor: Servidor | undefined;
+  cargos?: Cargo[];
+  lotacoes?: Lotacao[];
   "data-testid"?: string;
 }
 
 /**
  * Read-only detail modal for a servidor record.
  * Uses the shared Modal base component.
+ * Resolves cargo and lotacao IDs to human-readable names.
  */
 export function ServidorViewModal({
   open,
   onClose,
   servidor,
+  cargos,
+  lotacoes,
   "data-testid": testId,
 }: ServidorViewModalProps): React.ReactElement | null {
   const { t } = useTranslation("servidores");
+
+  // Build lookup maps for O(1) name resolution
+  const cargoMap = useMemo(() => {
+    if (!cargos) return new Map<string, string>();
+    return new Map(cargos.map((c) => [c.id, c.nome]));
+  }, [cargos]);
+
+  const lotacaoMap = useMemo(() => {
+    if (!lotacoes) return new Map<string, string>();
+    return new Map(lotacoes.map((l) => [l.id, l.nome]));
+  }, [lotacoes]);
 
   if (!servidor) return null;
 
@@ -43,6 +62,9 @@ export function ServidorViewModal({
       hour: "2-digit",
       minute: "2-digit",
     });
+
+  const cargoNome = cargoMap.get(servidor.cargoId) || servidor.cargoId;
+  const lotacaoNome = lotacaoMap.get(servidor.lotacaoId) || servidor.lotacaoId;
 
   return (
     <Modal
@@ -74,8 +96,8 @@ export function ServidorViewModal({
           <InfoField label={t("table.cpf")} value={formatCpf(servidor.cpf)} />
           <InfoField label={t("table.email")} value={servidor.email} />
           <InfoField label={t("form.telefone")} value={servidor.telefone} />
-          <InfoField label={t("form.cargoId")} value={servidor.cargoId} />
-          <InfoField label={t("form.lotacaoId")} value={servidor.lotacaoId} />
+          <InfoField label={t("form.cargoId")} value={cargoNome} />
+          <InfoField label={t("form.lotacaoId")} value={lotacaoNome} />
         </dl>
 
         {/* Papéis */}
@@ -94,8 +116,8 @@ export function ServidorViewModal({
 
         {/* Timestamps */}
         <div className="grid grid-cols-2 gap-4 border-t border-neutral-100 pt-4">
-          <InfoField label="Criado em" value={formatDate(servidor.createdAt)} muted />
-          <InfoField label="Atualizado em" value={formatDate(servidor.updatedAt)} muted />
+          <InfoField label={t("timestamps.createdAt")} value={formatDate(servidor.createdAt)} muted />
+          <InfoField label={t("timestamps.updatedAt")} value={formatDate(servidor.updatedAt)} muted />
         </div>
       </div>
     </Modal>
@@ -124,3 +146,4 @@ function InfoField({
     </div>
   );
 }
+

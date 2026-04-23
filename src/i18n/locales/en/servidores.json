@@ -66,5 +66,9 @@
     "duplicate": "CPF or email already registered.",
     "invalidData": "Invalid data — check CPF, email, and roles.",
     "dependencyNotFound": "Cargo or Lotação not found."
+  },
+  "timestamps": {
+    "createdAt": "Created at",
+    "updatedAt": "Updated at"
   }
 }

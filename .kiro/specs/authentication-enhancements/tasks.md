@@ -214,7 +214,7 @@ All tasks build incrementally, with checkpoints to ensure quality and correctnes
     - Test: multiple concurrent 401s → single refresh call → all requests retry
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 9.1, 9.2, 9.3, 9.4, 9.5_
 
-- [-] 11. Final checkpoint - Verify all functionality
+- [x] 11. Final checkpoint - Verify all functionality
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

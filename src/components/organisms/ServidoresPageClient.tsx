@@ -15,6 +15,8 @@ import { formatCpf } from "@/lib/formatCpf";
 import { unformatCpf } from "@/lib/cpfUtils";
 import { useReativarServidor } from "@/hooks/servidores/useReativarServidor";
 import { useServidores } from "@/hooks/servidores/useServidores";
+import { useCargos } from "@/hooks/cargos/useCargos";
+import { useLotacoes } from "@/hooks/useLotacoes";
 import { filterByAtivo } from "@/lib/filterByAtivo";
 import type { AtivoFilter } from "@/lib/filterByAtivo";
 import { Permission } from "@/models";
@@ -32,6 +34,10 @@ const papelVariant: Record<Papel, "danger" | "info" | "neutral"> = {
 export function ServidoresPageClient() {
   const { t } = useTranslation("servidores");
   const { data, isLoading, isError, refetch } = useServidores();
+
+  // Pre-load cargos and lotacoes for name resolution in ServidorViewModal
+  const { data: cargosData } = useCargos();
+  const { data: lotacoesData } = useLotacoes();
 
   const [filter, setFilter] = useState<AtivoFilter>("all");
   const [search, setSearch] = useState("");
@@ -201,6 +207,8 @@ export function ServidoresPageClient() {
         open={!!viewTarget}
         onClose={() => setViewTarget(undefined)}
         servidor={viewTarget}
+        cargos={cargosData}
+        lotacoes={lotacoesData}
       />
     </Can>
   );

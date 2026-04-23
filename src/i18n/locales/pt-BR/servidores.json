@@ -66,5 +66,9 @@
     "duplicate": "CPF ou email ja cadastrado.",
     "invalidData": "Dados invalidos - verifique CPF, email e papeis.",
     "dependencyNotFound": "Cargo ou lotacao nao encontrado."
+  },
+  "timestamps": {
+    "createdAt": "Criado em",
+    "updatedAt": "Atualizado em"
   }
 }
