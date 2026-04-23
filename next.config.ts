@@ -19,12 +19,6 @@ const nextConfig: NextConfig = {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
     return {
       beforeFiles: [
-        // Socket.io proxy — /socket.io path goes to backend
-        {
-          source: "/socket.io/:path*",
-          destination: `${apiUrl}/socket.io/:path*`,
-        },
-        // REST API proxy
         {
           source: "/api/proxy/:path*",
           destination: `${apiUrl}/:path*`,
