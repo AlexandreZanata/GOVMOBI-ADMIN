@@ -4,7 +4,7 @@ import { Toaster } from "sonner";
 import { Providers } from "./providers";
 import { MSWProvider } from "@/components/MSWProvider";
 import "./globals.css";
-import "mapbox-gl/dist/mapbox-gl.css";
+import "leaflet/dist/leaflet.css";
 
 const geistSans = Geist({
   variable: "--font-sans",

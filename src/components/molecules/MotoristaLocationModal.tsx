@@ -3,10 +3,21 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MapPin, X, Loader2 } from "lucide-react";
+import dynamic from "next/dynamic";
 
 import { Button } from "@/components/atoms";
 import type { Motorista } from "@/models/Motorista";
 import { motoristasFacade } from "@/facades/motoristasFacade";
+
+// Dynamically import map component to avoid SSR issues
+const MapView = dynamic(() => import("./MotoristaLocationMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-96 items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50">
+      <Loader2 className="h-8 w-8 animate-spin text-brand-primary" />
+    </div>
+  ),
+});
 
 export interface MotoristaLocationModalProps {
   open: boolean;
@@ -26,7 +37,7 @@ interface MotoristaPosition {
 
 /**
  * Modal that displays the current location of a motorista on a map.
- * Uses Mapbox GL JS to render an interactive map with the driver's position.
+ * Uses Leaflet to render an interactive map with the driver's position.
  */
 export function MotoristaLocationModal({
   open,
@@ -38,30 +49,6 @@ export function MotoristaLocationModal({
   const [position, setPosition] = useState<MotoristaPosition | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [mapboxToken, setMapboxToken] = useState<string | null>(null);
-
-  // Fetch Mapbox token on mount
-  useEffect(() => {
-    async function fetchMapboxToken() {
-      try {
-        const { fetchWithAuth } = await import("@/facades/authFacade");
-        const response = await fetchWithAuth("/api/proxy/pesquisa/config");
-        if (response.ok) {
-          const data = await response.json();
-          const token = data.data?.mapboxToken || data.mapboxToken || null;
-          if (process.env.NODE_ENV === "development") {
-            console.log("[MotoristaLocationModal] Mapbox token fetched:", token ? "✓" : "✗");
-          }
-          setMapboxToken(token);
-        } else {
-          console.error("[MotoristaLocationModal] Failed to fetch config:", response.status);
-        }
-      } catch (err) {
-        console.error("[MotoristaLocationModal] Failed to fetch Mapbox token:", err);
-      }
-    }
-    fetchMapboxToken();
-  }, []);
 
   // Fetch motorista position when modal opens
   useEffect(() => {
@@ -91,75 +78,6 @@ export function MotoristaLocationModal({
 
     fetchPosition();
   }, [open, motorista, t]);
-
-  // Initialize map when position and token are available
-  useEffect(() => {
-    if (!open || !position || !mapboxToken) return;
-
-    let map: any = null;
-    let mapInitialized = false;
-
-    // Small delay to ensure DOM is ready
-    const timer = setTimeout(() => {
-      // Dynamically import Mapbox GL JS
-      import("mapbox-gl").then((mapboxgl) => {
-        try {
-          const container = document.getElementById("motorista-location-map");
-          if (!container) {
-            console.warn("Map container not found");
-            return;
-          }
-
-          mapboxgl.default.accessToken = mapboxToken;
-
-          map = new mapboxgl.default.Map({
-            container: "motorista-location-map",
-            style: "mapbox://styles/mapbox/streets-v12",
-            center: [position.lng, position.lat],
-            zoom: 15,
-            preserveDrawingBuffer: true,
-          });
-
-          mapInitialized = true;
-
-          // Add marker for motorista position
-          new mapboxgl.default.Marker({ color: "#3B82F6" })
-            .setLngLat([position.lng, position.lat])
-            .setPopup(
-              new mapboxgl.default.Popup({ offset: 25 }).setHTML(
-                `<div style="padding: 8px;">
-                  <p style="margin: 0; font-weight: 600; font-size: 14px;">${t("location.driverPosition")}</p>
-                  <p style="margin: 4px 0 0; font-size: 12px; color: #6B7280;">
-                    ${new Date(position.atualizadoEm).toLocaleString()}
-                  </p>
-                </div>`
-              )
-            )
-            .addTo(map);
-
-          // Add navigation controls
-          map.addControl(new mapboxgl.default.NavigationControl(), "top-right");
-        } catch (error) {
-          console.error("Failed to initialize map:", error);
-          // Don't set error state - just log it and show position data without map
-        }
-      }).catch((error) => {
-        console.error("Failed to load Mapbox GL:", error);
-        // Don't set error state - just log it and show position data without map
-      });
-    }, 100);
-
-    return () => {
-      clearTimeout(timer);
-      if (map && mapInitialized) {
-        try {
-          map.remove();
-        } catch (e) {
-          console.warn("Error removing map:", e);
-        }
-      }
-    };
-  }, [open, position, mapboxToken, t]);
 
   if (!open) return null;
 
@@ -227,14 +145,10 @@ export function MotoristaLocationModal({
                 </p>
               </div>
             </div>
-          ) : position && mapboxToken ? (
+          ) : position ? (
             <div className="space-y-4">
               {/* Map container */}
-              <div
-                id="motorista-location-map"
-                className="h-96 w-full rounded-xl border border-neutral-200 shadow-sm"
-                style={{ minHeight: "384px" }}
-              />
+              <MapView position={position} driverName={motorista?.cnhNumero || ""} />
 
               {/* Position info */}
               <div className="space-y-3">
