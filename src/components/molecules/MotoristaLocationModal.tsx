@@ -42,7 +42,8 @@ export function MotoristaLocationModal({
   useEffect(() => {
     async function fetchMapboxToken() {
       try {
-        const response = await fetch("/api/proxy/pesquisa/config");
+        const { fetchWithAuth } = await import("@/facades/authFacade");
+        const response = await fetchWithAuth("/api/proxy/pesquisa/config");
         if (response.ok) {
           const data = await response.json();
           setMapboxToken(data.data?.mapboxToken || data.mapboxToken || null);
