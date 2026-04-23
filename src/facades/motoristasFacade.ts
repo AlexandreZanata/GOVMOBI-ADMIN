@@ -202,7 +202,7 @@ export const motoristasFacade = {
       }
       
       const runsResponse = await fetchWithAuth(`${baseUrl()}/corridas?page=1&limit=100`);
-      const runsData = await handleEnvelopedResponse<{ data: any[]; total: number }>(runsResponse);
+      const runsData = await import("@/lib/handleApiResponse").then(m => m.handleApiResponse<{ data: any[]; total: number }>(runsResponse));
       
       if (process.env.NODE_ENV === "development") {
         console.log("[getPosicaoMotorista] Total runs fetched:", runsData.data?.length || 0);
@@ -249,7 +249,7 @@ export const motoristasFacade = {
         return null;
       }
       
-      const data = await handleEnvelopedResponse<{ posicao: { lat: number; lng: number; velocidade?: number; heading?: number }; timestamp: number }>(positionResponse);
+      const data = await import("@/lib/handleApiResponse").then(m => m.handleApiResponse<{ posicao: { lat: number; lng: number; velocidade?: number; heading?: number }; timestamp: number }>(positionResponse));
       
       if (process.env.NODE_ENV === "development") {
         console.log("[getPosicaoMotorista] Position data:", data);
