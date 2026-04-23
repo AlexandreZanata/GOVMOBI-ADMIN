@@ -87,11 +87,18 @@
     "errorDescription": "O motorista pode estar offline ou sem localização disponível.",
     "mapError": "Erro ao carregar o mapa",
     "noPosition": "Motorista sem localização disponível",
+    "noPositionDescription": "O motorista pode estar offline ou ainda não enviou sua posição.",
     "driverPosition": "Posição do motorista",
+    "address": "Endereço",
     "coordinates": "Coordenadas",
     "lastUpdate": "Última atualização",
+    "operationalStatus": "Status operacional",
     "activeRun": "Corrida ativa",
     "passenger": "Passageiro",
-    "destination": "Destino"
+    "destination": "Destino",
+    "opStatus": {
+      "disponivel": "Disponível",
+      "ocupado": "Em corrida"
+    }
   }
 }
