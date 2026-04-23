@@ -189,7 +189,7 @@ export function RunsPageClient() {
               size="sm"
               onClick={() => setCreateOpen(true)}
             >
-              + {t("page.actions.createRun")}
+              {t("page.actions.createRun")}
             </Button>
           </Can>
         </div>

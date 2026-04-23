@@ -131,6 +131,11 @@ export function VeiculosPageClient() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-neutral-900">{t("page.title")}</h1>
+            {data && (
+              <p className="mt-0.5 text-sm text-neutral-500">
+                {filtered.length} {filtered.length === 1 ? "veículo" : "veículos"}
+              </p>
+            )}
           </div>
           <Can perform={Permission.VEICULO_CREATE}>
             <Button
@@ -139,7 +144,7 @@ export function VeiculosPageClient() {
               size="sm"
               onClick={handleOpenCreate}
             >
-              + {t("actions.create")}
+              {t("actions.create")}
             </Button>
           </Can>
         </div>

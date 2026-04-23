@@ -130,7 +130,7 @@ export function ServidoresPageClient() {
           </div>
           <Can perform={Permission.SERVIDOR_CREATE}>
             <Button data-testid="servidores-create-btn" variant="primary" size="sm" onClick={handleOpenCreate}>
-              + {t("actions.create")}
+              {t("actions.create")}
             </Button>
           </Can>
         </div>

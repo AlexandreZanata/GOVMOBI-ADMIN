@@ -152,9 +152,16 @@ export function CargosPageClient({
       <div className="space-y-4">
         {/* Header row */}
         <div className="flex items-center justify-between gap-3">
-          <h1 className="text-lg font-semibold text-neutral-900">
-            {t("page.title")}
-          </h1>
+          <div>
+            <h1 className="text-xl font-bold text-neutral-900">
+              {t("page.title")}
+            </h1>
+            {data && (
+              <p className="mt-0.5 text-sm text-neutral-500">
+                {filtered.length} {filtered.length === 1 ? "cargo" : "cargos"}
+              </p>
+            )}
+          </div>
           <Can perform={Permission.CARGO_CREATE}>
             <Button
               data-testid="cargos-create-btn"

@@ -142,7 +142,7 @@ export function MotoristasPageClient() {
           </div>
           <Can perform={Permission.MOTORISTA_CREATE}>
             <Button data-testid="motoristas-create-btn" variant="primary" size="sm" onClick={handleOpenCreate}>
-              + {t("actions.create")}
+              {t("actions.create")}
             </Button>
           </Can>
         </div>
