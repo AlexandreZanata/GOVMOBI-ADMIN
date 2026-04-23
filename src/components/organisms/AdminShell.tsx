@@ -4,6 +4,7 @@ import { useState, useCallback, type ReactNode } from "react";
 
 import { SidebarNav } from "@/components/organisms/SidebarNav";
 import { LanguageSwitcher } from "@/components/molecules/LanguageSwitcher";
+import { ChangePasswordDialog } from "@/components/molecules/ChangePasswordDialog";
 import { NAV_ITEMS } from "@/config/nav";
 import { useAuthStore } from "@/stores/authStore";
 import { useLogout } from "@/hooks/auth/useLogout";
@@ -33,6 +34,7 @@ export function AdminShell({
   defaultCollapsed = false,
 }: AdminShellProps) {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   // Real user data from auth store
   const user = useAuthStore((s) => s.user);
@@ -50,6 +52,10 @@ export function AdminShell({
     logout();
   }, [logout]);
 
+  const handleChangePassword = useCallback(() => {
+    setIsChangePasswordOpen(true);
+  }, []);
+
   return (
     <div className="flex h-screen overflow-hidden bg-neutral-50">
       <SidebarNav
@@ -60,6 +66,7 @@ export function AdminShell({
         userRole={user?.role ?? UserRole.DISPATCHER}
         userAvatarUrl={null}
         onLogout={handleLogout}
+        onChangePassword={handleChangePassword}
       />
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
@@ -80,6 +87,12 @@ export function AdminShell({
           {children}
         </main>
       </div>
+
+      {/* Change Password Dialog */}
+      <ChangePasswordDialog
+        open={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
+      />
     </div>
   );
 }

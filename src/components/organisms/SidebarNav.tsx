@@ -55,6 +55,8 @@ export interface SidebarNavProps {
   userAvatarUrl?: string | null;
   /** Called when the user clicks the logout button. */
   onLogout?: () => void;
+  /** Called when the user clicks the change password button. */
+  onChangePassword?: () => void;
   /** Test selector. */
   "data-testid"?: string;
 }
@@ -68,6 +70,8 @@ export interface SidebarNavProps {
  * @param userName - Authenticated user name
  * @param userRole - Authenticated user role
  * @param userAvatarUrl - Optional avatar URL
+ * @param onLogout - Logout callback
+ * @param onChangePassword - Change password callback
  * @param testId - Optional test selector
  * @returns Sidebar nav element
  */
@@ -79,6 +83,7 @@ export function SidebarNav({
   userRole,
   userAvatarUrl,
   onLogout,
+  onChangePassword,
   "data-testid": testId,
 }: SidebarNavProps) {
   const { t } = useTranslation("nav");
@@ -153,6 +158,7 @@ export function SidebarNav({
           avatarUrl={userAvatarUrl}
           isCollapsed={isCollapsed}
           onLogout={onLogout}
+          onChangePassword={onChangePassword}
         />
       </div>
 
