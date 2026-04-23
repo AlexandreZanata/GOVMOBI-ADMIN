@@ -82,11 +82,28 @@ export function MotoristaLocationModal({
           
           if (process.env.NODE_ENV === "development") {
             console.log("[MotoristaLocationModal] Run data:", runData);
-            console.log("[MotoristaLocationModal] Passageiro:", runData.passageiro);
+            console.log("[MotoristaLocationModal] PassageiroId:", runData.passageiroId);
+          }
+          
+          // Fetch passenger name using passageiroId (which is a servidor ID)
+          let passageiroNome = "—";
+          if (runData.passageiroId) {
+            try {
+              const servidorResponse = await fetchWithAuth(`/api/proxy/servidores/${runData.passageiroId}`);
+              const servidorData = await handleApiResponse<any>(servidorResponse);
+              passageiroNome = servidorData.nome || "—";
+              
+              if (process.env.NODE_ENV === "development") {
+                console.log("[MotoristaLocationModal] Servidor data:", servidorData);
+                console.log("[MotoristaLocationModal] Passageiro nome:", passageiroNome);
+              }
+            } catch (err) {
+              console.error("Failed to fetch servidor:", err);
+            }
           }
           
           setRunDetails({
-            passageiroNome: runData.passageiro?.nome || runData.passageiroNome || "—",
+            passageiroNome,
             destino: runData.destino?.endereco || `${runData.destino?.lat.toFixed(6)}, ${runData.destino?.lng.toFixed(6)}`,
           });
         } else {
