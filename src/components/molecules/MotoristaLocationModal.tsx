@@ -89,12 +89,17 @@ export function MotoristaLocationModal({
           let passageiroNome = "—";
           if (runData.passageiroId) {
             try {
+              const { handleEnvelopedResponse } = await import("@/lib/handleApiResponse");
               const servidorResponse = await fetchWithAuth(`/api/proxy/servidores/${runData.passageiroId}`);
-              const servidorData = await handleApiResponse<any>(servidorResponse);
+              const servidorData = await handleEnvelopedResponse<any>(servidorResponse);
+              
+              if (process.env.NODE_ENV === "development") {
+                console.log("[MotoristaLocationModal] Servidor data (unwrapped):", servidorData);
+              }
+              
               passageiroNome = servidorData.nome || "—";
               
               if (process.env.NODE_ENV === "development") {
-                console.log("[MotoristaLocationModal] Servidor data:", servidorData);
                 console.log("[MotoristaLocationModal] Passageiro nome:", passageiroNome);
               }
             } catch (err) {
