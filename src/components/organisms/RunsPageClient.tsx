@@ -21,14 +21,15 @@ import type { Run } from "@/models/Run";
 
 /** Status badge color mapping for corridas. */
 const STATUS_CLASSES: Record<string, string> = {
-  [RunStatus.SOLICITADA]:        "bg-warning/15 text-warning",
-  [RunStatus.AGUARDANDO_ACEITE]: "bg-info/15 text-info",
-  [RunStatus.ACEITA]:            "bg-info/15 text-info",
-  [RunStatus.EM_ROTA]:           "bg-brand-primary/15 text-brand-primary",
-  [RunStatus.CONCLUIDA]:         "bg-success/15 text-success",
-  [RunStatus.AVALIADA]:          "bg-success/15 text-success",
-  [RunStatus.CANCELADA]:         "bg-danger/15 text-danger",
-  [RunStatus.EXPIRADA]:          "bg-neutral-200 text-neutral-700",
+  [RunStatus.SOLICITADA]:        "bg-warning/10 text-warning",
+  [RunStatus.AGUARDANDO_ACEITE]: "bg-info/10 text-info",
+  [RunStatus.ACEITA]:            "bg-info/10 text-info",
+  [RunStatus.EM_ROTA]:           "bg-brand-primary/10 text-brand-primary",
+  [RunStatus.PASSAGEIRO_A_BORDO]: "bg-brand-primary/10 text-brand-primary",
+  [RunStatus.CONCLUIDA]:         "bg-success/10 text-success",
+  [RunStatus.AVALIADA]:          "bg-success/10 text-success",
+  [RunStatus.CANCELADA]:         "bg-danger/10 text-danger",
+  [RunStatus.EXPIRADA]:          "bg-neutral-100 text-neutral-500",
 };
 
 const ACTIVE_STATUSES = new Set([
@@ -36,6 +37,7 @@ const ACTIVE_STATUSES = new Set([
   RunStatus.AGUARDANDO_ACEITE,
   RunStatus.ACEITA,
   RunStatus.EM_ROTA,
+  RunStatus.PASSAGEIRO_A_BORDO,
 ]);
 
 const ALL_STATUSES = Object.values(RunStatus);
@@ -317,6 +319,7 @@ function RunRow({ run, showPosition, onView, onCancel }: RunRowProps) {
       </td>
       <td className="px-5 py-3.5">
         <span
+          data-testid={`run-status-${run.id}`}
           className={[
             "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
             statusClass,
