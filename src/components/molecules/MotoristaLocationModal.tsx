@@ -220,19 +220,19 @@ export function MotoristaLocationModal({
                       <MapPin className="h-4 w-4 text-brand-primary" />
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-neutral-500">
+                      <p className="text-xs font-semibold text-neutral-900">
                         {t("location.coordinates")}
                       </p>
-                      <p className="text-sm font-semibold text-neutral-900">
+                      <p className="text-sm text-neutral-400">
                         {position.lat.toFixed(6)}, {position.lng.toFixed(6)}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-medium text-neutral-500">
+                    <p className="text-xs font-semibold text-neutral-900">
                       {t("location.lastUpdate")}
                     </p>
-                    <p className="text-sm font-semibold text-neutral-900">
+                    <p className="text-sm text-neutral-400">
                       {new Date(position.atualizadoEm).toLocaleString()}
                     </p>
                   </div>
@@ -243,20 +243,20 @@ export function MotoristaLocationModal({
                   <div className="grid grid-cols-2 gap-3">
                     {position.velocidade !== undefined && (
                       <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3">
-                        <p className="text-xs font-medium text-neutral-500">
+                        <p className="text-xs font-semibold text-neutral-900">
                           {t("location.speed")}
                         </p>
-                        <p className="text-sm font-semibold text-neutral-900">
+                        <p className="text-sm text-neutral-400">
                           {position.velocidade.toFixed(1)} km/h
                         </p>
                       </div>
                     )}
                     {position.heading !== undefined && (
                       <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3">
-                        <p className="text-xs font-medium text-neutral-500">
+                        <p className="text-xs font-semibold text-neutral-900">
                           {t("location.heading")}
                         </p>
-                        <p className="text-sm font-semibold text-neutral-900">
+                        <p className="text-sm text-neutral-400">
                           {position.heading.toFixed(0)}°
                         </p>
                       </div>
@@ -273,10 +273,10 @@ export function MotoristaLocationModal({
                       </svg>
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-info">
+                      <p className="text-xs font-semibold text-neutral-900">
                         {t("location.activeRun")}
                       </p>
-                      <p className="text-xs text-info/80">
+                      <p className="text-xs text-neutral-400">
                         ID: {position.corridaId.substring(0, 8)}...
                       </p>
                     </div>
