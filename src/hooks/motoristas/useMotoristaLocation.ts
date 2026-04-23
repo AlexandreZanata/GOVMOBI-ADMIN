@@ -54,12 +54,10 @@ export function useMotoristaLocation(
         ? sessionStorage.getItem("govmobile.access_token")
         : null;
 
-    // Connect through the Next.js rewrite proxy to avoid CORS.
-    // /api/ws rewrites to the backend's /despacho socket.io namespace.
-    // Using polling-only since Next.js rewrites don't support WS upgrades.
-    // The backend will handle the socket.io session over HTTP polling.
+    // Connect through the existing /api/proxy rewrite which is known to work.
+    // Socket.io polling: /api/proxy/despacho?EIO=4&... → backend/despacho?EIO=4&...
     const socket = io(window.location.origin, {
-      path: "/api/ws",
+      path: "/api/proxy/despacho",
       transports: ["polling"],
       auth: token ? { token } : undefined,
       reconnectionAttempts: 3,

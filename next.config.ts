@@ -19,14 +19,6 @@ const nextConfig: NextConfig = {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
     return {
       beforeFiles: [
-        // Socket.io polling for /despacho namespace.
-        // Next.js rewrites preserve query strings, so
-        // /api/ws?EIO=4&transport=polling → backend/despacho?EIO=4&transport=polling
-        {
-          source: "/api/ws",
-          destination: `${apiUrl}/despacho`,
-        },
-        // REST API proxy
         {
           source: "/api/proxy/:path*",
           destination: `${apiUrl}/:path*`,
