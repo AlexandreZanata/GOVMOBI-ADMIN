@@ -284,8 +284,7 @@ export const authFacade = {
             console.log("Token refresh failed: 401 Unauthorized");
           }
           clearTokens();
-          const raw = await handleApiResponse<TokenPair & { success?: boolean; data?: TokenPair }>(response);
-          return raw as TokenPair;
+          throw new ApiError(401, "UNAUTHORIZED", "Refresh token expired or invalid");
         }
 
         // 5xx - server error, retry if attempts remain
@@ -311,8 +310,7 @@ export const authFacade = {
             console.log(`Token refresh failed: ${response.status} ${response.statusText}`);
           }
           clearTokens();
-          const raw = await handleApiResponse<TokenPair & { success?: boolean; data?: TokenPair }>(response);
-          return raw as TokenPair;
+          throw new ApiError(response.status, "REFRESH_FAILED", `Token refresh failed: ${response.statusText}`);
         }
 
         // Success - parse and save tokens
