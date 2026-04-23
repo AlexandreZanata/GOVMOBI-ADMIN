@@ -1,4 +1,4 @@
-import type { Papel } from "@/models/Servidor";
+import type { Papel } from "@/models";
 
 /**
  * Input contract for creating a new servidor.

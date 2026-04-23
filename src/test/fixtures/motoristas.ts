@@ -1,4 +1,5 @@
 import type { Motorista } from "@/models/Motorista";
+import { StatusOperacional } from "@/models";
 
 /**
  * Fixture dataset used by motoristas MSW handlers and unit tests.
@@ -10,7 +11,7 @@ export const mockMotoristas: Motorista[] = [
     servidorId: "servidor-001",
     cnhNumero: "12345678901",
     cnhCategoria: "D",
-    statusOperacional: "DISPONIVEL",
+    statusOperacional: StatusOperacional.DISPONIVEL,
     veiculoId: null,
     notaMedia: 4.8,
     totalAvaliacoes: 25,
@@ -24,7 +25,7 @@ export const mockMotoristas: Motorista[] = [
     servidorId: "servidor-002",
     cnhNumero: "98765432100",
     cnhCategoria: "B",
-    statusOperacional: "EM_SERVICO",
+    statusOperacional: StatusOperacional.EM_CORRIDA,
     veiculoId: null,
     notaMedia: 4.5,
     totalAvaliacoes: 12,
@@ -38,7 +39,7 @@ export const mockMotoristas: Motorista[] = [
     servidorId: "servidor-003",
     cnhNumero: "11122233344",
     cnhCategoria: "E",
-    statusOperacional: "AFASTADO",
+    statusOperacional: StatusOperacional.OFFLINE,
     veiculoId: null,
     notaMedia: null,
     totalAvaliacoes: 0,

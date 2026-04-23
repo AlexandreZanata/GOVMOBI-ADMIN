@@ -11,6 +11,8 @@ import {
   vi,
 } from "vitest";
 
+import { StatusOperacional } from "@/models";
+
 import { useMotoristas } from "@/hooks/motoristas/useMotoristas";
 import { useCreateMotorista } from "@/hooks/motoristas/useCreateMotorista";
 import { useUpdateMotorista } from "@/hooks/motoristas/useUpdateMotorista";
@@ -71,7 +73,7 @@ describe("useMotoristas", () => {
     expect(result.current.data?.[0]).toMatchObject({
       id: "motorista-001",
       cnhCategoria: "D",
-      statusOperacional: "DISPONIVEL",
+      statusOperacional: StatusOperacional.DISPONIVEL,
     });
   });
 
@@ -191,7 +193,7 @@ describe("useCreateMotorista", () => {
       });
     });
 
-    expect(created).toMatchObject({ ativo: true, statusOperacional: "DISPONIVEL" });
+    expect(created).toMatchObject({ ativo: true, statusOperacional: StatusOperacional.DISPONIVEL });
   });
 });
 
@@ -273,7 +275,7 @@ describe("useUpdateMotoristaStatus", () => {
     await act(async () => {
       await result.current.mutateAsync({
         id: "motorista-001",
-        statusOperacional: "EM_SERVICO",
+        statusOperacional: StatusOperacional.EM_CORRIDA,
       });
     });
 
@@ -286,7 +288,7 @@ describe("useUpdateMotoristaStatus", () => {
 
     await act(async () => {
       await result.current
-        .mutateAsync({ id: "not-found", statusOperacional: "DISPONIVEL" })
+        .mutateAsync({ id: "not-found", statusOperacional: StatusOperacional.DISPONIVEL })
         .catch(() => undefined);
     });
 

@@ -1,17 +1,14 @@
+import { CorridaStatus } from "./enums";
+
 /**
- * Corrida (ride) lifecycle status values matching the real API.
+ * Convenience constant for backward compatibility
  */
-export enum RunStatus {
-  SOLICITADA = "solicitada",
-  AGUARDANDO_ACEITE = "aguardando_aceite",
-  ACEITA = "aceita",
-  EM_ROTA = "em_rota",
-  PASSAGEIRO_A_BORDO = "passageiro_a_bordo",
-  CONCLUIDA = "concluida",
-  AVALIADA = "avaliada",
-  CANCELADA = "cancelada",
-  EXPIRADA = "expirada",
-}
+export const RunStatus = CorridaStatus;
+
+/**
+ * Type alias for backward compatibility
+ */
+export type RunStatus = CorridaStatus;
 
 /**
  * Geographic coordinate for origin/destination.
@@ -87,7 +84,7 @@ export interface Run {
   /** Unique corrida identifier (UUID v7). */
   id: string;
   /** Current lifecycle status. */
-  status: RunStatus;
+  status: CorridaStatus;
   /** Passenger (passageiro) identifier. */
   passageiroId: string;
   /** Assigned driver (motorista) identifier, or null if not yet assigned. */
@@ -149,7 +146,7 @@ export interface CorridasPage {
 export interface CorridasFilters {
   page?: number;
   limit?: number;
-  status?: RunStatus | string;
+  status?: CorridaStatus | string;
 }
 
 /**

@@ -11,7 +11,7 @@ import { useUpdateMotorista } from "@/hooks/motoristas/useUpdateMotorista";
 import { useUpdateMotoristaStatus } from "@/hooks/motoristas/useUpdateMotoristaStatus";
 import { useDesativarMotorista } from "@/hooks/motoristas/useDesativarMotorista";
 import { useReativarMotorista } from "@/hooks/motoristas/useReativarMotorista";
-import { UserRole } from "@/models";
+import { UserRole, StatusOperacional } from "@/models";
 import type { Motorista } from "@/models/Motorista";
 
 // ── Mock hooks ───────────────────────────────────────────────────────────────
@@ -47,7 +47,7 @@ const activeMotorista: Motorista = {
   servidorId: "servidor-001",
   cnhNumero: "12345678901",
   cnhCategoria: "D",
-  statusOperacional: "DISPONIVEL",
+  statusOperacional: StatusOperacional.DISPONIVEL,
   veiculoId: null,
   notaMedia: 4.8,
   totalAvaliacoes: 25,
@@ -62,7 +62,7 @@ const inactiveMotorista: Motorista = {
   servidorId: "servidor-003",
   cnhNumero: "11122233344",
   cnhCategoria: "E",
-  statusOperacional: "AFASTADO",
+  statusOperacional: StatusOperacional.OFFLINE,
   veiculoId: null,
   notaMedia: null,
   totalAvaliacoes: 0,

@@ -2,6 +2,7 @@ import { delay, http, HttpResponse } from "msw";
 
 import { Permission } from "@/models/Permission";
 import { UserRole } from "@/models/User";
+import { Papel } from "@/models";
 import type { AuthUser, TokenPair, LoginInput, RegisterInput } from "@/models/Auth";
 import type { Servidor } from "@/models/Servidor";
 
@@ -115,7 +116,7 @@ export const authHandlers = [
       telefone: body.telefone,
       cargoId: body.cargoId,
       lotacaoId: body.lotacaoId,
-      papeis: ["USUARIO"],
+      papeis: [Papel.USUARIO],
       ativo: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -146,7 +147,7 @@ export const authHandlers = [
       telefone: "11999999999",
       cargoId: "cargo-1",
       lotacaoId: "lotacao-1",
-      papeis: ["USUARIO"],
+      papeis: [Papel.USUARIO],
       ativo: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

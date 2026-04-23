@@ -7,14 +7,15 @@ import "@/i18n/config";
 import { Badge } from "@/components/atoms";
 import { Modal } from "@/components/molecules/Modal";
 import { formatCpf } from "@/lib/formatCpf";
-import type { Papel, Servidor } from "@/models/Servidor";
+import type { Servidor } from "@/models/Servidor";
 import type { Cargo } from "@/models/Cargo";
 import type { Lotacao } from "@/models/Lotacao";
+import { Papel } from "@/models";
 
 const papelVariant: Record<Papel, "danger" | "info" | "neutral"> = {
-  ADMIN: "danger",
-  MOTORISTA: "info",
-  USUARIO: "neutral",
+  [Papel.ADMIN]: "danger",
+  [Papel.MOTORISTA]: "info",
+  [Papel.USUARIO]: "neutral",
 };
 
 export interface ServidorViewModalProps {

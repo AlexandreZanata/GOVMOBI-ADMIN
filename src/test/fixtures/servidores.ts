@@ -1,4 +1,5 @@
 import type { Servidor } from "@/models/Servidor";
+import { Papel } from "@/models";
 
 /**
  * Fixture dataset used by servidores MSW handlers and unit tests.
@@ -12,7 +13,7 @@ export const mockServidores: Servidor[] = [
     telefone: "66974002072",
     cargoId: "cargo-001",
     lotacaoId: "lotacao-001",
-    papeis: ["USUARIO", "MOTORISTA"],
+    papeis: [Papel.USUARIO, Papel.MOTORISTA],
     ativo: true,
     createdAt: "2026-04-15T14:18:02.629Z",
     updatedAt: "2026-04-15T14:18:02.629Z",
@@ -26,7 +27,7 @@ export const mockServidores: Servidor[] = [
     telefone: "21977776666",
     cargoId: "cargo-002",
     lotacaoId: "lotacao-002",
-    papeis: ["USUARIO"],
+    papeis: [Papel.USUARIO],
     ativo: true,
     createdAt: "2026-04-10T10:00:00.000Z",
     updatedAt: "2026-04-10T10:00:00.000Z",
@@ -40,7 +41,7 @@ export const mockServidores: Servidor[] = [
     telefone: "11955554444",
     cargoId: "cargo-001",
     lotacaoId: "lotacao-003",
-    papeis: ["ADMIN"],
+    papeis: [Papel.ADMIN],
     ativo: false,
     createdAt: "2026-04-08T09:00:00.000Z",
     updatedAt: "2026-04-14T08:00:00.000Z",

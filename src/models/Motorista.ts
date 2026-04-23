@@ -1,20 +1,10 @@
+import { StatusOperacional } from "./enums";
+
 /**
  * CNH (Brazilian driver's license) category union.
  * @todo Sync final values from Swagger once the /motoristas endpoint is published.
  */
 export type CnhCategoria = "A" | "B" | "AB" | "C" | "D" | "E";
-
-/**
- * Operational status of a motorista (driver).
- * - DISPONIVEL: in shift, ready to receive rides
- * - EM_CORRIDA: executing an active ride — managed exclusively by the system
- * - OFFLINE: off shift or disconnected by inactivity
- */
-export type MotoristaStatusOperacional =
-  | "DISPONIVEL"
-  | "EM_CORRIDA"
-  | "OFFLINE"
-  | (string & Record<never, never>); // allow unknown values without breaking TS
 
 /**
  * Core motorista (driver) contract matching the real API response shape.
@@ -29,7 +19,7 @@ export interface Motorista {
   /** CNH category (e.g. B, D, E). */
   cnhCategoria: CnhCategoria;
   /** Current operational status of the driver. */
-  statusOperacional: MotoristaStatusOperacional;
+  statusOperacional: StatusOperacional;
   /** Currently associated vehicle identifier, or null if none. */
   veiculoId: string | null;
   /** Average rating from completed runs, or null if no ratings yet. */

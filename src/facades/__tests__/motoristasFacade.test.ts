@@ -1,6 +1,8 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { setupServer } from "msw/node";
 
+import { StatusOperacional } from "@/models";
+
 import { motoristasFacade } from "@/facades/motoristasFacade";
 import { motoristasHandlers } from "@/msw/motoristasHandlers";
 import { mockMotoristas } from "@/test/fixtures/motoristas";
@@ -65,7 +67,7 @@ describe("motoristasFacade", () => {
       expect(result.cnhNumero).toBe("55566677788");
       expect(result.cnhCategoria).toBe("B");
       expect(result.ativo).toBe(true);
-      expect(result.statusOperacional).toBe("DISPONIVEL");
+      expect(result.statusOperacional).toBe(StatusOperacional.DISPONIVEL);
       expect(result.deletedAt).toBeNull();
     });
 
@@ -124,16 +126,16 @@ describe("motoristasFacade", () => {
     it("returns the motorista with the updated status", async () => {
       const result = await motoristasFacade.updateMotoristaStatus(
         "motorista-001",
-        { statusOperacional: "EM_SERVICO" }
+        { statusOperacional: StatusOperacional.EM_CORRIDA }
       );
 
-      expect(result.statusOperacional).toBe("EM_SERVICO");
+      expect(result.statusOperacional).toBe(StatusOperacional.EM_CORRIDA);
     });
 
     it("throws ApiError 404 for unknown id", async () => {
       await expect(
         motoristasFacade.updateMotoristaStatus("not-found", {
-          statusOperacional: "DISPONIVEL",
+          statusOperacional: StatusOperacional.DISPONIVEL,
         })
       ).rejects.toMatchObject({ status: 404 });
     });

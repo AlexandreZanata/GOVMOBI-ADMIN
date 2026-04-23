@@ -1,8 +1,4 @@
-/**
- * Roles a servidor can hold within the system.
- * @todo Sync final values from Swagger once the /servidores endpoint is published.
- */
-export type Papel = "USUARIO" | "ADMIN" | "MOTORISTA";
+import { Papel } from "./enums";
 
 /**
  * Core servidor (public servant) contract matching the real API response shape.

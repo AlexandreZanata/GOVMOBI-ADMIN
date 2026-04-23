@@ -19,13 +19,13 @@ import { useCargos } from "@/hooks/cargos/useCargos";
 import { useLotacoes } from "@/hooks/useLotacoes";
 import { filterByAtivo } from "@/lib/filterByAtivo";
 import type { AtivoFilter } from "@/lib/filterByAtivo";
-import { Permission } from "@/models";
-import type { Papel, Servidor } from "@/models/Servidor";
+import { Permission, Papel } from "@/models";
+import type { Servidor } from "@/models/Servidor";
 
 const papelVariant: Record<Papel, "danger" | "info" | "neutral"> = {
-  ADMIN: "danger",
-  MOTORISTA: "info",
-  USUARIO: "neutral",
+  [Papel.ADMIN]: "danger",
+  [Papel.MOTORISTA]: "info",
+  [Papel.USUARIO]: "neutral",
 };
 
 /**

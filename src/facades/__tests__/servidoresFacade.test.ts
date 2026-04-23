@@ -1,6 +1,8 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { setupServer } from "msw/node";
 
+import { Papel } from "@/models";
+
 import { servidoresFacade } from "@/facades/servidoresFacade";
 import { servidoresHandlers } from "@/msw/servidoresHandlers";
 import { mockServidores } from "@/test/fixtures/servidores";
@@ -51,7 +53,7 @@ describe("servidoresFacade", () => {
         telefone: "11999998888",
         cargoId: "cargo-001",
         lotacaoId: "lotacao-001",
-        papeis: ["USUARIO"],
+        papeis: [Papel.USUARIO],
         senha: "GovMob@2026",
       });
       expect(result.nome).toBe("Novo Servidor");
@@ -68,7 +70,7 @@ describe("servidoresFacade", () => {
           telefone: "11999998888",
           cargoId: "cargo-001",
           lotacaoId: "lotacao-001",
-          papeis: ["USUARIO"],
+          papeis: [Papel.USUARIO],
         senha: "GovMob@2026",
         })
       ).rejects.toMatchObject({ status: 409, code: "CONFLICT" });
@@ -83,7 +85,7 @@ describe("servidoresFacade", () => {
           telefone: "11999998888",
           cargoId: "not-found",
           lotacaoId: "lotacao-001",
-          papeis: ["USUARIO"],
+          papeis: [Papel.USUARIO],
         senha: "GovMob@2026",
         })
       ).rejects.toMatchObject({ status: 404 });
@@ -98,7 +100,7 @@ describe("servidoresFacade", () => {
           telefone: "11999998888",
           cargoId: "cargo-001",
           lotacaoId: "lotacao-001",
-          papeis: ["USUARIO"],
+          papeis: [Papel.USUARIO],
         senha: "GovMob@2026",
         })
         .catch((e: unknown) => e);

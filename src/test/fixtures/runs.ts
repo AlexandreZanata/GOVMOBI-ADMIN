@@ -1,4 +1,5 @@
-import type { Run, RunStatus } from "@/models/Run";
+import { StatusOperacional, Papel } from "@/models";
+import { Run, RunStatus } from "@/models/Run";
 
 /**
  * Offset-based paginated response contract used by list endpoints.
@@ -62,7 +63,7 @@ export const runsFixture: RunListItem[] = [
       id: "019db519-e90f-707a-a846-270683043600",
       servidorId: "019db515-2d1a-75fa-9015-563c933cf793",
       cnhCategoria: "AB",
-      statusOperacional: "EM_CORRIDA",
+      statusOperacional: StatusOperacional.EM_CORRIDA,
       notaMedia: 5,
       totalAvaliacoes: 6,
     },
@@ -109,7 +110,7 @@ export const runsFixture: RunListItem[] = [
       id: "019db519-e90f-707a-a846-270683043600",
       servidorId: "019db515-2d1a-75fa-9015-563c933cf793",
       cnhCategoria: "AB",
-      statusOperacional: "DISPONIVEL",
+      statusOperacional: StatusOperacional.DISPONIVEL,
       notaMedia: 5,
       totalAvaliacoes: 6,
     },
