@@ -54,10 +54,11 @@ export function useMotoristaLocation(
         ? sessionStorage.getItem("govmobile.access_token")
         : null;
 
-    // Connect through the existing /api/proxy rewrite which is known to work.
-    // Socket.io polling: /api/proxy/despacho?EIO=4&... → backend/despacho?EIO=4&...
-    const socket = io(window.location.origin, {
-      path: "/api/proxy/despacho",
+    // Socket.io is at /socket.io (default path) on the backend.
+    // /despacho is the namespace. We proxy /socket.io through Next.js rewrites
+    // to avoid CORS, then connect to the /despacho namespace.
+    const socket = io(`${window.location.origin}/despacho`, {
+      path: "/socket.io",
       transports: ["polling"],
       auth: token ? { token } : undefined,
       reconnectionAttempts: 3,
