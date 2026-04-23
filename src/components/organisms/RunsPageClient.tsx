@@ -12,7 +12,6 @@ import { ErrorState } from "@/components/molecules/ErrorState";
 import { RunCancelDialog } from "@/components/molecules/RunCancelDialog";
 import { RunCreateAdminDialog } from "@/components/molecules/RunCreateAdminDialog";
 import { RunViewModal } from "@/components/molecules/RunViewModal";
-import { useActiveRuns } from "@/hooks/runs/useActiveRuns";
 import { useRuns } from "@/hooks/runs/useRuns";
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
 import { useServidores } from "@/hooks/servidores/useServidores";
@@ -41,8 +40,6 @@ const ACTIVE_STATUSES = new Set([
 
 const ALL_STATUSES = Object.values(RunStatus);
 
-type Tab = "all" | "ativas";
-
 export function RunsPageClient() {
   const { t } = useTranslation("runs");
   const { data: currentUser } = useCurrentUser();
@@ -51,7 +48,6 @@ export function RunsPageClient() {
   const { data: servidoresData } = useServidores();
   const { data: motoristasData } = useMotoristas();
 
-  const [tab, setTab] = useState<Tab>("all");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -66,14 +62,6 @@ export function RunsPageClient() {
     status: statusFilter || undefined,
   });
 
-  // Active corridas (admin tab, polled every 15s)
-  const {
-    data: activeRuns,
-    isLoading: isLoadingAtivas,
-    isError: isErrorAtivas,
-    refetch: refetchAtivas,
-  } = useActiveRuns();
-
   const runs = data?.data ?? [];
   const totalPages = data?.totalPages ?? 1;
 
@@ -84,18 +72,12 @@ export function RunsPageClient() {
     return runs.filter((r) => r.id.toLowerCase().includes(term));
   }, [runs, search]);
 
-  const filteredAtivas = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    if (!term) return activeRuns ?? [];
-    return (activeRuns ?? []).filter((r) => r.id.toLowerCase().includes(term));
-  }, [activeRuns, search]);
+  // ── Content ──────────────────────────────────────────────────────────────
 
-  // ── Content: "Todas" tab ──────────────────────────────────────────────────
-
-  let allContent: ReactNode;
+  let content: ReactNode;
 
   if (isLoading) {
-    allContent = (
+    content = (
       <div className="space-y-2">
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="h-14 w-full animate-pulse rounded-lg bg-neutral-100" />
@@ -103,9 +85,9 @@ export function RunsPageClient() {
       </div>
     );
   } else if (isError) {
-    allContent = <ErrorState data-testid="runs-error" onRetry={() => void refetch()} />;
+    content = <ErrorState data-testid="runs-error" onRetry={() => void refetch()} />;
   } else if (!filteredRuns.length) {
-    allContent = (
+    content = (
       <div
         data-testid="runs-empty"
         className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-neutral-50 py-16 text-center"
@@ -115,7 +97,7 @@ export function RunsPageClient() {
       </div>
     );
   } else {
-    allContent = (
+    content = (
       <>
         <div
           data-testid="runs-table"
@@ -177,63 +159,6 @@ export function RunsPageClient() {
     );
   }
 
-  // ── Content: "Ativas" tab ─────────────────────────────────────────────────
-
-  let ativasContent: ReactNode;
-
-  if (isLoadingAtivas) {
-    ativasContent = (
-      <div className="space-y-2">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-14 w-full animate-pulse rounded-lg bg-neutral-100" />
-        ))}
-      </div>
-    );
-  } else if (isErrorAtivas) {
-    ativasContent = <ErrorState data-testid="runs-ativas-error" onRetry={() => void refetchAtivas()} />;
-  } else if (!filteredAtivas.length) {
-    ativasContent = (
-      <div
-        data-testid="runs-ativas-empty"
-        className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-neutral-50 py-16 text-center"
-      >
-        <p className="text-sm font-medium text-neutral-600">{t("page.emptyAtivas.title")}</p>
-        <p className="mt-1 text-xs text-neutral-400">{t("page.emptyAtivas.message")}</p>
-      </div>
-    );
-  } else {
-    ativasContent = (
-      <div
-        data-testid="runs-ativas-table"
-        className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm"
-      >
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-neutral-100 bg-neutral-50">
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("table.id")}</th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("table.status")}</th>
-              <th className="hidden px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500 md:table-cell">{t("table.origem")}</th>
-              <th className="hidden px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500 md:table-cell">{t("table.destino")}</th>
-              <th className="hidden px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500 lg:table-cell">{t("table.posicao")}</th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("table.actions")}</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-neutral-50">
-            {filteredAtivas.map((run) => (
-              <RunRow
-                key={run.id}
-                run={run}
-                showPosition
-                onView={setViewTarget}
-                onCancel={setCancelTarget}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
   return (
     <Can
       perform={Permission.VIEW_RUNS}
@@ -269,26 +194,6 @@ export function RunsPageClient() {
           </Can>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-1 border-b border-neutral-200">
-          {(["all", "ativas"] as Tab[]).map((tabKey) => (
-            <button
-              key={tabKey}
-              type="button"
-              data-testid={`runs-tab-${tabKey}`}
-              onClick={() => setTab(tabKey)}
-              className={[
-                "px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary",
-                tab === tabKey
-                  ? "border-b-2 border-brand-primary text-brand-primary"
-                  : "text-neutral-500 hover:text-neutral-700",
-              ].join(" ")}
-            >
-              {t(`page.tabs.${tabKey}`)}
-            </button>
-          ))}
-        </div>
-
         {/* Toolbar: search + status filter pills */}
         <div className="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center">
           <div className="relative flex-1">
@@ -307,51 +212,46 @@ export function RunsPageClient() {
             />
           </div>
 
-          {/* Status filter pills — only on "all" tab */}
-          {tab === "all" && (
-            <>
-              <div aria-hidden="true" className="hidden h-6 w-px bg-neutral-200 sm:block" />
-              <div
-                role="group"
-                aria-label={t("page.filters.status")}
-                className="flex flex-wrap gap-1.5"
+          <div aria-hidden="true" className="hidden h-6 w-px bg-neutral-200 sm:block" />
+          <div
+            role="group"
+            aria-label={t("page.filters.status")}
+            className="flex flex-wrap gap-1.5"
+          >
+            <button
+              type="button"
+              aria-pressed={statusFilter === ""}
+              onClick={() => { setStatusFilter(""); setPage(1); }}
+              className={[
+                "rounded-full px-3 py-1 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1",
+                statusFilter === ""
+                  ? "bg-brand-primary text-white shadow-sm"
+                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200",
+              ].join(" ")}
+            >
+              {t("page.filters.all")}
+            </button>
+            {ALL_STATUSES.map((s) => (
+              <button
+                key={s}
+                type="button"
+                data-testid={`runs-filter-${s}`}
+                aria-pressed={statusFilter === s}
+                onClick={() => { setStatusFilter(s); setPage(1); }}
+                className={[
+                  "rounded-full px-3 py-1 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1",
+                  statusFilter === s
+                    ? "bg-brand-primary text-white shadow-sm"
+                    : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200",
+                ].join(" ")}
               >
-                <button
-                  type="button"
-                  aria-pressed={statusFilter === ""}
-                  onClick={() => { setStatusFilter(""); setPage(1); }}
-                  className={[
-                    "rounded-full px-3 py-1 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1",
-                    statusFilter === ""
-                      ? "bg-brand-primary text-white shadow-sm"
-                      : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200",
-                  ].join(" ")}
-                >
-                  {t("page.filters.all")}
-                </button>
-                {ALL_STATUSES.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    data-testid={`runs-filter-${s}`}
-                    aria-pressed={statusFilter === s}
-                    onClick={() => { setStatusFilter(s); setPage(1); }}
-                    className={[
-                      "rounded-full px-3 py-1 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1",
-                      statusFilter === s
-                        ? "bg-brand-primary text-white shadow-sm"
-                        : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200",
-                    ].join(" ")}
-                  >
-                    {t(`status.${s}`)}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
+                {t(`status.${s}`)}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {tab === "all" ? allContent : ativasContent}
+        {content}
       </div>
 
       {/* Create admin run dialog */}
