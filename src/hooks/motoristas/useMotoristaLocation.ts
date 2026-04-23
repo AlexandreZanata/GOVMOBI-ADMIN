@@ -19,14 +19,17 @@ interface UseMotoristaLocationResult {
   data: MotoristaLocationData | null;
   isLoading: boolean;
   error: string | null;
+  isLive: boolean;
 }
 
+const REFRESH_INTERVAL_MS = 3000;
+
 /**
- * Hook that connects to the /despacho WebSocket and subscribes to
- * real-time position updates for a single motorista via
- * `buscar-posicao-motorista` / `posicao-motorista` events.
+ * Hook that connects to the /despacho WebSocket and polls for real-time
+ * position updates every 3 seconds via buscar-posicao-motorista / posicao-motorista.
  *
- * Automatically disconnects when the component unmounts or `enabled` is false.
+ * The server responds to each emit with a single posicao-motorista event,
+ * so we re-emit on an interval to keep the position fresh.
  */
 export function useMotoristaLocation(
   motoristaId: string | undefined,
@@ -35,44 +38,53 @@ export function useMotoristaLocation(
   const [data, setData] = useState<MotoristaLocationData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLive, setIsLive] = useState(false);
   const socketRef = useRef<Socket | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (!enabled || !motoristaId) {
       setData(null);
       setError(null);
+      setIsLive(false);
       return;
     }
 
     setIsLoading(true);
     setError(null);
     setData(null);
+    setIsLive(false);
 
-    // Retrieve access token from sessionStorage (same key used by authFacade)
     const token =
       typeof window !== "undefined"
         ? sessionStorage.getItem("govmobile.access_token")
         : null;
 
-    // The backend has CORS enabled (Access-Control-Allow-Origin: *),
-    // so we connect directly. No proxy needed.
     const backendUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
 
     const socket = io(`${backendUrl}/despacho`, {
       transports: ["polling", "websocket"],
       auth: token ? { token } : undefined,
-      reconnectionAttempts: 3,
+      reconnectionAttempts: 5,
       timeout: 10000,
     });
 
     socketRef.current = socket;
 
+    const requestPosition = () => {
+      if (socket.connected) {
+        socket.emit("buscar-posicao-motorista", {
+          motoristaId,
+          comEndereco: true,
+        });
+      }
+    };
+
     socket.on("connect", () => {
-      // Request position with address resolution
-      socket.emit("buscar-posicao-motorista", {
-        motoristaId,
-        comEndereco: true,
-      });
+      setIsLive(true);
+      requestPosition();
+      // Poll every 3s to keep position fresh
+      intervalRef.current = setInterval(requestPosition, REFRESH_INTERVAL_MS);
     });
 
     socket.on(
@@ -83,6 +95,7 @@ export function useMotoristaLocation(
           setError("no_position");
           return;
         }
+        setError(null);
         setData(payload.posicao);
       }
     );
@@ -94,18 +107,27 @@ export function useMotoristaLocation(
 
     socket.on("connect_error", (err) => {
       setIsLoading(false);
+      setIsLive(false);
       setError(err.message ?? "connect_error");
     });
 
     socket.on("disconnect", () => {
-      setIsLoading(false);
+      setIsLive(false);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     });
 
     return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
       socket.disconnect();
       socketRef.current = null;
     };
   }, [motoristaId, enabled]);
 
-  return { data, isLoading, error };
+  return { data, isLoading, error, isLive };
 }

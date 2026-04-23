@@ -44,7 +44,7 @@ export function MotoristaLocationModal({
 }: MotoristaLocationModalProps) {
   const { t } = useTranslation("motoristas");
 
-  const { data: position, isLoading, error } = useMotoristaLocation(
+  const { data: position, isLoading, error, isLive } = useMotoristaLocation(
     motorista?.id,
     open
   );
@@ -60,7 +60,13 @@ export function MotoristaLocationModal({
       open={open}
       onClose={onClose}
       title={t("location.title")}
-      subtitle={motorista ? t("location.subtitle", { cnh: motorista.cnhNumero }) : undefined}
+      subtitle={
+        isLive
+          ? `● Ao vivo · CNH: ${motorista?.cnhNumero ?? ""}`
+          : motorista
+            ? t("location.subtitle", { cnh: motorista.cnhNumero })
+            : undefined
+      }
       maxWidth="max-w-3xl"
       data-testid={testId}
       footer={
