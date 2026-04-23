@@ -46,6 +46,42 @@ export function useDashboardRuns() {
 }
 
 /**
+ * Computes top motoristas by average rating.
+ * Only includes motoristas with at least 1 rating (notaMedia != null).
+ * Returns top 5 sorted by rating (descending), then by total reviews (descending).
+ */
+export function computeTopMotoristasByRating(
+  motoristas: Motorista[] = [],
+  servidores: Servidor[] = [],
+): Array<{ rank: number; id: string; name: string; rating: number; totalAvaliacoes: number }> {
+  const servidorById = new Map<string, Servidor>(
+    servidores.map((s) => [s.id, s]),
+  );
+
+  return motoristas
+    .filter((m) => m.notaMedia != null && m.notaMedia > 0)
+    .sort((a, b) => {
+      // Sort by rating descending, then by total reviews descending
+      if (b.notaMedia !== a.notaMedia) {
+        return (b.notaMedia ?? 0) - (a.notaMedia ?? 0);
+      }
+      return b.totalAvaliacoes - a.totalAvaliacoes;
+    })
+    .slice(0, 5)
+    .map((m, idx) => {
+      const servidor = servidorById.get(m.servidorId);
+      const name = servidor?.nome ?? m.id.slice(0, 8) + "…";
+      return {
+        rank: idx + 1,
+        id: m.id,
+        name,
+        rating: m.notaMedia ?? 0,
+        totalAvaliacoes: m.totalAvaliacoes,
+      };
+    });
+}
+
+/**
  * Computes dashboard statistics from runs data, resolving UUIDs to display names
  * using the already-loaded servidores and motoristas lists.
  *

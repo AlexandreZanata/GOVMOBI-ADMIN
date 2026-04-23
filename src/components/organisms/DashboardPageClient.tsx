@@ -15,7 +15,7 @@ import "@/i18n/config";
 
 import { useMotoristas } from "@/hooks/motoristas/useMotoristas";
 import { useServidores } from "@/hooks/servidores/useServidores";
-import { useDashboardRuns, computeDashboardStats } from "@/hooks/dashboard/useDashboardStats";
+import { useDashboardRuns, computeDashboardStats, computeTopMotoristasByRating } from "@/hooks/dashboard/useDashboardStats";
 import { RunStatus } from "@/models";
 
 // ─── Status color map ─────────────────────────────────────────────────────────
@@ -142,6 +142,66 @@ function RankingRow({ rank, name, value, unit, maxValue }: RankingRowProps) {
   );
 }
 
+// ─── Rating Ranking Row ───────────────────────────────────────────────────────
+
+interface RatingRankingRowProps {
+  rank: number;
+  name: string;
+  rating: number;
+  totalAvaliacoes: number;
+  maxRating?: number;
+}
+
+function RatingRankingRow({
+  rank,
+  name,
+  rating,
+  totalAvaliacoes,
+  maxRating = 5,
+}: RatingRankingRowProps) {
+  const pct = maxRating > 0 ? Math.round((rating / maxRating) * 100) : 0;
+  const isTop = rank === 1;
+
+  return (
+    <div className="flex items-center gap-3 py-2.5">
+      <span
+        className={[
+          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold",
+          isTop
+            ? "bg-warning text-white"
+            : "bg-neutral-100 text-neutral-500",
+        ].join(" ")}
+      >
+        {rank}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-2">
+          <p className="truncate text-sm font-medium text-neutral-800">{name}</p>
+          <div className="flex shrink-0 items-center gap-1.5">
+            <span className="text-sm font-bold text-neutral-900">
+              {rating.toFixed(1)}
+            </span>
+            <Star
+              className="h-3.5 w-3.5 fill-warning text-warning"
+              aria-hidden="true"
+            />
+            <span className="text-xs text-neutral-400">
+              ({totalAvaliacoes})
+            </span>
+          </div>
+        </div>
+        <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-neutral-100">
+          <div
+            className="h-full rounded-full bg-warning transition-all duration-500"
+            style={{ width: `${pct}%` }}
+            aria-hidden="true"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Status Bar ───────────────────────────────────────────────────────────────
 
 interface StatusBarProps {
@@ -242,6 +302,11 @@ export function DashboardPageClient() {
       () => computeDashboardStats(runs, servidores, motoristas),
       [runs, servidores, motoristas],
     );
+
+  const topMotoristasByRating = useMemo(
+    () => computeTopMotoristasByRating(motoristas, servidores),
+    [motoristas, servidores],
+  );
 
   const totalCorridas = runs.length;
   const maxSolicitante = topSolicitantes[0]?.total ?? 1;
@@ -409,7 +474,7 @@ export function DashboardPageClient() {
           </div>
         </section>
 
-        {/* Top avaliações — API em produção */}
+        {/* Top motoristas por avaliação */}
         <section
           data-testid="dashboard-top-avaliacoes"
           aria-label={t("sections.topAvaliacoes")}
@@ -419,23 +484,22 @@ export function DashboardPageClient() {
             icon={<Award className="h-4 w-4" aria-hidden="true" />}
             title={t("sections.topAvaliacoes")}
           />
-          <div className="mt-5 flex flex-col items-center justify-center gap-3 py-8">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-warning/10">
-              <Star className="h-7 w-7 text-warning" aria-hidden="true" />
-            </div>
-            <p className="text-sm font-semibold text-neutral-700">
-              {t("rating.pending")}
-            </p>
-            <p className="max-w-[220px] text-center text-xs text-neutral-400">
-              {t("rating.pendingDescription")}
-            </p>
-            <span className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-warning/10 px-3 py-1 text-xs font-medium text-warning">
-              <span
-                className="h-1.5 w-1.5 animate-pulse rounded-full bg-warning"
-                aria-hidden="true"
-              />
-              Em desenvolvimento
-            </span>
+          <div className="mt-5 divide-y divide-neutral-50">
+            {isLoadingMotoristas ? (
+              <SkeletonList rows={5} />
+            ) : topMotoristasByRating.length === 0 ? (
+              <EmptyState message={t("table.semDados")} />
+            ) : (
+              topMotoristasByRating.map((item) => (
+                <RatingRankingRow
+                  key={item.id}
+                  rank={item.rank}
+                  name={item.name}
+                  rating={item.rating}
+                  totalAvaliacoes={item.totalAvaliacoes}
+                />
+              ))
+            )}
           </div>
         </section>
       </div>
