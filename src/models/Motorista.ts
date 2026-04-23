@@ -32,6 +32,10 @@ export interface Motorista {
   statusOperacional: MotoristaStatusOperacional;
   /** Currently associated vehicle identifier, or null if none. */
   veiculoId: string | null;
+  /** Average rating from completed runs, or null if no ratings yet. */
+  notaMedia: number | null;
+  /** Total number of ratings received. */
+  totalAvaliacoes: number;
   /** Whether the motorista record is active. */
   ativo: boolean;
   /** ISO 8601 timestamp when the record was created. */
