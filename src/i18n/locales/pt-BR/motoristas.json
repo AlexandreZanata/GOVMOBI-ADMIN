@@ -91,7 +91,7 @@
     "coordinates": "Coordenadas",
     "lastUpdate": "Última atualização",
     "activeRun": "Corrida ativa",
-    "speed": "Velocidade",
-    "heading": "Direção"
+    "passenger": "Passageiro",
+    "destination": "Destino"
   }
 }

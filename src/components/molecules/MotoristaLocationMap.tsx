@@ -32,8 +32,8 @@ export default function MotoristaLocationMap({
       center={[position.lat, position.lng]}
       zoom={15}
       scrollWheelZoom={true}
-      className="h-96 w-full rounded-xl border border-neutral-200 shadow-sm"
-      style={{ minHeight: "384px" }}
+      className="h-64 w-full rounded-xl border border-neutral-200 shadow-sm"
+      style={{ minHeight: "256px" }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

@@ -94,7 +94,7 @@
     "coordinates": "Coordinates",
     "lastUpdate": "Last update",
     "activeRun": "Active run",
-    "speed": "Speed",
-    "heading": "Heading"
+    "passenger": "Passenger",
+    "destination": "Destination"
   }
 }
