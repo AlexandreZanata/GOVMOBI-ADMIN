@@ -183,4 +183,20 @@ export const motoristasFacade = {
     if (response.status === 404) return null;
     return handleEnvelopedResponse<import("@/models/Veiculo").Veiculo>(response);
   },
+
+  /**
+   * Gets the current location of a motorista.
+   * GET /frota/motoristas/{id}/posicao
+   * 
+   * @param motoristaId - Target motorista identifier
+   * @returns Promise resolving to the motorista's current position or null if unavailable
+   * @throws ApiError 404 when the motorista does not exist or has no position
+   */
+  async getPosicaoMotorista(motoristaId: string): Promise<{ lat: number; lng: number; atualizadoEm: string } | null> {
+    const response = await fetchWithAuth(
+      `${baseUrl()}/frota/motoristas/${motoristaId}/posicao`
+    );
+    if (response.status === 404) return null;
+    return handleEnvelopedResponse<{ lat: number; lng: number; atualizadoEm: string }>(response);
+  },
 };

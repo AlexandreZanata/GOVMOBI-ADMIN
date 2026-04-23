@@ -32,7 +32,8 @@
     "updateStatus": "Atualizar status",
     "gerenciarVeiculo": "Gerenciar veículo",
     "associarVeiculo": "Associar veículo",
-    "desassociarVeiculo": "Remover veículo"
+    "desassociarVeiculo": "Remover veículo",
+    "viewLocation": "Ver localização"
   },
   "form": {
     "servidorId": "Servidor",
@@ -75,5 +76,18 @@
     "duplicateCnh": "Ja existe um motorista com este numero de CNH.",
     "notFound": "Motorista nao encontrado.",
     "invalidData": "Dados invalidos. Revise o formulario."
+  },
+  "location": {
+    "title": "Localização do motorista",
+    "subtitle": "CNH: {{cnh}}",
+    "close": "Fechar",
+    "loading": "Carregando localização...",
+    "loadingMap": "Carregando mapa...",
+    "error": "Não foi possível carregar a localização",
+    "errorDescription": "O motorista pode estar offline ou sem localização disponível.",
+    "noPosition": "Motorista sem localização disponível",
+    "driverPosition": "Posição do motorista",
+    "coordinates": "Coordenadas",
+    "lastUpdate": "Última atualização"
   }
 }

@@ -32,7 +32,8 @@
     "updateStatus": "Update Status",
     "gerenciarVeiculo": "Manage Vehicle",
     "associarVeiculo": "Associate Vehicle",
-    "desassociarVeiculo": "Remove Vehicle"
+    "desassociarVeiculo": "Remove Vehicle",
+    "viewLocation": "View Location"
   },
   "form": {
     "servidorId": "Employee",
@@ -78,5 +79,18 @@
     "duplicateCnh": "A driver with this CNH number already exists.",
     "notFound": "Driver not found.",
     "invalidData": "Invalid data. Please review the form."
+  },
+  "location": {
+    "title": "Driver Location",
+    "subtitle": "CNH: {{cnh}}",
+    "close": "Close",
+    "loading": "Loading location...",
+    "loadingMap": "Loading map...",
+    "error": "Unable to load location",
+    "errorDescription": "The driver may be offline or have no available location.",
+    "noPosition": "Driver has no available location",
+    "driverPosition": "Driver position",
+    "coordinates": "Coordinates",
+    "lastUpdate": "Last update"
   }
 }
