@@ -89,6 +89,8 @@
     "driverPosition": "Posição do motorista",
     "coordinates": "Coordenadas",
     "lastUpdate": "Última atualização",
-    "activeRun": "Corrida ativa"
+    "activeRun": "Corrida ativa",
+    "speed": "Velocidade",
+    "heading": "Direção"
   }
 }

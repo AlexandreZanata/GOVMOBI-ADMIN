@@ -92,6 +92,8 @@
     "driverPosition": "Driver position",
     "coordinates": "Coordinates",
     "lastUpdate": "Last update",
-    "activeRun": "Active run"
+    "activeRun": "Active run",
+    "speed": "Speed",
+    "heading": "Heading"
   }
 }

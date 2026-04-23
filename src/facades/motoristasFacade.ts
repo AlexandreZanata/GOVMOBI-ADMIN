@@ -193,7 +193,7 @@ export const motoristasFacade = {
    * @returns Promise resolving to the motorista's current position or null if unavailable
    * @throws ApiError 404 when the motorista has no active run or no position
    */
-  async getPosicaoMotorista(motoristaId: string): Promise<{ lat: number; lng: number; atualizadoEm: string; corridaId: string } | null> {
+  async getPosicaoMotorista(motoristaId: string): Promise<{ lat: number; lng: number; atualizadoEm: string; corridaId: string; velocidade?: number; heading?: number } | null> {
     // First, we need to find the active run for this motorista
     // We'll fetch all runs and filter for active ones with this motorista
     const runsResponse = await fetchWithAuth(`${baseUrl()}/corridas?page=1&limit=100`);
@@ -216,10 +216,14 @@ export const motoristasFacade = {
     
     if (positionResponse.status === 404) return null;
     
-    const position = await handleEnvelopedResponse<{ lat: number; lng: number; atualizadoEm: string }>(positionResponse);
+    const data = await handleEnvelopedResponse<{ posicao: { lat: number; lng: number; velocidade?: number; heading?: number }; timestamp: number }>(positionResponse);
     
     return {
-      ...position,
+      lat: data.posicao.lat,
+      lng: data.posicao.lng,
+      velocidade: data.posicao.velocidade,
+      heading: data.posicao.heading,
+      atualizadoEm: new Date(data.timestamp).toISOString(),
       corridaId: activeRun.id,
     };
   },

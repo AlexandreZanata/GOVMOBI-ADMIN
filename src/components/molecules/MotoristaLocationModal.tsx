@@ -20,6 +20,8 @@ interface MotoristaPosition {
   lng: number;
   atualizadoEm: string;
   corridaId: string;
+  velocidade?: number;
+  heading?: number;
 }
 
 /**
@@ -223,6 +225,32 @@ export function MotoristaLocationModal({
                     </p>
                   </div>
                 </div>
+
+                {/* Speed and heading info */}
+                {(position.velocidade !== undefined || position.heading !== undefined) && (
+                  <div className="grid grid-cols-2 gap-3">
+                    {position.velocidade !== undefined && (
+                      <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3">
+                        <p className="text-xs font-medium text-neutral-500">
+                          {t("location.speed")}
+                        </p>
+                        <p className="text-sm font-semibold text-neutral-900">
+                          {position.velocidade.toFixed(1)} km/h
+                        </p>
+                      </div>
+                    )}
+                    {position.heading !== undefined && (
+                      <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3">
+                        <p className="text-xs font-medium text-neutral-500">
+                          {t("location.heading")}
+                        </p>
+                        <p className="text-sm font-semibold text-neutral-900">
+                          {position.heading.toFixed(0)}°
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Active run info */}
                 <div className="rounded-lg border border-info/20 bg-info/5 px-4 py-3">
