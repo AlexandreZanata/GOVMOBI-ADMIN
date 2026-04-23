@@ -249,10 +249,18 @@ export const motoristasFacade = {
         return null;
       }
       
-      const data = await import("@/lib/handleApiResponse").then(m => m.handleApiResponse<{ posicao: { lat: number; lng: number; velocidade?: number; heading?: number }; timestamp: number }>(positionResponse));
+      const data = await import("@/lib/handleApiResponse").then(m => m.handleApiResponse<{ posicao: { lat: number; lng: number; velocidade?: number; heading?: number } | null; timestamp: number | null }>(positionResponse));
       
       if (process.env.NODE_ENV === "development") {
         console.log("[getPosicaoMotorista] Position data:", data);
+      }
+      
+      // Check if position data is available
+      if (!data.posicao || !data.timestamp) {
+        if (process.env.NODE_ENV === "development") {
+          console.log("[getPosicaoMotorista] Position data is null for run:", activeRun.id);
+        }
+        return null;
       }
       
       return {
