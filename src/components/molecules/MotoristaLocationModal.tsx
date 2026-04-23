@@ -48,10 +48,16 @@ export function MotoristaLocationModal({
         const response = await fetchWithAuth("/api/proxy/pesquisa/config");
         if (response.ok) {
           const data = await response.json();
-          setMapboxToken(data.data?.mapboxToken || data.mapboxToken || null);
+          const token = data.data?.mapboxToken || data.mapboxToken || null;
+          if (process.env.NODE_ENV === "development") {
+            console.log("[MotoristaLocationModal] Mapbox token fetched:", token ? "✓" : "✗");
+          }
+          setMapboxToken(token);
+        } else {
+          console.error("[MotoristaLocationModal] Failed to fetch config:", response.status);
         }
       } catch (err) {
-        console.error("Failed to fetch Mapbox token:", err);
+        console.error("[MotoristaLocationModal] Failed to fetch Mapbox token:", err);
       }
     }
     fetchMapboxToken();
