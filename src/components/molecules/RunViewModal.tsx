@@ -6,11 +6,16 @@ import "@/i18n/config";
 import { Modal } from "@/components/molecules/Modal";
 import type { Run } from "@/models/Run";
 import { RunStatus } from "@/models/Run";
+import type { Servidor } from "@/models/Servidor";
+import type { Motorista } from "@/models/Motorista";
+import { useMemo } from "react";
 
 export interface RunViewModalProps {
   open: boolean;
   onClose: () => void;
   run: Run | undefined;
+  servidores?: Servidor[];
+  motoristas?: Motorista[];
   "data-testid"?: string;
 }
 
@@ -47,13 +52,42 @@ export function RunViewModal({
   open,
   onClose,
   run,
+  servidores,
+  motoristas,
   "data-testid": testId,
 }: RunViewModalProps): React.ReactElement | null {
   const { t } = useTranslation("runs");
 
+  // Build lookup maps for O(1) name resolution
+  const servidoresMap = useMemo(() => {
+    if (!servidores) return new Map();
+    return new Map(servidores.map((s) => [s.id, s.nome]));
+  }, [servidores]);
+
+  const motoristasMap = useMemo(() => {
+    if (!motoristas) return new Map();
+    return new Map(motoristas.map((m) => [m.id, m.servidorId]));
+  }, [motoristas]);
+
   if (!run) return null;
 
   const statusClass = STATUS_CLASSES[run.status] ?? "bg-neutral-100 text-neutral-500 ring-neutral-200";
+
+  // Resolve passageiro name
+  const passageiroNome = servidoresMap.get(run.passageiroId);
+  const passageiroDisplay = passageiroNome || run.passageiroId.slice(0, 8) + "…";
+
+  // Resolve motorista name (motoristaId → servidorId → servidor.nome)
+  const motoristaNome = run.motoristaId
+    ? (() => {
+        const servidorId = motoristasMap.get(run.motoristaId);
+        if (servidorId) {
+          const nome = servidoresMap.get(servidorId);
+          return nome || run.motoristaId.slice(0, 8) + "…";
+        }
+        return run.motoristaId.slice(0, 8) + "…";
+      })()
+    : "—";
 
   const safeDate = (iso: string | null | undefined) => {
     if (!iso) return "—";
@@ -124,19 +158,18 @@ export function RunViewModal({
         {/* Participantes */}
         <Section title={t("view.participantes")}>
           <div className="grid grid-cols-1 gap-x-10 gap-y-5 sm:grid-cols-2">
-            <Field label={t("view.passageiroId")} value={run.passageiroId} />
-            <Field label={t("view.motoristaId")} value={run.motoristaId ?? "—"} />
-            <Field label={t("view.veiculoId")} value={run.veiculoId ?? "—"} />
-            {run.motorista && (
-              <Field
-                label={t("view.notaMotorista")}
-                value={run.motorista.notaMedia != null ? `${run.motorista.notaMedia} ★ (${run.motorista.totalAvaliacoes})` : "—"}
-              />
-            )}
+            <Field label={t("view.passageiro")} value={passageiroDisplay} />
+            <Field label={t("view.motorista")} value={motoristaNome} />
             {run.veiculo && (
               <Field
                 label={t("view.veiculo")}
                 value={`${run.veiculo.modelo} ${run.veiculo.ano} — ${run.veiculo.placa}`}
+              />
+            )}
+            {run.motorista && (
+              <Field
+                label={t("view.notaMotorista")}
+                value={run.motorista.notaMedia != null ? `${run.motorista.notaMedia} ★ (${run.motorista.totalAvaliacoes})` : "—"}
               />
             )}
           </div>
@@ -160,9 +193,9 @@ export function RunViewModal({
         {run.avaliacao && (
           <Section title={t("view.avaliacao")}>
             <div className="grid grid-cols-1 gap-x-10 gap-y-5 sm:grid-cols-2">
-              <Field label={t("view.avaliacaoNota")} value={`${run.avaliacao.nota} ★`} />
+              <Field label={t("view.nota")} value={`${run.avaliacao.nota} ★`} />
               {run.avaliacao.comentario && (
-                <Field label={t("view.avaliacaoComentario")} value={run.avaliacao.comentario} />
+                <Field label={t("view.comentario")} value={run.avaliacao.comentario} />
               )}
             </div>
           </Section>

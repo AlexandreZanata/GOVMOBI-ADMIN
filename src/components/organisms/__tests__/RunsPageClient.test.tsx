@@ -1,11 +1,16 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import "@/test/i18n-mock";
 
 import { PermissionsProvider } from "@/components/auth/PermissionsProvider";
 import { RunsPageClient } from "@/components/organisms/RunsPageClient";
 import { useRuns } from "@/hooks/runs/useRuns";
+import { useActiveRuns } from "@/hooks/runs/useActiveRuns";
+import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
+import { useServidores } from "@/hooks/servidores/useServidores";
+import { useMotoristas } from "@/hooks/motoristas/useMotoristas";
 import { RunStatus, UserRole, type Run } from "@/models";
 import type { CorridasPage } from "@/models/Run";
 
@@ -13,7 +18,27 @@ vi.mock("@/hooks/runs/useRuns", () => ({
   useRuns: vi.fn(),
 }));
 
+vi.mock("@/hooks/runs/useActiveRuns", () => ({
+  useActiveRuns: vi.fn(),
+}));
+
+vi.mock("@/hooks/auth/useCurrentUser", () => ({
+  useCurrentUser: vi.fn(),
+}));
+
+vi.mock("@/hooks/servidores/useServidores", () => ({
+  useServidores: vi.fn(),
+}));
+
+vi.mock("@/hooks/motoristas/useMotoristas", () => ({
+  useMotoristas: vi.fn(),
+}));
+
 const mockUseRuns = vi.mocked(useRuns);
+const mockUseActiveRuns = vi.mocked(useActiveRuns);
+const mockUseCurrentUser = vi.mocked(useCurrentUser);
+const mockUseServidores = vi.mocked(useServidores);
+const mockUseMotoristas = vi.mocked(useMotoristas);
 
 const runFixture: Run = {
   id: "run-1",
@@ -38,10 +63,19 @@ const pageFixture: CorridasPage = {
 };
 
 function renderForRole(role: UserRole) {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+  
   return render(
-    <PermissionsProvider role={role}>
-      <RunsPageClient />
-    </PermissionsProvider>
+    <QueryClientProvider client={queryClient}>
+      <PermissionsProvider role={role}>
+        <RunsPageClient />
+      </PermissionsProvider>
+    </QueryClientProvider>
   );
 }
 
@@ -49,6 +83,34 @@ describe("RunsPageClient", () => {
   beforeEach(() => {
     mockUseRuns.mockReturnValue({
       data: pageFixture,
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(async () => { throw new Error("not used"); }),
+    });
+    
+    mockUseActiveRuns.mockReturnValue({
+      data: [],
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(async () => { throw new Error("not used"); }),
+    });
+    
+    mockUseCurrentUser.mockReturnValue({
+      data: { id: "user-1", email: "admin@test.com", role: UserRole.ADMIN },
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(async () => { throw new Error("not used"); }),
+    });
+    
+    mockUseServidores.mockReturnValue({
+      data: [],
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(async () => { throw new Error("not used"); }),
+    });
+    
+    mockUseMotoristas.mockReturnValue({
+      data: [],
       isLoading: false,
       isError: false,
       refetch: vi.fn(async () => { throw new Error("not used"); }),

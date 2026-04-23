@@ -15,6 +15,8 @@ import { RunViewModal } from "@/components/molecules/RunViewModal";
 import { useActiveRuns } from "@/hooks/runs/useActiveRuns";
 import { useRuns } from "@/hooks/runs/useRuns";
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
+import { useServidores } from "@/hooks/servidores/useServidores";
+import { useMotoristas } from "@/hooks/motoristas/useMotoristas";
 import { Permission, RunStatus } from "@/models";
 import type { Run } from "@/models/Run";
 
@@ -44,6 +46,10 @@ type Tab = "all" | "ativas";
 export function RunsPageClient() {
   const { t } = useTranslation("runs");
   const { data: currentUser } = useCurrentUser();
+
+  // Pre-load servidores and motoristas for name resolution in RunViewModal
+  const { data: servidoresData } = useServidores();
+  const { data: motoristasData } = useMotoristas();
 
   const [tab, setTab] = useState<Tab>("all");
   const [statusFilter, setStatusFilter] = useState<string>("");
@@ -372,6 +378,8 @@ export function RunsPageClient() {
         open={!!viewTarget}
         onClose={() => setViewTarget(undefined)}
         run={viewTarget}
+        servidores={servidoresData}
+        motoristas={motoristasData}
       />
     </Can>
   );
