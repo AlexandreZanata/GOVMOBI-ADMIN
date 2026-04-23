@@ -169,7 +169,7 @@ export function RunViewModal({
             {run.motorista && (
               <Field
                 label={t("view.notaMotorista")}
-                value={run.motorista.notaMedia != null ? `${run.motorista.notaMedia} ★ (${run.motorista.totalAvaliacoes})` : "—"}
+                value={run.motorista.notaMedia != null ? `${run.motorista.notaMedia.toFixed(1)} ★ (${run.motorista.totalAvaliacoes})` : "—"}
               />
             )}
           </div>
