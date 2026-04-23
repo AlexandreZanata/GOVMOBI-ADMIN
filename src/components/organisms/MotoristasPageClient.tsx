@@ -46,7 +46,6 @@ export function MotoristasPageClient() {
   const [search, setSearch] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Motorista | undefined>();
-  const [statusTarget, setStatusTarget] = useState<Motorista | undefined>();
   const [desativarTarget, setDesativarTarget] = useState<Motorista | undefined>();
   const [veiculoTarget, setVeiculoTarget] = useState<Motorista | undefined>();
   const [viewTarget, setViewTarget] = useState<Motorista | undefined>();

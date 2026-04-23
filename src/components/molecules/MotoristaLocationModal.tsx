@@ -76,8 +76,11 @@ export function MotoristaLocationModal({
           
           // Fetch run details
           const { fetchWithAuth } = await import("@/facades/authFacade");
-          const { handleApiResponse } = await import("@/lib/handleApiResponse");
-          const runResponse = await fetchWithAuth(`/api/proxy/corridas/${pos.corridaId}`);
+          const { handleApiResponse, handleEnvelopedResponse } = await import("@/lib/handleApiResponse");
+          const { getApiBase } = await import("@/lib/apiBase");
+          const baseUrl = getApiBase();
+          
+          const runResponse = await fetchWithAuth(`${baseUrl}/corridas/${pos.corridaId}`);
           const runData = await handleApiResponse<any>(runResponse);
           
           if (process.env.NODE_ENV === "development") {
@@ -89,21 +92,24 @@ export function MotoristaLocationModal({
           let passageiroNome = "—";
           if (runData.passageiroId) {
             try {
-              const { handleEnvelopedResponse } = await import("@/lib/handleApiResponse");
-              const servidorResponse = await fetchWithAuth(`/api/proxy/servidores/${runData.passageiroId}`);
+              const servidorResponse = await fetchWithAuth(`${baseUrl}/servidores/${runData.passageiroId}`);
               const servidorData = await handleEnvelopedResponse<any>(servidorResponse);
               
               if (process.env.NODE_ENV === "development") {
-                console.log("[MotoristaLocationModal] Servidor data (unwrapped):", servidorData);
+                console.log("[MotoristaLocationModal] Servidor response unwrapped:", servidorData);
+                console.log("[MotoristaLocationModal] Servidor data type:", typeof servidorData);
+                console.log("[MotoristaLocationModal] Servidor data keys:", servidorData ? Object.keys(servidorData) : "null");
+                console.log("[MotoristaLocationModal] Nome field:", servidorData?.nome);
               }
               
-              passageiroNome = servidorData.nome || "—";
+              // The data should already be unwrapped by handleEnvelopedResponse
+              passageiroNome = servidorData?.nome || "—";
               
               if (process.env.NODE_ENV === "development") {
-                console.log("[MotoristaLocationModal] Passageiro nome:", passageiroNome);
+                console.log("[MotoristaLocationModal] Final passageiro nome:", passageiroNome);
               }
             } catch (err) {
-              console.error("Failed to fetch servidor:", err);
+              console.error("[MotoristaLocationModal] Failed to fetch servidor:", err);
             }
           }
           
