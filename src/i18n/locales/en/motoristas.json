@@ -88,6 +88,7 @@
     "loadingMap": "Loading map...",
     "error": "Unable to load location",
     "errorDescription": "The driver may be offline or have no available location.",
+    "mapError": "Failed to load map",
     "noPosition": "Driver has no available location",
     "driverPosition": "Driver position",
     "coordinates": "Coordinates",

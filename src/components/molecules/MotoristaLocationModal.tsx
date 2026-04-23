@@ -90,39 +90,51 @@ export function MotoristaLocationModal({
   useEffect(() => {
     if (!open || !position || !mapboxToken) return;
 
+    let map: any = null;
+
     // Dynamically import Mapbox GL JS
     import("mapbox-gl").then((mapboxgl) => {
-      mapboxgl.default.accessToken = mapboxToken;
+      try {
+        mapboxgl.default.accessToken = mapboxToken;
 
-      const map = new mapboxgl.default.Map({
-        container: "motorista-location-map",
-        style: "mapbox://styles/mapbox/streets-v12",
-        center: [position.lng, position.lat],
-        zoom: 15,
-      });
+        map = new mapboxgl.default.Map({
+          container: "motorista-location-map",
+          style: "mapbox://styles/mapbox/streets-v12",
+          center: [position.lng, position.lat],
+          zoom: 15,
+        });
 
-      // Add marker for motorista position
-      new mapboxgl.default.Marker({ color: "#3B82F6" })
-        .setLngLat([position.lng, position.lat])
-        .setPopup(
-          new mapboxgl.default.Popup({ offset: 25 }).setHTML(
-            `<div style="padding: 8px;">
-              <p style="margin: 0; font-weight: 600; font-size: 14px;">${t("location.driverPosition")}</p>
-              <p style="margin: 4px 0 0; font-size: 12px; color: #6B7280;">
-                ${new Date(position.atualizadoEm).toLocaleString()}
-              </p>
-            </div>`
+        // Add marker for motorista position
+        new mapboxgl.default.Marker({ color: "#3B82F6" })
+          .setLngLat([position.lng, position.lat])
+          .setPopup(
+            new mapboxgl.default.Popup({ offset: 25 }).setHTML(
+              `<div style="padding: 8px;">
+                <p style="margin: 0; font-weight: 600; font-size: 14px;">${t("location.driverPosition")}</p>
+                <p style="margin: 4px 0 0; font-size: 12px; color: #6B7280;">
+                  ${new Date(position.atualizadoEm).toLocaleString()}
+                </p>
+              </div>`
+            )
           )
-        )
-        .addTo(map);
+          .addTo(map);
 
-      // Add navigation controls
-      map.addControl(new mapboxgl.default.NavigationControl(), "top-right");
-
-      return () => {
-        map.remove();
-      };
+        // Add navigation controls
+        map.addControl(new mapboxgl.default.NavigationControl(), "top-right");
+      } catch (error) {
+        console.error("Failed to initialize map:", error);
+        setError(t("location.mapError"));
+      }
+    }).catch((error) => {
+      console.error("Failed to load Mapbox GL:", error);
+      setError(t("location.mapError"));
     });
+
+    return () => {
+      if (map) {
+        map.remove();
+      }
+    };
   }, [open, position, mapboxToken, t]);
 
   if (!open) return null;

@@ -85,6 +85,7 @@
     "loadingMap": "Carregando mapa...",
     "error": "Não foi possível carregar a localização",
     "errorDescription": "O motorista pode estar offline ou sem localização disponível.",
+    "mapError": "Erro ao carregar o mapa",
     "noPosition": "Motorista sem localização disponível",
     "driverPosition": "Posição do motorista",
     "coordinates": "Coordenadas",
