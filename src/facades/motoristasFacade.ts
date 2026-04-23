@@ -185,18 +185,42 @@ export const motoristasFacade = {
   },
 
   /**
-   * Gets the current location of a motorista.
-   * GET /frota/motoristas/{id}/posicao
+   * Gets the current location of a motorista through their active run.
+   * First finds the active run for the motorista, then fetches the position.
+   * GET /corridas/{id}/posicao-motorista
    * 
    * @param motoristaId - Target motorista identifier
    * @returns Promise resolving to the motorista's current position or null if unavailable
-   * @throws ApiError 404 when the motorista does not exist or has no position
+   * @throws ApiError 404 when the motorista has no active run or no position
    */
-  async getPosicaoMotorista(motoristaId: string): Promise<{ lat: number; lng: number; atualizadoEm: string } | null> {
-    const response = await fetchWithAuth(
-      `${baseUrl()}/frota/motoristas/${motoristaId}/posicao`
+  async getPosicaoMotorista(motoristaId: string): Promise<{ lat: number; lng: number; atualizadoEm: string; corridaId: string } | null> {
+    // First, we need to find the active run for this motorista
+    // We'll fetch all runs and filter for active ones with this motorista
+    const runsResponse = await fetchWithAuth(`${baseUrl()}/corridas?page=1&limit=100`);
+    const runsData = await handleEnvelopedResponse<{ data: any[]; total: number }>(runsResponse);
+    
+    // Find active run for this motorista (status: aceita, em_rota, or passageiro_a_bordo)
+    const activeStatuses = ['aceita', 'em_rota', 'passageiro_a_bordo'];
+    const activeRun = runsData.data?.find(
+      (run: any) => run.motoristaId === motoristaId && activeStatuses.includes(run.status)
     );
-    if (response.status === 404) return null;
-    return handleEnvelopedResponse<{ lat: number; lng: number; atualizadoEm: string }>(response);
+    
+    if (!activeRun) {
+      return null; // No active run found
+    }
+    
+    // Now fetch the position using the run ID
+    const positionResponse = await fetchWithAuth(
+      `${baseUrl()}/corridas/${activeRun.id}/posicao-motorista`
+    );
+    
+    if (positionResponse.status === 404) return null;
+    
+    const position = await handleEnvelopedResponse<{ lat: number; lng: number; atualizadoEm: string }>(positionResponse);
+    
+    return {
+      ...position,
+      corridaId: activeRun.id,
+    };
   },
 };

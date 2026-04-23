@@ -19,6 +19,7 @@ interface MotoristaPosition {
   lat: number;
   lng: number;
   atualizadoEm: string;
+  corridaId: string;
 }
 
 /**
@@ -197,27 +198,48 @@ export function MotoristaLocationModal({
               />
 
               {/* Position info */}
-              <div className="flex items-center justify-between rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-primary/10">
-                    <MapPin className="h-4 w-4 text-brand-primary" />
+              <div className="space-y-3">
+                <div className="flex items-center justify-between rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-primary/10">
+                      <MapPin className="h-4 w-4 text-brand-primary" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-neutral-500">
+                        {t("location.coordinates")}
+                      </p>
+                      <p className="text-sm font-semibold text-neutral-900">
+                        {position.lat.toFixed(6)}, {position.lng.toFixed(6)}
+                      </p>
+                    </div>
                   </div>
-                  <div>
+                  <div className="text-right">
                     <p className="text-xs font-medium text-neutral-500">
-                      {t("location.coordinates")}
+                      {t("location.lastUpdate")}
                     </p>
                     <p className="text-sm font-semibold text-neutral-900">
-                      {position.lat.toFixed(6)}, {position.lng.toFixed(6)}
+                      {new Date(position.atualizadoEm).toLocaleString()}
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-xs font-medium text-neutral-500">
-                    {t("location.lastUpdate")}
-                  </p>
-                  <p className="text-sm font-semibold text-neutral-900">
-                    {new Date(position.atualizadoEm).toLocaleString()}
-                  </p>
+
+                {/* Active run info */}
+                <div className="rounded-lg border border-info/20 bg-info/5 px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-info/20">
+                      <svg className="h-3.5 w-3.5 text-info" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-info">
+                        {t("location.activeRun")}
+                      </p>
+                      <p className="text-xs text-info/80">
+                        ID: {position.corridaId.substring(0, 8)}...
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

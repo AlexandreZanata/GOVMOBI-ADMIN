@@ -91,6 +91,7 @@
     "noPosition": "Driver has no available location",
     "driverPosition": "Driver position",
     "coordinates": "Coordinates",
-    "lastUpdate": "Last update"
+    "lastUpdate": "Last update",
+    "activeRun": "Active run"
   }
 }
