@@ -194,37 +194,80 @@ export const motoristasFacade = {
    * @throws ApiError 404 when the motorista has no active run or no position
    */
   async getPosicaoMotorista(motoristaId: string): Promise<{ lat: number; lng: number; atualizadoEm: string; corridaId: string; velocidade?: number; heading?: number } | null> {
-    // First, we need to find the active run for this motorista
-    // We'll fetch all runs and filter for active ones with this motorista
-    const runsResponse = await fetchWithAuth(`${baseUrl()}/corridas?page=1&limit=100`);
-    const runsData = await handleEnvelopedResponse<{ data: any[]; total: number }>(runsResponse);
-    
-    // Find active run for this motorista (status: aceita, em_rota, or passageiro_a_bordo)
-    const activeStatuses = ['aceita', 'em_rota', 'passageiro_a_bordo'];
-    const activeRun = runsData.data?.find(
-      (run: any) => run.motoristaId === motoristaId && activeStatuses.includes(run.status)
-    );
-    
-    if (!activeRun) {
-      return null; // No active run found
+    try {
+      // First, we need to find the active run for this motorista
+      // We'll fetch all runs and filter for active ones with this motorista
+      if (process.env.NODE_ENV === "development") {
+        console.log("[getPosicaoMotorista] Fetching runs for motorista:", motoristaId);
+      }
+      
+      const runsResponse = await fetchWithAuth(`${baseUrl()}/corridas?page=1&limit=100`);
+      const runsData = await handleEnvelopedResponse<{ data: any[]; total: number }>(runsResponse);
+      
+      if (process.env.NODE_ENV === "development") {
+        console.log("[getPosicaoMotorista] Total runs fetched:", runsData.data?.length || 0);
+        console.log("[getPosicaoMotorista] Runs data:", runsData.data);
+      }
+      
+      // Find active run for this motorista (status: aceita, em_rota, or passageiro_a_bordo)
+      const activeStatuses = ['aceita', 'em_rota', 'passageiro_a_bordo'];
+      const activeRun = runsData.data?.find(
+        (run: any) => {
+          const matches = run.motoristaId === motoristaId && activeStatuses.includes(run.status);
+          if (process.env.NODE_ENV === "development" && run.motoristaId === motoristaId) {
+            console.log("[getPosicaoMotorista] Found run for motorista:", {
+              runId: run.id,
+              status: run.status,
+              motoristaId: run.motoristaId,
+              matches
+            });
+          }
+          return matches;
+        }
+      );
+      
+      if (!activeRun) {
+        if (process.env.NODE_ENV === "development") {
+          console.log("[getPosicaoMotorista] No active run found for motorista:", motoristaId);
+        }
+        return null; // No active run found
+      }
+      
+      if (process.env.NODE_ENV === "development") {
+        console.log("[getPosicaoMotorista] Active run found:", activeRun.id);
+      }
+      
+      // Now fetch the position using the run ID
+      const positionResponse = await fetchWithAuth(
+        `${baseUrl()}/corridas/${activeRun.id}/posicao-motorista`
+      );
+      
+      if (positionResponse.status === 404) {
+        if (process.env.NODE_ENV === "development") {
+          console.log("[getPosicaoMotorista] Position not found (404) for run:", activeRun.id);
+        }
+        return null;
+      }
+      
+      const data = await handleEnvelopedResponse<{ posicao: { lat: number; lng: number; velocidade?: number; heading?: number }; timestamp: number }>(positionResponse);
+      
+      if (process.env.NODE_ENV === "development") {
+        console.log("[getPosicaoMotorista] Position data:", data);
+      }
+      
+      return {
+        lat: data.posicao.lat,
+        lng: data.posicao.lng,
+        velocidade: data.posicao.velocidade,
+        heading: data.posicao.heading,
+        atualizadoEm: new Date(data.timestamp).toISOString(),
+        corridaId: activeRun.id,
+      };
+    } catch (error) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("[getPosicaoMotorista] Error:", error);
+      }
+      throw error;
     }
-    
-    // Now fetch the position using the run ID
-    const positionResponse = await fetchWithAuth(
-      `${baseUrl()}/corridas/${activeRun.id}/posicao-motorista`
-    );
-    
-    if (positionResponse.status === 404) return null;
-    
-    const data = await handleEnvelopedResponse<{ posicao: { lat: number; lng: number; velocidade?: number; heading?: number }; timestamp: number }>(positionResponse);
-    
-    return {
-      lat: data.posicao.lat,
-      lng: data.posicao.lng,
-      velocidade: data.posicao.velocidade,
-      heading: data.posicao.heading,
-      atualizadoEm: new Date(data.timestamp).toISOString(),
-      corridaId: activeRun.id,
-    };
   },
 };
