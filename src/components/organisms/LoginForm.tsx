@@ -64,13 +64,11 @@ export function LoginForm() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
           {t("login.title")}
         </h1>
-        <p className="text-sm text-neutral-500">
-          {t("login.subtitle", { defaultValue: "Acesse o painel de gestão com suas credenciais." })}
-        </p>
+        <p className="text-sm text-neutral-400">Painel de gestão GovMobile</p>
       </div>
 
       {/* Session expired banner */}
