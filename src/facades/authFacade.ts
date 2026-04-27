@@ -121,13 +121,19 @@ export async function fetchWithAuth(
       } catch {
         throw new ApiError(0, "NETWORK_ERROR", "Network request failed");
       }
+      // Return the retried response regardless of status —
+      // let the caller decide how to handle non-401 errors
+      return response;
     } catch (error) {
       // If the error is already an ApiError from the retry fetch, re-throw it
       if (error instanceof ApiError && error.code === "NETWORK_ERROR") {
         throw error;
       }
-      // Refresh failed — clear tokens and throw
-      clearTokens();
+      // Refresh failed with 401 (refresh token expired) — clear tokens
+      // For other errors (5xx, network), don't clear tokens — may be transient
+      if (error instanceof ApiError && error.status === 401) {
+        clearTokens();
+      }
       throw error;
     }
   }
@@ -255,9 +261,6 @@ export const authFacade = {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              ...(accessToken
-                ? { Authorization: `Bearer ${accessToken}` }
-                : {}),
             },
             body: JSON.stringify({ refreshToken }),
           });
@@ -270,24 +273,23 @@ export const authFacade = {
             }
             continue;
           }
-          // Final attempt failed
+          // Final attempt failed — don't clear tokens, may be transient
           if (process.env.NODE_ENV === "development") {
             console.log("Token refresh failed: Network error (all retries exhausted)");
           }
-          clearTokens();
           throw lastError;
         }
 
-        // 401 - authentication failure, do NOT retry
+        // 401 - refresh token is expired/invalid, must re-login
         if (response.status === 401) {
           if (process.env.NODE_ENV === "development") {
-            console.log("Token refresh failed: 401 Unauthorized");
+            console.log("Token refresh failed: 401 Unauthorized — refresh token expired");
           }
           clearTokens();
           throw new ApiError(401, "UNAUTHORIZED", "Refresh token expired or invalid");
         }
 
-        // 5xx - server error, retry if attempts remain
+        // 5xx - server error, retry if attempts remain — don't clear tokens
         if (response.status >= 500) {
           lastError = new ApiError(response.status, "SERVER_ERROR", `Server error: ${response.statusText}`);
           if (attempt < MAX_RETRIES) {
@@ -296,20 +298,18 @@ export const authFacade = {
             }
             continue;
           }
-          // Final attempt failed
           if (process.env.NODE_ENV === "development") {
             console.log(`Token refresh failed: ${response.status} ${response.statusText} (all retries exhausted)`);
           }
-          clearTokens();
+          // Don't clear tokens on server errors — may be transient
           throw lastError;
         }
 
-        // Other non-OK responses
+        // Other non-OK responses — don't clear tokens
         if (!response.ok) {
           if (process.env.NODE_ENV === "development") {
             console.log(`Token refresh failed: ${response.status} ${response.statusText}`);
           }
-          clearTokens();
           throw new ApiError(response.status, "REFRESH_FAILED", `Token refresh failed: ${response.statusText}`);
         }
 
@@ -327,7 +327,6 @@ export const authFacade = {
       }
 
       // Should never reach here, but TypeScript needs this
-      clearTokens();
       throw lastError || new ApiError(0, "UNKNOWN_ERROR", "Token refresh failed");
     })();
 
