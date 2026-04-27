@@ -3,10 +3,9 @@
 import React, { useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { AlertCircle, Clock, LogIn } from "lucide-react";
+import { AlertCircle, Clock } from "lucide-react";
 import "@/i18n/config";
 
-import { Button } from "@/components/atoms";
 import { Input } from "@/components/atoms";
 import { useLogin } from "@/hooks/auth/useLogin";
 import { formatCpf, unformatCpf, isValidCpfFormat } from "@/lib/cpfUtils";
@@ -45,16 +44,6 @@ export function LoginForm() {
     }
   }
 
-  function handleCpfChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setCpf(formatCpf(e.target.value));
-    if (fieldErrors.cpf) setFieldErrors((p) => ({ ...p, cpf: undefined }));
-  }
-
-  function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setPassword(e.target.value);
-    if (fieldErrors.password) setFieldErrors((p) => ({ ...p, password: undefined }));
-  }
-
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!validate()) return;
@@ -63,37 +52,36 @@ export function LoginForm() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
-          {t("login.title")}
-        </h1>
-        <p className="text-sm text-neutral-400">Painel de gestão GovMobile</p>
-      </div>
+      {/* Title */}
+      <h1 className="text-3xl font-bold leading-tight tracking-tight text-neutral-900">
+        {t("login.title")}
+      </h1>
 
-      {/* Session expired banner */}
+      {/* Banners */}
       {isSessionExpired && (
-        <div role="status" className="flex items-start gap-3 rounded-xl border border-warning/20 bg-warning/5 px-4 py-3">
+        <div role="status" className="flex items-start gap-2.5 rounded-lg border border-warning/20 bg-warning/5 px-3.5 py-3">
           <Clock className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
           <p className="text-sm text-warning">{t("session.expired")}</p>
         </div>
       )}
 
-      {/* API error banner */}
       {isError && error && (
-        <div data-testid="error-message" role="alert" className="flex items-start gap-3 rounded-xl border border-danger/20 bg-danger/5 px-4 py-3">
+        <div data-testid="error-message" role="alert" className="flex items-start gap-2.5 rounded-lg border border-danger/20 bg-danger/5 px-3.5 py-3">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-danger" aria-hidden="true" />
           <p className="text-sm text-danger">{getApiErrorMessage(error as ApiError)}</p>
         </div>
       )}
 
       {/* Form */}
-      <form onSubmit={handleSubmit} noValidate className="space-y-5">
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
         <Input
           label={t("login.cpfLabel")}
           placeholder={t("login.cpfPlaceholder")}
           value={cpf}
-          onChange={handleCpfChange}
+          onChange={(e) => {
+            setCpf(formatCpf(e.target.value));
+            if (fieldErrors.cpf) setFieldErrors((p) => ({ ...p, cpf: undefined }));
+          }}
           autoComplete="username"
           data-testid="input-cpf"
           error={fieldErrors.cpf}
@@ -101,32 +89,34 @@ export function LoginForm() {
           inputMode="numeric"
         />
 
-        <div className="space-y-1">
-          <Input
-            label={t("login.passwordLabel")}
-            placeholder={t("login.passwordPlaceholder")}
-            type="password"
-            value={password}
-            onChange={handlePasswordChange}
-            autoComplete="current-password"
-            data-testid="input-password"
-            error={fieldErrors.password}
-            id="login-password"
-          />
-        </div>
+        <Input
+          label={t("login.passwordLabel")}
+          placeholder={t("login.passwordPlaceholder")}
+          type="password"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            if (fieldErrors.password) setFieldErrors((p) => ({ ...p, password: undefined }));
+          }}
+          autoComplete="current-password"
+          data-testid="input-password"
+          error={fieldErrors.password}
+          id="login-password"
+        />
 
-        <Button
+        <button
           type="submit"
-          variant="primary"
-          size="lg"
-          isLoading={isPending}
-          aria-busy={isPending}
+          disabled={isPending}
           data-testid="button-login"
-          className="w-full"
+          aria-busy={isPending}
+          className="mt-2 flex w-full items-center justify-center rounded-lg bg-neutral-900 px-4 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
         >
-          {!isPending && <LogIn className="mr-2 h-4 w-4" aria-hidden="true" />}
-          {t("login.submitButton")}
-        </Button>
+          {isPending ? (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          ) : (
+            t("login.submitButton")
+          )}
+        </button>
       </form>
     </div>
   );
