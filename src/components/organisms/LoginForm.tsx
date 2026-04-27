@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, type FormEvent } from "react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { AlertCircle, Clock, LogIn } from "lucide-react";
@@ -131,24 +130,6 @@ export function LoginForm() {
           {t("login.submitButton")}
         </Button>
       </form>
-
-      {/* Divider */}
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-neutral-200" />
-        </div>
-        <div className="relative flex justify-center">
-          <span className="bg-neutral-50 px-3 text-xs text-neutral-400">ou</span>
-        </div>
-      </div>
-
-      {/* Register link */}
-      <p className="text-center text-sm text-neutral-500">
-        Não tem uma conta?{" "}
-        <Link href="/register" className="font-medium text-brand-primary hover:underline">
-          {t("login.registerLink")}
-        </Link>
-      </p>
     </div>
   );
 }
