@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { User, Mail, CreditCard, ShieldCheck, KeyRound, CheckCircle2, AlertCircle } from "lucide-react";
+import "@/i18n/config";
 
 import { useAuthStore } from "@/stores/authStore";
 import { useChangePassword } from "@/hooks/auth/useChangePassword";
