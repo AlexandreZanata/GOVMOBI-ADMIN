@@ -69,7 +69,14 @@ export function NavItem({
         aria-hidden="true"
         className="h-5 w-5 shrink-0"
       />
-      {!isCollapsed && <span className="truncate">{label}</span>}
+      <span
+        className={[
+          "overflow-hidden truncate transition-all duration-300 ease-in-out",
+          isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100",
+        ].join(" ")}
+      >
+        {label}
+      </span>
     </Link>
   );
 }

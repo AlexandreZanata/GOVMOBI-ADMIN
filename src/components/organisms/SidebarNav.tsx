@@ -13,7 +13,6 @@ import {
   UserRound,
   Users,
   ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -93,7 +92,7 @@ export function SidebarNav({
       data-testid={testId ?? "sidebar-nav"}
       className={[
         "flex h-full flex-col border-r border-neutral-200 bg-white",
-        "transition-[width] duration-200 ease-in-out",
+        "transition-[width] duration-300 ease-in-out",
         isCollapsed ? "w-16" : "w-60",
       ].join(" ")}
     >
@@ -110,11 +109,15 @@ export function SidebarNav({
         >
           G
         </span>
-        {!isCollapsed && (
-          <span className="truncate text-sm font-semibold text-neutral-900">
-            GovMobile
-          </span>
-        )}
+        <span
+          className={[
+            "overflow-hidden truncate text-sm font-semibold text-neutral-900",
+            "transition-all duration-300 ease-in-out",
+            isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100",
+          ].join(" ")}
+        >
+          GovMobile
+        </span>
       </div>
 
       {/* Navigation links */}
@@ -177,14 +180,21 @@ export function SidebarNav({
             isCollapsed ? "justify-center" : "gap-2",
           ].join(" ")}
         >
-          {isCollapsed ? (
-            <ChevronRight aria-hidden="true" className="h-4 w-4 shrink-0" />
-          ) : (
-            <>
-              <ChevronLeft aria-hidden="true" className="h-4 w-4 shrink-0" />
-              <span className="truncate">{t("collapse")}</span>
-            </>
-          )}
+          <ChevronLeft
+            aria-hidden="true"
+            className={[
+              "h-4 w-4 shrink-0 transition-transform duration-300 ease-in-out",
+              isCollapsed ? "rotate-180" : "rotate-0",
+            ].join(" ")}
+          />
+          <span
+            className={[
+              "overflow-hidden truncate transition-all duration-300 ease-in-out",
+              isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100",
+            ].join(" ")}
+          >
+            {t("collapse")}
+          </span>
         </button>
       </div>
     </aside>
