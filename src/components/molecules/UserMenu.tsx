@@ -99,7 +99,7 @@ export function UserMenu({
               className="flex w-full items-center gap-2 px-3 py-2 text-sm text-neutral-700 transition-colors hover:bg-neutral-50"
             >
               <UserRound className="h-4 w-4" aria-hidden="true" />
-              <span>Perfil</span>
+              <span>{t("nav:profile")}</span>
             </button>
 
             {onLogout && (

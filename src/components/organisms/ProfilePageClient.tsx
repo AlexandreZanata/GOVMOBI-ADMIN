@@ -10,13 +10,6 @@ import { formatCpf } from "@/lib/cpfUtils";
 import { Button } from "@/components/atoms";
 import type { ApiError } from "@/types";
 
-const ROLE_LABELS: Record<string, string> = {
-  ADMIN: "Administrador",
-  SUPERVISOR: "Supervisor",
-  DISPATCHER: "Despachante",
-  AGENT: "Agente",
-};
-
 const ROLE_COLORS: Record<string, string> = {
   ADMIN:      "bg-danger/10 text-danger",
   SUPERVISOR: "bg-warning/10 text-warning",
@@ -79,11 +72,11 @@ export function ProfilePageClient() {
 
   return (
     <div className="space-y-5">
-      {/* Page header — matches all other pages */}
+      {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-neutral-900">Perfil</h1>
-          <p className="mt-0.5 text-sm text-neutral-500">Suas informações de conta e segurança</p>
+          <h1 className="text-xl font-bold text-neutral-900">{t("profile.title")}</h1>
+          <p className="mt-0.5 text-sm text-neutral-500">{t("profile.subtitle")}</p>
         </div>
       </div>
 
@@ -92,17 +85,17 @@ export function ProfilePageClient() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-neutral-100 bg-neutral-50">
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">Campo</th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">Valor</th>
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("profile.fieldColumn")}</th>
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("profile.valueColumn")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-50">
-            <InfoRow icon={User} label="Nome completo" value={user?.nome} />
-            <InfoRow icon={Mail} label="E-mail" value={user?.email} />
-            <InfoRow icon={CreditCard} label="CPF" value={user?.cpf ? formatCpf(user.cpf) : undefined} />
-            <InfoRow icon={ShieldCheck} label="Função">
+            <InfoRow icon={User} label={t("profile.fullName")} value={user?.nome} />
+            <InfoRow icon={Mail} label={t("profile.email")} value={user?.email} />
+            <InfoRow icon={CreditCard} label={t("profile.cpf")} value={user?.cpf ? formatCpf(user.cpf) : undefined} />
+            <InfoRow icon={ShieldCheck} label={t("profile.role")}>
               <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${ROLE_COLORS[roleKey] ?? "bg-neutral-100 text-neutral-600"}`}>
-                {ROLE_LABELS[roleKey] ?? roleKey}
+                {t(`profile.roles.${roleKey}`, { defaultValue: roleKey })}
               </span>
             </InfoRow>
           </tbody>
@@ -114,7 +107,7 @@ export function ProfilePageClient() {
         <div className="border-b border-neutral-100 bg-neutral-50 px-5 py-3">
           <div className="flex items-center gap-2">
             <KeyRound className="h-4 w-4 text-neutral-400" aria-hidden="true" />
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-neutral-500">Alterar senha</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("profile.changePasswordSection")}</h2>
           </div>
         </div>
 
