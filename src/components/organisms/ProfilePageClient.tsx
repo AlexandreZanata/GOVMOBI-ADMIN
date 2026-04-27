@@ -18,10 +18,10 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 const ROLE_COLORS: Record<string, string> = {
-  ADMIN: "bg-danger/10 text-danger",
+  ADMIN:      "bg-danger/10 text-danger",
   SUPERVISOR: "bg-warning/10 text-warning",
   DISPATCHER: "bg-info/10 text-info",
-  AGENT: "bg-neutral-100 text-neutral-600",
+  AGENT:      "bg-neutral-100 text-neutral-600",
 };
 
 interface PwErrors {
@@ -67,13 +67,9 @@ export function ProfilePageClient() {
         },
         onError: (err) => {
           const apiErr = err as ApiError;
-          if (apiErr.status === 401) {
-            setErrors({ senhaAntiga: t("changePassword.errors.incorrectPassword") });
-          } else if (apiErr.code === "NETWORK_ERROR") {
-            setErrors({ general: t("errors.networkError") });
-          } else {
-            setErrors({ general: apiErr.message || t("errors.serverError") });
-          }
+          if (apiErr.status === 401) setErrors({ senhaAntiga: t("changePassword.errors.incorrectPassword") });
+          else if (apiErr.code === "NETWORK_ERROR") setErrors({ general: t("errors.networkError") });
+          else setErrors({ general: apiErr.message || t("errors.serverError") });
         },
       }
     );
@@ -82,49 +78,47 @@ export function ProfilePageClient() {
   const roleKey = String(user?.role ?? "").toUpperCase();
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-xl font-bold text-neutral-900">Perfil</h1>
-        <p className="mt-0.5 text-sm text-neutral-500">Suas informações de conta e segurança</p>
+    <div className="space-y-5">
+      {/* Page header — matches all other pages */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-neutral-900">Perfil</h1>
+          <p className="mt-0.5 text-sm text-neutral-500">Suas informações de conta e segurança</p>
+        </div>
       </div>
 
       {/* Identity card */}
       <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
-        {/* Avatar banner */}
-        <div className="h-20 bg-gradient-to-r from-brand-primary to-brand-secondary" />
-        <div className="px-6 pb-6">
-          <div className="-mt-8 mb-4 flex items-end gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-4 border-white bg-brand-primary text-xl font-bold text-white shadow-sm">
-              {user?.nome?.charAt(0).toUpperCase() ?? "?"}
-            </div>
-            <div className="mb-1">
-              <p className="text-lg font-bold text-neutral-900">{user?.nome ?? "—"}</p>
-              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${ROLE_COLORS[roleKey] ?? "bg-neutral-100 text-neutral-600"}`}>
-                {ROLE_LABELS[roleKey] ?? roleKey}
-              </span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-neutral-100 bg-neutral-50">
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">Campo</th>
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">Valor</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-neutral-50">
             <InfoRow icon={User} label="Nome completo" value={user?.nome} />
             <InfoRow icon={Mail} label="E-mail" value={user?.email} />
             <InfoRow icon={CreditCard} label="CPF" value={user?.cpf ? formatCpf(user.cpf) : undefined} />
-            <InfoRow icon={ShieldCheck} label="Função" value={ROLE_LABELS[roleKey] ?? roleKey} />
-          </div>
-        </div>
+            <InfoRow icon={ShieldCheck} label="Função">
+              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${ROLE_COLORS[roleKey] ?? "bg-neutral-100 text-neutral-600"}`}>
+                {ROLE_LABELS[roleKey] ?? roleKey}
+              </span>
+            </InfoRow>
+          </tbody>
+        </table>
       </div>
 
       {/* Change password card */}
-      <div className="rounded-xl border border-neutral-200 bg-white shadow-sm">
-        <div className="border-b border-neutral-100 px-6 py-4">
+      <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
+        <div className="border-b border-neutral-100 bg-neutral-50 px-5 py-3">
           <div className="flex items-center gap-2">
             <KeyRound className="h-4 w-4 text-neutral-400" aria-hidden="true" />
-            <h2 className="text-sm font-semibold text-neutral-900">Alterar senha</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-neutral-500">Alterar senha</h2>
           </div>
         </div>
 
-        <div className="px-6 py-5">
+        <div className="px-5 py-5">
           {isSuccess && (
             <div className="mb-5 flex items-center gap-2.5 rounded-lg border border-success/20 bg-success/5 px-4 py-3">
               <CheckCircle2 className="h-4 w-4 shrink-0 text-success" aria-hidden="true" />
@@ -140,18 +134,17 @@ export function ProfilePageClient() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <PasswordField
-              id="senhaAntiga"
-              label={t("changePassword.currentPasswordLabel")}
-              placeholder={t("changePassword.currentPasswordPlaceholder")}
-              value={senhaAntiga}
-              onChange={(v) => { setSenhaAntiga(v); if (errors.senhaAntiga) setErrors((p) => ({ ...p, senhaAntiga: undefined })); }}
-              error={errors.senhaAntiga}
-              disabled={isPending}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <PasswordField
+            <div className="grid grid-cols-3 gap-4">
+              <PwField
+                id="senhaAntiga"
+                label={t("changePassword.currentPasswordLabel")}
+                placeholder={t("changePassword.currentPasswordPlaceholder")}
+                value={senhaAntiga}
+                onChange={(v) => { setSenhaAntiga(v); if (errors.senhaAntiga) setErrors((p) => ({ ...p, senhaAntiga: undefined })); }}
+                error={errors.senhaAntiga}
+                disabled={isPending}
+              />
+              <PwField
                 id="novaSenha"
                 label={t("changePassword.newPasswordLabel")}
                 placeholder={t("changePassword.newPasswordPlaceholder")}
@@ -160,7 +153,7 @@ export function ProfilePageClient() {
                 error={errors.novaSenha}
                 disabled={isPending}
               />
-              <PasswordField
+              <PwField
                 id="confirmarSenha"
                 label={t("changePassword.confirmPasswordLabel")}
                 placeholder={t("changePassword.confirmPasswordPlaceholder")}
@@ -171,7 +164,7 @@ export function ProfilePageClient() {
               />
             </div>
 
-            <div className="flex justify-end pt-1">
+            <div className="flex justify-end">
               <Button type="submit" variant="primary" size="sm" isLoading={isPending} aria-busy={isPending}>
                 {t("changePassword.submitButton")}
               </Button>
@@ -185,19 +178,35 @@ export function ProfilePageClient() {
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
-function InfoRow({ icon: Icon, label, value }: { icon: typeof User; label: string; value?: string }) {
+function InfoRow({
+  icon: Icon,
+  label,
+  value,
+  children,
+}: {
+  icon: typeof User;
+  label: string;
+  value?: string;
+  children?: React.ReactNode;
+}) {
   return (
-    <div className="flex items-start gap-3 rounded-lg bg-neutral-50 px-3 py-2.5">
-      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" aria-hidden="true" />
-      <div className="min-w-0">
-        <p className="text-xs text-neutral-400">{label}</p>
-        <p className="mt-0.5 truncate text-sm font-medium text-neutral-900">{value ?? "—"}</p>
-      </div>
-    </div>
+    <tr className="transition-colors hover:bg-neutral-50/60">
+      <td className="px-5 py-3.5">
+        <div className="flex items-center gap-2 text-neutral-500">
+          <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span className="text-sm">{label}</span>
+        </div>
+      </td>
+      <td className="px-5 py-3.5">
+        {children ?? (
+          <span className="text-sm font-medium text-neutral-900">{value ?? "—"}</span>
+        )}
+      </td>
+    </tr>
   );
 }
 
-function PasswordField({
+function PwField({
   id, label, placeholder, value, onChange, error, disabled,
 }: {
   id: string; label: string; placeholder: string;
@@ -216,7 +225,7 @@ function PasswordField({
         disabled={disabled}
         aria-invalid={!!error}
         className={[
-          "h-10 w-full rounded-lg border px-3 text-sm transition-colors",
+          "h-9 w-full rounded-lg border px-3 text-sm transition-colors",
           "placeholder:text-neutral-400 focus:outline-none focus:ring-2",
           error
             ? "border-danger bg-danger/5 focus:border-danger focus:ring-danger/20"
