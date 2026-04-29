@@ -10,6 +10,7 @@ import { ErrorState } from "@/components/molecules/ErrorState";
 import { Modal } from "@/components/molecules/Modal";
 import { Button } from "@/components/atoms";
 import { useAuditTrail } from "@/hooks/useAuditTrail";
+import { useServidores } from "@/hooks/servidores/useServidores";
 import { Permission, type AuditEntry } from "@/models";
 import type { AuditFilters } from "@/types/audit";
 
@@ -295,20 +296,53 @@ function AuditRow({ entry, onView }: { entry: AuditEntry; onView: (e: AuditEntry
 
 // ── AuditViewModal ────────────────────────────────────────────────────────────
 
-function AuditViewModal({ entry, open, onClose }: { entry: AuditEntry | undefined; open: boolean; onClose: () => void }) {
-  const { t } = useTranslation("audit");
+/** UUID-like values get a copy button; plain strings are shown as-is. */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Human-readable labels for known payload keys. */
+const PAYLOAD_KEY_LABELS: Record<string, string> = {
+  adminId:      "Admin",
+  corridaId:    "ID da corrida",
+  passageiroId: "Passageiro",
+  motoristaId:  "Motorista",
+  veiculoId:    "Veículo",
+  servidorId:   "Servidor",
+  observacoes:  "Observações",
+  status:       "Status",
+  userId:       "Usuário",
+};
+
+function CopyButton({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
-
-  // Derive label without calling a hook conditionally
-  const aggregateLabel = entry ? getAggregateLabel(t, entry.aggregateType) : "";
-
-  const copyHash = () => {
-    if (!entry) return;
-    void navigator.clipboard.writeText(entry.hash).then(() => {
+  const copy = () => {
+    void navigator.clipboard.writeText(value).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
   };
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      className="ml-1 inline-flex shrink-0 items-center gap-0.5 rounded px-1 py-0.5 text-xs text-neutral-400 hover:bg-neutral-200 hover:text-neutral-600"
+    >
+      {copied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
+    </button>
+  );
+}
+
+function AuditViewModal({ entry, open, onClose }: { entry: AuditEntry | undefined; open: boolean; onClose: () => void }) {
+  const { t } = useTranslation("audit");
+  const { data: servidores = [] } = useServidores();
+
+  // All hooks before early return
+  const aggregateLabel = entry ? getAggregateLabel(t, entry.aggregateType) : "";
+
+  // Resolve servidor name from ID
+  const servidorNome = entry?.servidorId
+    ? (servidores.find((s) => s.id === entry.servidorId)?.nome ?? null)
+    : null;
+
   if (!entry) return null;
 
   const payloadEntries = Object.entries(entry.payload);
@@ -339,52 +373,67 @@ function AuditViewModal({ entry, open, onClose }: { entry: AuditEntry | undefine
 
         {/* Main info grid */}
         <div className="grid grid-cols-2 gap-3">
-          <InfoCell label={t("modal.eventName")} value={entry.eventName} />
+          <InfoCell label={t("modal.eventName")}    value={entry.eventName} />
           <InfoCell label={t("modal.aggregateType")} value={aggregateLabel} />
-          <InfoCell label={t("modal.occurredAt")} value={new Date(entry.occurredAt).toLocaleString()} />
-          <InfoCell label={t("modal.createdAt")} value={new Date(entry.createdAt).toLocaleString()} />
-          <InfoCell label={t("modal.ipAddress")} value={entry.ipAddress ?? "—"} />
-          <InfoCell label={t("modal.isCritico")} value={entry.isCritico ? t("modal.yes") : t("modal.no")} />
+          <InfoCell label={t("modal.occurredAt")}   value={new Date(entry.occurredAt).toLocaleString()} />
+          <InfoCell label={t("modal.createdAt")}    value={new Date(entry.createdAt).toLocaleString()} />
+          <InfoCell label={t("modal.ipAddress")}    value={entry.ipAddress ?? "—"} />
+          <InfoCell label={t("modal.isCritico")}    value={entry.isCritico ? t("modal.yes") : t("modal.no")} />
         </div>
 
         {/* IDs */}
         <div className="space-y-2">
-          <InfoCell label={t("modal.aggregateId")} value={entry.aggregateId} mono />
+          <InfoCell label={t("modal.aggregateId")} value={entry.aggregateId} mono copyable />
+
+          {/* Servidor — show name + copy ID button */}
           {entry.servidorId && (
-            <InfoCell label={t("modal.servidorId")} value={entry.servidorId} mono />
+            <div className="rounded-lg border border-neutral-200 bg-white px-3 py-2.5">
+              <p className="text-xs font-semibold text-neutral-900">{t("modal.servidorId")}</p>
+              <div className="mt-0.5 flex items-center gap-1">
+                <span className="text-sm text-neutral-400">
+                  {servidorNome ?? entry.servidorId}
+                </span>
+                <CopyButton value={entry.servidorId} />
+              </div>
+            </div>
           )}
-          <InfoCell label={t("modal.id")} value={entry.id} mono />
+
+          <InfoCell label={t("modal.id")} value={entry.id} mono copyable />
         </div>
 
         {/* Hash */}
-        <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2">
+        <div className="rounded-lg border border-neutral-200 bg-white px-3 py-2.5">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-semibold text-neutral-500">{t("modal.hash")}</p>
-            <button
-              type="button"
-              onClick={copyHash}
-              className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-neutral-400 hover:bg-neutral-200 hover:text-neutral-700"
-            >
-              {copied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
-              {copied ? "Copiado" : "Copiar"}
-            </button>
+            <p className="text-xs font-semibold text-neutral-900">{t("modal.hash")}</p>
+            <CopyButton value={entry.hash} />
           </div>
-          <p className="mt-1 break-all font-mono text-xs text-neutral-600">{entry.hash}</p>
+          <p className="mt-1 break-all font-mono text-xs text-neutral-400">{entry.hash}</p>
         </div>
 
         {/* Payload */}
-        <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2">
-          <p className="mb-2 text-xs font-semibold text-neutral-500">{t("modal.payload")}</p>
+        <div className="rounded-lg border border-neutral-200 bg-white px-3 py-2.5">
+          <p className="mb-3 text-xs font-semibold text-neutral-900">{t("modal.payload")}</p>
           {payloadEntries.length === 0 ? (
             <p className="text-xs text-neutral-400">{t("modal.payloadEmpty")}</p>
           ) : (
-            <div className="space-y-1">
-              {payloadEntries.map(([key, value]) => (
-                <div key={key} className="flex items-start gap-2 text-xs">
-                  <span className="shrink-0 font-medium text-neutral-600">{key}:</span>
-                  <span className="break-all font-mono text-neutral-500">{JSON.stringify(value)}</span>
-                </div>
-              ))}
+            <div className="space-y-2">
+              {payloadEntries.map(([key, value]) => {
+                const isUuid = typeof value === "string" && UUID_RE.test(value);
+                const label = PAYLOAD_KEY_LABELS[key] ?? key;
+                const displayValue = typeof value === "string" ? value : JSON.stringify(value);
+
+                return (
+                  <div key={key} className="rounded-md border border-neutral-100 bg-neutral-50 px-2.5 py-2">
+                    <p className="text-xs font-semibold text-neutral-900">{label}</p>
+                    <div className="mt-0.5 flex items-center gap-1">
+                      <span className={["text-xs text-neutral-400 break-all", isUuid ? "font-mono" : ""].join(" ")}>
+                        {displayValue}
+                      </span>
+                      {isUuid && <CopyButton value={displayValue} />}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -395,13 +444,17 @@ function AuditViewModal({ entry, open, onClose }: { entry: AuditEntry | undefine
 
 // ── InfoCell ──────────────────────────────────────────────────────────────────
 
-function InfoCell({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+function InfoCell({ label, value, mono, copyable }: { label: string; value: string; mono?: boolean; copyable?: boolean }) {
   return (
-    <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2">
-      <p className="text-xs font-semibold text-neutral-500">{label}</p>
-      <p className={["mt-0.5 text-sm text-neutral-900 break-all", mono ? "font-mono text-xs" : ""].join(" ")}>
-        {value}
-      </p>
+    <div className="rounded-lg border border-neutral-200 bg-white px-3 py-2.5">
+      <p className="text-xs font-semibold text-neutral-900">{label}</p>
+      <div className="mt-0.5 flex items-center gap-1">
+        <span className={["text-sm text-neutral-400 break-all", mono ? "font-mono text-xs" : ""].join(" ")}>
+          {value}
+        </span>
+        {copyable && <CopyButton value={value} />}
+      </div>
     </div>
   );
 }
+
