@@ -120,7 +120,12 @@
     "identificacao": "Record identification",
     "auditoria": "Audit",
     "criadoEm": "Created at",
-    "atualizadoEm": "Updated at"
+    "atualizadoEm": "Updated at",
+    "viewMap": "View on map",
+    "hideMap": "Hide map",
+    "loadingRoute": "Loading route...",
+    "routeCalculated": "Route calculated",
+    "straightLine": "Straight line (route unavailable)"
   },
   "toast": {
     "created": "Run requested successfully.",

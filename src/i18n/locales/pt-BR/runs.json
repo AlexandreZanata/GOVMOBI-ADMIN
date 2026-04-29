@@ -120,7 +120,12 @@
     "identificacao": "Identificação do registro",
     "auditoria": "Auditoria",
     "criadoEm": "Criada em",
-    "atualizadoEm": "Atualizada em"
+    "atualizadoEm": "Atualizada em",
+    "viewMap": "Ver no mapa",
+    "hideMap": "Ocultar mapa",
+    "loadingRoute": "Carregando rota...",
+    "routeCalculated": "Rota calculada",
+    "straightLine": "Linha reta (rota indisponível)"
   },
   "toast": {
     "created": "Corrida solicitada com sucesso.",
