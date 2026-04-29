@@ -53,16 +53,30 @@ export function ServidorPicker({
   // Derive the display label from the current value
   const selectedServidor = servidores.find((s) => s.id === value);
 
-  // Filter list
-  const candidates = servidores.filter((s) => {
-    if (onlyAtivo && !s.ativo) return false;
-    if (!query.trim()) return true;
+  // Filter list — only show results when there's a query, sorted by relevance
+  const candidates = (() => {
+    const pool = servidores.filter((s) => onlyAtivo ? s.ativo : true);
     const q = query.trim().toLowerCase();
-    return (
-      s.nome.toLowerCase().includes(q) ||
-      s.cpf.replace(/\D/g, "").includes(q.replace(/\D/g, ""))
-    );
-  });
+
+    if (!q) return pool; // show all when no query
+
+    const qDigits = q.replace(/\D/g, "");
+
+    return pool
+      .filter((s) => {
+        const nameMatch = s.nome.toLowerCase().includes(q);
+        const cpfMatch = qDigits.length > 0 && s.cpf.replace(/\D/g, "").includes(qDigits);
+        return nameMatch || cpfMatch;
+      })
+      .sort((a, b) => {
+        // Exact start-of-name matches first
+        const aStarts = a.nome.toLowerCase().startsWith(q);
+        const bStarts = b.nome.toLowerCase().startsWith(q);
+        if (aStarts && !bStarts) return -1;
+        if (!aStarts && bStarts) return 1;
+        return a.nome.localeCompare(b.nome);
+      });
+  })();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -176,7 +190,7 @@ export function ServidorPicker({
             data-testid={testId ? `${testId}-input` : "servidor-picker-input"}
             value={query}
             onChange={(e) => { setQuery(e.target.value); setOpen(true); setActiveIndex(-1); }}
-            onFocus={() => setOpen(true)}
+            onFocus={() => { if (query.trim() || servidores.length <= 10) setOpen(true); }}
             onKeyDown={handleKeyDown}
             placeholder="Buscar por nome ou CPF..."
             aria-required={required}
