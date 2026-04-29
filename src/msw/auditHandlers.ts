@@ -1,7 +1,6 @@
 import { delay, http, HttpResponse } from "msw";
 
 import type { AuditEntry } from "@/models/AuditEntry";
-import { mockAuditEntries } from "@/test/fixtures/audit";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
@@ -10,61 +9,45 @@ function latency(): number {
   return 200 + Math.floor(Math.random() * 301);
 }
 
-function applyFilters(entries: AuditEntry[], url: URL): AuditEntry[] {
-  const eventType = url.searchParams.get("eventType");
-  const actorId = url.searchParams.get("actorId");
-  const entityType = url.searchParams.get("entityType");
-  const entityId = url.searchParams.get("entityId");
-  const from = url.searchParams.get("from");
-  const to = url.searchParams.get("to");
-
-  return entries.filter((entry) => {
-    const matchesEventType = eventType ? entry.eventType === eventType : true;
-    const matchesActor = actorId ? entry.actorId === actorId : true;
-    const matchesEntityType = entityType ? entry.entityType === entityType : true;
-    const matchesEntityId = entityId ? entry.entityId === entityId : true;
-    const matchesFrom = from ? entry.timestamp >= from : true;
-    const matchesTo = to ? entry.timestamp <= to : true;
-
-    return (
-      matchesEventType &&
-      matchesActor &&
-      matchesEntityType &&
-      matchesEntityId &&
-      matchesFrom &&
-      matchesTo
-    );
-  });
-}
-
-/**
- * MSW v2 handlers for `/v1/audit` endpoints.
- * Uses cursor-based pagination with `cursor` and `pageSize` query params.
- */
+/** MSW v2 handlers for /admin/auditoria endpoints. */
 export const auditHandlers = [
-  http.get(`${BASE_URL}/v1/audit`, async ({ request }) => {
+  http.get(`${BASE_URL}/admin/auditoria`, async ({ request }) => {
     await delay(latency());
-
     const url = new URL(request.url);
-    const pageSize = Number(url.searchParams.get("pageSize") ?? "20");
-    const cursor = Number(url.searchParams.get("cursor") ?? "0");
+    const page = Number(url.searchParams.get("page") ?? "1");
+    const limit = Number(url.searchParams.get("limit") ?? "20");
+    const eventName = url.searchParams.get("eventName");
+    const aggregateType = url.searchParams.get("aggregateType");
+    const isCritico = url.searchParams.get("isCritico");
 
-    const sorted = [...mockAuditEntries].sort((a, b) =>
-      b.timestamp.localeCompare(a.timestamp)
-    );
-    const filtered = applyFilters(sorted, url);
+    const mockEntries: AuditEntry[] = [];
 
-    const start = Number.isNaN(cursor) ? 0 : Math.max(0, cursor);
-    const end = start + Math.max(1, pageSize);
+    const filtered = mockEntries.filter((e) => {
+      if (eventName && !e.eventName.toLowerCase().includes(eventName.toLowerCase())) return false;
+      if (aggregateType && e.aggregateType !== aggregateType) return false;
+      if (isCritico !== null && String(e.isCritico) !== isCritico) return false;
+      return true;
+    });
 
-    const items = filtered.slice(start, end);
-    const hasMore = end < filtered.length;
-    const nextCursor = hasMore ? String(end) : null;
+    const start = (page - 1) * limit;
+    const data = filtered.slice(start, start + limit);
 
     return HttpResponse.json({
-      items,
-      hasMore,
-      nextCursor,
+      data,
+      total: filtered.length,
+      page,
+      limit,
+      totalPages: Math.ceil(filtered.length / limit),
     });
+  }),
+
+  http.get(`${BASE_URL}/admin/auditoria/criticos`, async () => {
+    await delay(latency());
+    return HttpResponse.json([]);
+  }),
+
+  http.get(`${BASE_URL}/admin/auditoria/aggregate/:id`, async () => {
+    await delay(latency());
+    return HttpResponse.json([]);
   }),
 ];
