@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { MapPin, Navigation } from "lucide-react";
 import dynamic from "next/dynamic";
 import "@/i18n/config";
@@ -12,7 +12,6 @@ import type { Run } from "@/models/Run";
 import { RunStatus } from "@/models/Run";
 import type { Servidor } from "@/models/Servidor";
 import type { Motorista } from "@/models/Motorista";
-import { useMemo, useState, useEffect } from "react";
 import { fetchWithAuth } from "@/facades/authFacade";
 import { getApiBase } from "@/lib/apiBase";
 
