@@ -85,14 +85,43 @@ function StatCard({
 function SectionHeader({
   icon,
   title,
+  info,
 }: {
   icon: React.ReactNode;
   title: string;
+  info?: string;
 }) {
+  const [showInfo, setShowInfo] = useState(false);
   return (
-    <div className="flex items-center gap-2">
+    <div className="relative flex items-center gap-2">
       <span className="text-brand-primary">{icon}</span>
       <h2 className="text-sm font-semibold text-neutral-800">{title}</h2>
+      {info && (
+        <div className="relative ml-auto">
+          <button
+            type="button"
+            aria-label="Informações sobre a classificação"
+            onClick={() => setShowInfo((v) => !v)}
+            className="flex h-5 w-5 items-center justify-center rounded-full text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          >
+            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+          {showInfo && (
+            <div className="absolute right-0 top-6 z-20 w-72 rounded-xl border border-neutral-200 bg-white p-3 shadow-lg">
+              <p className="text-xs leading-relaxed text-neutral-600">{info}</p>
+              <button
+                type="button"
+                onClick={() => setShowInfo(false)}
+                className="mt-2 text-xs font-medium text-brand-primary hover:underline"
+              >
+                Fechar
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -484,6 +513,7 @@ export function DashboardPageClient() {
           <SectionHeader
             icon={<Award className="h-4 w-4" aria-hidden="true" />}
             title={t("sections.topAvaliacoes")}
+            info="Classificação por média bayesiana: motoristas com poucas avaliações são puxados para a média geral, evitando que uma única nota alta coloque um motorista novo à frente de quem tem histórico consistente. Motoristas sem nenhuma avaliação não aparecem no ranking."
           />
           <div className="mt-5 divide-y divide-neutral-50">
             {isLoadingMotoristas ? (

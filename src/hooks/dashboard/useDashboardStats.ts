@@ -46,29 +46,49 @@ export function useDashboardRuns() {
 }
 
 /**
- * Computes top motoristas by average rating.
- * Only includes motoristas with at least 1 rating (notaMedia != null).
- * Returns top 5 sorted by rating (descending), then by total reviews (descending).
+ * Computes top motoristas by rating using a Bayesian weighted score.
+ *
+ * Ranking formula: score = (v / (v + m)) * R + (m / (v + m)) * C
+ *   - R = motorista's average rating
+ *   - v = number of reviews (totalAvaliacoes)
+ *   - m = minimum reviews threshold (5) — acts as a confidence weight
+ *   - C = global average rating across all rated motoristas
+ *
+ * This ensures motoristas with few reviews are pulled toward the global
+ * average, preventing a single 5★ review from outranking drivers with
+ * many consistent reviews. Motoristas with 0 reviews are excluded entirely.
  */
 export function computeTopMotoristasByRating(
   motoristas: Motorista[] = [],
   servidores: Servidor[] = [],
-): Array<{ rank: number; id: string; name: string; rating: number; totalAvaliacoes: number }> {
+): Array<{ rank: number; id: string; name: string; rating: number; totalAvaliacoes: number; score: number }> {
   const servidorById = new Map<string, Servidor>(
     servidores.map((s) => [s.id, s]),
   );
 
-  return motoristas
-    .filter((m) => m.notaMedia != null && m.notaMedia > 0)
-    .sort((a, b) => {
-      // Sort by rating descending, then by total reviews descending
-      if (b.notaMedia !== a.notaMedia) {
-        return (b.notaMedia ?? 0) - (a.notaMedia ?? 0);
-      }
-      return b.totalAvaliacoes - a.totalAvaliacoes;
+  // Only include motoristas with at least 1 real review
+  const rated = motoristas.filter(
+    (m) => m.notaMedia != null && m.notaMedia > 0 && m.totalAvaliacoes >= 1,
+  );
+
+  if (rated.length === 0) return [];
+
+  // Global average rating (C)
+  const globalAvg = rated.reduce((sum, m) => sum + (m.notaMedia ?? 0), 0) / rated.length;
+
+  // Minimum reviews threshold (m) — use 5 or median, whichever is smaller
+  const MIN_REVIEWS = 5;
+
+  return rated
+    .map((m) => {
+      const R = m.notaMedia ?? 0;
+      const v = m.totalAvaliacoes;
+      const score = (v / (v + MIN_REVIEWS)) * R + (MIN_REVIEWS / (v + MIN_REVIEWS)) * globalAvg;
+      return { m, score };
     })
+    .sort((a, b) => b.score - a.score)
     .slice(0, 5)
-    .map((m, idx) => {
+    .map(({ m, score }, idx) => {
       const servidor = servidorById.get(m.servidorId);
       const name = servidor?.nome ?? m.id.slice(0, 8) + "…";
       return {
@@ -77,6 +97,7 @@ export function computeTopMotoristasByRating(
         name,
         rating: m.notaMedia ?? 0,
         totalAvaliacoes: m.totalAvaliacoes,
+        score,
       };
     });
 }
