@@ -1,32 +1,35 @@
 {
   "page": {
     "title": "Trilha de auditoria",
-    "subtitle": "Linha do tempo somente leitura de acoes que alteram estado na plataforma.",
-    "accessDenied": "Voce nao tem permissao para visualizar registros de auditoria.",
+    "subtitle": "Log imutável de eventos do sistema com verificação de integridade.",
+    "accessDenied": "Você não tem permissão para visualizar registros de auditoria.",
     "empty": {
-      "title": "Nenhum registro de auditoria encontrado",
-      "message": "Tente alterar filtros ou intervalo de datas para ver eventos correspondentes."
+      "title": "Nenhum evento encontrado",
+      "message": "Tente alterar os filtros ou o intervalo de datas."
     }
   },
   "filters": {
-    "eventType": "Tipo de evento",
-    "actorId": "ID do ator",
-    "entityType": "Tipo de entidade",
-    "from": "De",
-    "to": "Ate",
+    "eventName": "Nome do evento",
+    "aggregateType": "Tipo de aggregate",
+    "aggregateId": "ID do aggregate",
+    "isCritico": "Criticidade",
+    "dataInicio": "Data início",
+    "dataFim": "Data fim",
     "placeholders": {
-      "eventType": "run.overridden",
-      "actorId": "user-001",
-      "entityType": "run"
+      "eventName": "Ex: CorridaCriada",
+      "aggregateType": "Ex: Corrida, Motorista",
+      "allEvents": "Todos os eventos",
+      "criticalOnly": "Apenas críticos",
+      "nonCritical": "Não críticos"
     }
+  },
+  "table": {
+    "event": "Evento",
+    "aggregate": "Aggregate",
+    "occurredAt": "Ocorrido em",
+    "critical": "Criticidade"
   },
   "actions": {
     "loadMore": "Carregar mais"
-  },
-  "timeline": {
-    "entity": "Entidade: {{entityType}} #{{entityId}}",
-    "payload": "Payload",
-    "payloadEmpty": "nenhum",
-    "actorFallback": "Usuario {{actorId}}"
   }
 }
