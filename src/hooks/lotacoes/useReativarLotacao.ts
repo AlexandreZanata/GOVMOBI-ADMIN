@@ -40,8 +40,10 @@ export function useReativarLotacao() {
     onError: (error) => {
       if (error.status === 404) {
         toast.error(t("toast.notFound"));
+      } else if (error.status === 403) {
+        toast.error(t("toast.accessDenied", { defaultValue: "Sem permissão para reativar." }));
       } else {
-        toast.error(t("toast.notFound"));
+        toast.error(t("toast.reativarError", { defaultValue: "Erro ao reativar. Tente novamente." }));
       }
     },
   });
