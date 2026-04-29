@@ -55,6 +55,7 @@ export const cargosHandlers = [
       id: crypto.randomUUID(),
       nome: body.nome,
       pesoPrioridade: body.pesoPrioridade,
+      nivelHierarquia: 1,
       ativo: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
