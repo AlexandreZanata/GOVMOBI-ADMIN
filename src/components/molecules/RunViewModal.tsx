@@ -12,7 +12,7 @@ import type { Run } from "@/models/Run";
 import { RunStatus } from "@/models/Run";
 import type { Servidor } from "@/models/Servidor";
 import type { Motorista } from "@/models/Motorista";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { fetchWithAuth } from "@/facades/authFacade";
 import { getApiBase } from "@/lib/apiBase";
 
@@ -84,6 +84,14 @@ export function RunViewModal({
   const [showMap, setShowMap] = useState(false);
   const [routeGeometry, setRouteGeometry] = useState<[number, number][] | undefined>();
   const [isLoadingRoute, setIsLoadingRoute] = useState(false);
+
+  // Reset map state whenever the run changes or modal closes
+  const runId = run?.id;
+  useEffect(() => {
+    setShowMap(false);
+    setRouteGeometry(undefined);
+    setIsLoadingRoute(false);
+  }, [runId, open]);
 
   // Build lookup maps for O(1) name resolution
   const servidoresMap = useMemo(() => {
@@ -190,7 +198,7 @@ export function RunViewModal({
           action={
             <button
               type="button"
-              onClick={() => void handleShowMap()}
+              onClick={() => showMap ? setShowMap(false) : void handleShowMap()}
               className="flex items-center gap-1.5 rounded-lg border border-neutral-200 bg-white px-2.5 py-1.5 text-xs font-medium text-neutral-600 shadow-sm transition-colors hover:bg-neutral-50 hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
             >
               <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
