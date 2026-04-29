@@ -21,7 +21,7 @@
     "placeholders": {
       "eventName": "Ex: CorridaCriada",
       "aggregateType": "Ex: Corrida, Motorista",
-      "aggregateId": "UUID da entidade",
+      "aggregateId": "Ex: 019db503-...",
       "allEvents": "Todos os eventos",
       "criticalOnly": "Apenas críticos",
       "nonCritical": "Não críticos"
