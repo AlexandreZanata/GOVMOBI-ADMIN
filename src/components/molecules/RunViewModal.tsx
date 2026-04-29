@@ -1,14 +1,35 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import { MapPin, Navigation } from "lucide-react";
+import dynamic from "next/dynamic";
 import "@/i18n/config";
 
 import { Modal } from "@/components/molecules/Modal";
+import { Button } from "@/components/atoms";
 import type { Run } from "@/models/Run";
 import { RunStatus } from "@/models/Run";
 import type { Servidor } from "@/models/Servidor";
 import type { Motorista } from "@/models/Motorista";
 import { useMemo } from "react";
+import { fetchWithAuth } from "@/facades/authFacade";
+import { getApiBase } from "@/lib/apiBase";
+
+interface MapViewProps {
+  origem: { lat: number; lng: number; endereco: string | null };
+  destino: { lat: number; lng: number; endereco: string | null };
+  routeGeometry?: [number, number][];
+}
+
+const RouteMap = dynamic<MapViewProps>(() => import("@/components/molecules/RunRouteMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-72 items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50">
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-primary border-t-transparent" />
+    </div>
+  ),
+});
 
 export interface RunViewModalProps {
   open: boolean;
@@ -30,10 +51,13 @@ const STATUS_CLASSES: Record<string, string> = {
   [RunStatus.EXPIRADA]:          "bg-neutral-100 text-neutral-500 ring-neutral-200",
 };
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
   return (
     <div>
-      <h3 className="mb-3 text-sm font-semibold text-neutral-900">{title}</h3>
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-neutral-900">{title}</h3>
+        {action}
+      </div>
       <div className="rounded-xl border border-neutral-100 bg-white p-5">{children}</div>
     </div>
   );
@@ -57,6 +81,9 @@ export function RunViewModal({
   "data-testid": testId,
 }: RunViewModalProps): React.ReactElement | null {
   const { t } = useTranslation("runs");
+  const [showMap, setShowMap] = useState(false);
+  const [routeGeometry, setRouteGeometry] = useState<[number, number][] | undefined>();
+  const [isLoadingRoute, setIsLoadingRoute] = useState(false);
 
   // Build lookup maps for O(1) name resolution
   const servidoresMap = useMemo(() => {
@@ -70,6 +97,32 @@ export function RunViewModal({
   }, [motoristas]);
 
   if (!run) return null;
+
+  const handleShowMap = async () => {
+    setShowMap(true);
+    if (routeGeometry) return; // already fetched
+    setIsLoadingRoute(true);
+    try {
+      const base = getApiBase();
+      const params = new URLSearchParams({
+        origemLat: String(run.origem.lat),
+        origemLng: String(run.origem.lng),
+        destinoLat: String(run.destino.lat),
+        destinoLng: String(run.destino.lng),
+      });
+      const res = await fetchWithAuth(`${base}/pesquisa/rota?${params.toString()}`);
+      if (res.ok) {
+        const data = await res.json() as { geometry?: { coordinates?: [number, number][] } };
+        // GeoJSON coordinates are [lng, lat] — flip to [lat, lng] for Leaflet
+        const coords = data?.geometry?.coordinates?.map(([lng, lat]) => [lat, lng] as [number, number]);
+        if (coords && coords.length > 0) setRouteGeometry(coords);
+      }
+    } catch {
+      // silently fall back to straight line
+    } finally {
+      setIsLoadingRoute(false);
+    }
+  };
 
   const statusClass = STATUS_CLASSES[run.status] ?? "bg-neutral-100 text-neutral-500 ring-neutral-200";
 
@@ -132,26 +185,70 @@ export function RunViewModal({
         </div>
 
         {/* Rota */}
-        <Section title={t("view.rota")}>
-          <div className="grid grid-cols-1 gap-x-10 gap-y-5 sm:grid-cols-2">
-            <Field
-              label={t("view.origem")}
-              value={
-                <span title={`${run.origem.lat.toFixed(6)}, ${run.origem.lng.toFixed(6)}`}>
-                  {run.origem.endereco ?? `${run.origem.lat.toFixed(6)}, ${run.origem.lng.toFixed(6)}`}
-                </span>
-              }
-            />
-            <Field
-              label={t("view.destino")}
-              value={
-                <span title={`${run.destino.lat.toFixed(6)}, ${run.destino.lng.toFixed(6)}`}>
-                  {run.destino.endereco ?? `${run.destino.lat.toFixed(6)}, ${run.destino.lng.toFixed(6)}`}
-                </span>
-              }
-            />
-            <Field label={t("view.distancia")} value={formatDistance(run.distanciaMetros)} />
-            <Field label={t("view.duracao")} value={formatDuration(run.duracaoSegundos)} />
+        <Section
+          title={t("view.rota")}
+          action={
+            <button
+              type="button"
+              onClick={() => void handleShowMap()}
+              className="flex items-center gap-1.5 rounded-lg border border-neutral-200 bg-white px-2.5 py-1.5 text-xs font-medium text-neutral-600 shadow-sm transition-colors hover:bg-neutral-50 hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+            >
+              <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
+              {showMap ? t("view.hideMap", { defaultValue: "Ocultar mapa" }) : t("view.viewMap", { defaultValue: "Ver no mapa" })}
+            </button>
+          }
+        >
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-x-10 gap-y-5 sm:grid-cols-2">
+              <Field
+                label={t("view.origem")}
+                value={
+                  <span title={`${run.origem.lat.toFixed(6)}, ${run.origem.lng.toFixed(6)}`}>
+                    {run.origem.endereco ?? `${run.origem.lat.toFixed(6)}, ${run.origem.lng.toFixed(6)}`}
+                  </span>
+                }
+              />
+              <Field
+                label={t("view.destino")}
+                value={
+                  <span title={`${run.destino.lat.toFixed(6)}, ${run.destino.lng.toFixed(6)}`}>
+                    {run.destino.endereco ?? `${run.destino.lat.toFixed(6)}, ${run.destino.lng.toFixed(6)}`}
+                  </span>
+                }
+              />
+              <Field label={t("view.distancia")} value={formatDistance(run.distanciaMetros)} />
+              <Field label={t("view.duracao")} value={formatDuration(run.duracaoSegundos)} />
+            </div>
+
+            {/* Inline map */}
+            {showMap && (
+              <div className="space-y-2">
+                {/* Legend */}
+                <div className="flex items-center gap-4 text-xs text-neutral-500">
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block h-2.5 w-2.5 rounded-full bg-success" />
+                    {t("view.origem")}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block h-2.5 w-2.5 rounded-full bg-danger" />
+                    {t("view.destino")}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Navigation className="h-3 w-3 text-brand-primary" aria-hidden="true" />
+                    {isLoadingRoute
+                      ? t("view.loadingRoute", { defaultValue: "Carregando rota..." })
+                      : routeGeometry
+                        ? t("view.routeCalculated", { defaultValue: "Rota calculada" })
+                        : t("view.straightLine", { defaultValue: "Linha reta (rota indisponível)" })}
+                  </span>
+                </div>
+                <RouteMap
+                  origem={run.origem}
+                  destino={run.destino}
+                  routeGeometry={routeGeometry}
+                />
+              </div>
+            )}
           </div>
         </Section>
 
