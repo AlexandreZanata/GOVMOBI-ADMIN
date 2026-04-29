@@ -299,7 +299,8 @@ function AuditRow({ entry, onView }: { entry: AuditEntry; onView: (e: AuditEntry
 /** UUID-like values get a copy button; plain strings are shown as-is. */
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Human-readable labels for known payload keys. */
+/** Keys whose UUID values should be resolved to a servidor name. */
+const SERVIDOR_UUID_KEYS = new Set(["passageiroId", "adminId", "servidorId", "motoristaId"]);
 const PAYLOAD_KEY_LABELS: Record<string, string> = {
   adminId:      "Admin",
   corridaId:    "ID da corrida",
@@ -422,12 +423,17 @@ function AuditViewModal({ entry, open, onClose }: { entry: AuditEntry | undefine
                 const label = PAYLOAD_KEY_LABELS[key] ?? key;
                 const displayValue = typeof value === "string" ? value : JSON.stringify(value);
 
+                // Resolve servidor name for known UUID keys
+                const resolvedName = isUuid && SERVIDOR_UUID_KEYS.has(key)
+                  ? (servidores.find((s) => s.id === value)?.nome ?? null)
+                  : null;
+
                 return (
                   <div key={key} className="rounded-md border border-neutral-100 bg-neutral-50 px-2.5 py-2">
                     <p className="text-xs font-semibold text-neutral-900">{label}</p>
                     <div className="mt-0.5 flex items-center gap-1">
-                      <span className={["text-xs text-neutral-400 break-all", isUuid ? "font-mono" : ""].join(" ")}>
-                        {displayValue}
+                      <span className={["text-xs text-neutral-400 break-all", isUuid && !resolvedName ? "font-mono" : ""].join(" ")}>
+                        {resolvedName ?? displayValue}
                       </span>
                       {isUuid && <CopyButton value={displayValue} />}
                     </div>
