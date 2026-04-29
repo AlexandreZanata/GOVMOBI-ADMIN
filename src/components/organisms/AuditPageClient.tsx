@@ -16,8 +16,7 @@ import type { AuditFilters } from "@/types/audit";
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 /** Translates known aggregateType values, falls back to raw value. */
-function useAggregateLabel(aggregateType: string) {
-  const { t } = useTranslation("audit");
+function getAggregateLabel(t: (key: string, opts?: Record<string, unknown>) => string, aggregateType: string): string {
   return t(`aggregateTypes.${aggregateType}`, { defaultValue: aggregateType });
 }
 
@@ -247,7 +246,7 @@ function FilterField({ label, id, children }: { label: string; id: string; child
 
 function AuditRow({ entry, onView }: { entry: AuditEntry; onView: (e: AuditEntry) => void }) {
   const { t } = useTranslation("audit");
-  const aggregateLabel = useAggregateLabel(entry.aggregateType);
+  const aggregateLabel = getAggregateLabel(t, entry.aggregateType);
 
   return (
     <tr data-testid={`audit-entry-${entry.id}`} className="transition-colors hover:bg-neutral-50/60">
@@ -299,7 +298,9 @@ function AuditRow({ entry, onView }: { entry: AuditEntry; onView: (e: AuditEntry
 function AuditViewModal({ entry, open, onClose }: { entry: AuditEntry | undefined; open: boolean; onClose: () => void }) {
   const { t } = useTranslation("audit");
   const [copied, setCopied] = useState(false);
-  const aggregateLabel = entry ? useAggregateLabel(entry.aggregateType) : "";
+
+  // Derive label without calling a hook conditionally
+  const aggregateLabel = entry ? getAggregateLabel(t, entry.aggregateType) : "";
 
   const copyHash = () => {
     if (!entry) return;
@@ -308,7 +309,6 @@ function AuditViewModal({ entry, open, onClose }: { entry: AuditEntry | undefine
       setTimeout(() => setCopied(false), 2000);
     });
   };
-
   if (!entry) return null;
 
   const payloadEntries = Object.entries(entry.payload);
