@@ -2,15 +2,31 @@
 
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ShieldAlert, ChevronLeft, ChevronRight } from "lucide-react";
+import { ShieldAlert, ChevronLeft, ChevronRight, Eye, Copy, Check } from "lucide-react";
 import "@/i18n/config";
 
-import { Button } from "@/components/atoms";
 import { Can } from "@/components/auth/Can";
 import { ErrorState } from "@/components/molecules/ErrorState";
+import { Modal } from "@/components/molecules/Modal";
+import { Button } from "@/components/atoms";
 import { useAuditTrail } from "@/hooks/useAuditTrail";
 import { Permission, type AuditEntry } from "@/models";
 import type { AuditFilters } from "@/types/audit";
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+/** Translates known aggregateType values, falls back to raw value. */
+function useAggregateLabel(aggregateType: string) {
+  const { t } = useTranslation("audit");
+  return t(`aggregateTypes.${aggregateType}`, { defaultValue: aggregateType });
+}
+
+const inputCls = [
+  "h-9 w-full rounded-lg border border-neutral-200 bg-neutral-50 px-3 text-sm text-neutral-900",
+  "placeholder:text-neutral-400 focus:border-brand-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary/20",
+].join(" ");
+
+// ── Main component ────────────────────────────────────────────────────────────
 
 export function AuditPageClient() {
   const { t } = useTranslation("audit");
@@ -22,21 +38,22 @@ export function AuditPageClient() {
   const [dataInicio, setDataInicio]       = useState("");
   const [dataFim, setDataFim]             = useState("");
   const [page, setPage]                   = useState(1);
+  const [viewTarget, setViewTarget]       = useState<AuditEntry | undefined>();
 
   const filters: AuditFilters = useMemo(() => ({
-    ...(eventName.trim()     ? { eventName: eventName.trim() }         : {}),
-    ...(aggregateType.trim() ? { aggregateType: aggregateType.trim() } : {}),
-    ...(aggregateId.trim()   ? { aggregateId: aggregateId.trim() }     : {}),
-    ...(isCritico !== undefined ? { isCritico }                        : {}),
-    ...(dataInicio           ? { dataInicio }                          : {}),
-    ...(dataFim              ? { dataFim }                             : {}),
+    ...(eventName.trim()      ? { eventName: eventName.trim() }         : {}),
+    ...(aggregateType.trim()  ? { aggregateType: aggregateType.trim() } : {}),
+    ...(aggregateId.trim()    ? { aggregateId: aggregateId.trim() }     : {}),
+    ...(isCritico !== undefined ? { isCritico }                         : {}),
+    ...(dataInicio            ? { dataInicio }                          : {}),
+    ...(dataFim               ? { dataFim }                             : {}),
     page,
     limit: 20,
   }), [eventName, aggregateType, aggregateId, isCritico, dataInicio, dataFim, page]);
 
   const { data, total, totalPages, isLoading, isError, refetch } = useAuditTrail(filters);
 
-  const handleFilterChange = () => setPage(1);
+  const resetPage = () => setPage(1);
 
   return (
     <Can
@@ -49,54 +66,64 @@ export function AuditPageClient() {
     >
       <div className="space-y-5" data-testid="audit-page-client">
         {/* Header */}
-        <div>
-          <h1 className="text-xl font-bold text-neutral-900">{t("page.title")}</h1>
-          <p className="mt-0.5 text-sm text-neutral-500">{t("page.subtitle")}</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-neutral-900">{t("page.title")}</h1>
+            {!isLoading && total > 0 && (
+              <p className="mt-0.5 text-sm text-neutral-500">
+                {t("page.counter_other", { count: total })}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Filters */}
         <div className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <FilterField label={t("filters.eventName")} testId="audit-filter-eventName">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            <FilterField label={t("filters.eventName")} id="audit-filter-eventName">
               <input
+                id="audit-filter-eventName"
                 data-testid="audit-filter-eventName"
                 type="text"
                 value={eventName}
-                onChange={(e) => { setEventName(e.target.value); handleFilterChange(); }}
+                onChange={(e) => { setEventName(e.target.value); resetPage(); }}
                 placeholder={t("filters.placeholders.eventName")}
                 className={inputCls}
               />
             </FilterField>
 
-            <FilterField label={t("filters.aggregateType")} testId="audit-filter-aggregateType">
+            <FilterField label={t("filters.aggregateType")} id="audit-filter-aggregateType">
               <input
+                id="audit-filter-aggregateType"
                 data-testid="audit-filter-aggregateType"
                 type="text"
                 value={aggregateType}
-                onChange={(e) => { setAggregateType(e.target.value); handleFilterChange(); }}
+                onChange={(e) => { setAggregateType(e.target.value); resetPage(); }}
                 placeholder={t("filters.placeholders.aggregateType")}
                 className={inputCls}
               />
             </FilterField>
 
-            <FilterField label={t("filters.aggregateId")} testId="audit-filter-aggregateId">
+            <FilterField label={t("filters.aggregateId")} id="audit-filter-aggregateId">
               <input
+                id="audit-filter-aggregateId"
                 data-testid="audit-filter-aggregateId"
                 type="text"
                 value={aggregateId}
-                onChange={(e) => { setAggregateId(e.target.value); handleFilterChange(); }}
-                placeholder="UUID do aggregate"
+                onChange={(e) => { setAggregateId(e.target.value); resetPage(); }}
+                placeholder={t("filters.placeholders.aggregateId")}
                 className={inputCls}
               />
             </FilterField>
 
-            <FilterField label={t("filters.isCritico")} testId="audit-filter-isCritico">
+            <FilterField label={t("filters.isCritico")} id="audit-filter-isCritico">
               <select
+                id="audit-filter-isCritico"
                 data-testid="audit-filter-isCritico"
                 value={isCritico === undefined ? "" : String(isCritico)}
                 onChange={(e) => {
                   setIsCritico(e.target.value === "" ? undefined : e.target.value === "true");
-                  handleFilterChange();
+                  resetPage();
                 }}
                 className={inputCls}
               >
@@ -106,22 +133,24 @@ export function AuditPageClient() {
               </select>
             </FilterField>
 
-            <FilterField label={t("filters.dataInicio")} testId="audit-filter-dataInicio">
+            <FilterField label={t("filters.dataInicio")} id="audit-filter-dataInicio">
               <input
+                id="audit-filter-dataInicio"
                 data-testid="audit-filter-dataInicio"
                 type="date"
                 value={dataInicio}
-                onChange={(e) => { setDataInicio(e.target.value); handleFilterChange(); }}
+                onChange={(e) => { setDataInicio(e.target.value); resetPage(); }}
                 className={inputCls}
               />
             </FilterField>
 
-            <FilterField label={t("filters.dataFim")} testId="audit-filter-dataFim">
+            <FilterField label={t("filters.dataFim")} id="audit-filter-dataFim">
               <input
+                id="audit-filter-dataFim"
                 data-testid="audit-filter-dataFim"
                 type="date"
                 value={dataFim}
-                onChange={(e) => { setDataFim(e.target.value); handleFilterChange(); }}
+                onChange={(e) => { setDataFim(e.target.value); resetPage(); }}
                 className={inputCls}
               />
             </FilterField>
@@ -132,7 +161,7 @@ export function AuditPageClient() {
         {isLoading ? (
           <div className="space-y-2" data-testid="audit-loading">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-16 w-full animate-pulse rounded-xl bg-neutral-100" />
+              <div key={i} className="h-14 w-full animate-pulse rounded-xl bg-neutral-100" />
             ))}
           </div>
         ) : isError ? (
@@ -144,12 +173,6 @@ export function AuditPageClient() {
           </div>
         ) : (
           <>
-            {/* Counter */}
-            <p className="text-sm text-neutral-500">
-              {total} {total === 1 ? "evento" : "eventos"}
-            </p>
-
-            {/* Table */}
             <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
               <table className="w-full text-sm" data-testid="audit-timeline">
                 <thead>
@@ -158,11 +181,12 @@ export function AuditPageClient() {
                     <th className="hidden px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500 md:table-cell">{t("table.aggregate")}</th>
                     <th className="hidden px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500 lg:table-cell">{t("table.occurredAt")}</th>
                     <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("table.critical")}</th>
+                    <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("table.actions")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-50">
                   {data.map((entry) => (
-                    <AuditRow key={entry.id} entry={entry} />
+                    <AuditRow key={entry.id} entry={entry} onView={setViewTarget} />
                   ))}
                 </tbody>
               </table>
@@ -172,7 +196,7 @@ export function AuditPageClient() {
             {totalPages > 1 && (
               <div className="flex items-center justify-between">
                 <p className="text-xs text-neutral-500">
-                  Página {page} de {totalPages}
+                  {t("page.page", { page, total: totalPages })}
                 </p>
                 <div className="flex gap-1">
                   <button
@@ -197,27 +221,34 @@ export function AuditPageClient() {
           </>
         )}
       </div>
+
+      {/* View modal */}
+      <AuditViewModal
+        entry={viewTarget}
+        open={!!viewTarget}
+        onClose={() => setViewTarget(undefined)}
+      />
     </Can>
   );
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ── FilterField ───────────────────────────────────────────────────────────────
 
-const inputCls = [
-  "h-9 w-full rounded-lg border border-neutral-200 bg-neutral-50 px-3 text-sm text-neutral-900",
-  "placeholder:text-neutral-400 focus:border-brand-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary/20",
-].join(" ");
-
-function FilterField({ label, testId, children }: { label: string; testId: string; children: React.ReactNode }) {
+function FilterField({ label, id, children }: { label: string; id: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={testId} className="text-xs font-medium text-neutral-500">{label}</label>
+      <label htmlFor={id} className="text-xs font-medium text-neutral-500">{label}</label>
       {children}
     </div>
   );
 }
 
-function AuditRow({ entry }: { entry: AuditEntry }) {
+// ── AuditRow ──────────────────────────────────────────────────────────────────
+
+function AuditRow({ entry, onView }: { entry: AuditEntry; onView: (e: AuditEntry) => void }) {
+  const { t } = useTranslation("audit");
+  const aggregateLabel = useAggregateLabel(entry.aggregateType);
+
   return (
     <tr data-testid={`audit-entry-${entry.id}`} className="transition-colors hover:bg-neutral-50/60">
       <td className="px-5 py-3.5">
@@ -228,9 +259,9 @@ function AuditRow({ entry }: { entry: AuditEntry }) {
       </td>
       <td className="hidden px-5 py-3.5 md:table-cell">
         <span className="inline-flex items-center rounded-md bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-700">
-          {entry.aggregateType}
+          {aggregateLabel}
         </span>
-        <p className="mt-0.5 truncate text-xs text-neutral-400 max-w-[180px]" title={entry.aggregateId}>
+        <p className="mt-0.5 max-w-[180px] truncate text-xs text-neutral-400" title={entry.aggregateId}>
           {entry.aggregateId}
         </p>
       </td>
@@ -241,14 +272,136 @@ function AuditRow({ entry }: { entry: AuditEntry }) {
         {entry.isCritico ? (
           <span className="inline-flex items-center gap-1 rounded-full bg-danger/10 px-2.5 py-0.5 text-xs font-medium text-danger">
             <ShieldAlert className="h-3 w-3" aria-hidden="true" />
-            Crítico
+            {t("criticality.critical")}
           </span>
         ) : (
           <span className="inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-500">
-            Normal
+            {t("criticality.normal")}
           </span>
         )}
       </td>
+      <td className="px-5 py-3.5 text-right">
+        <button
+          type="button"
+          aria-label={t("modal.title")}
+          onClick={() => onView(entry)}
+          className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+        >
+          <Eye className="h-4 w-4" aria-hidden="true" />
+        </button>
+      </td>
     </tr>
+  );
+}
+
+// ── AuditViewModal ────────────────────────────────────────────────────────────
+
+function AuditViewModal({ entry, open, onClose }: { entry: AuditEntry | undefined; open: boolean; onClose: () => void }) {
+  const { t } = useTranslation("audit");
+  const [copied, setCopied] = useState(false);
+  const aggregateLabel = entry ? useAggregateLabel(entry.aggregateType) : "";
+
+  const copyHash = () => {
+    if (!entry) return;
+    void navigator.clipboard.writeText(entry.hash).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  if (!entry) return null;
+
+  const payloadEntries = Object.entries(entry.payload);
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={t("modal.title")}
+      subtitle={entry.eventName}
+      maxWidth="max-w-2xl"
+      footer={
+        <div className="flex justify-end">
+          <Button variant="secondary" size="sm" onClick={onClose}>
+            {t("modal.close")}
+          </Button>
+        </div>
+      }
+    >
+      <div className="space-y-4">
+        {/* Critical badge */}
+        {entry.isCritico && (
+          <div className="flex items-center gap-2 rounded-lg border border-danger/20 bg-danger/5 px-3 py-2">
+            <ShieldAlert className="h-4 w-4 shrink-0 text-danger" aria-hidden="true" />
+            <p className="text-sm font-medium text-danger">{t("criticality.critical")}</p>
+          </div>
+        )}
+
+        {/* Main info grid */}
+        <div className="grid grid-cols-2 gap-3">
+          <InfoCell label={t("modal.eventName")} value={entry.eventName} />
+          <InfoCell label={t("modal.aggregateType")} value={aggregateLabel} />
+          <InfoCell label={t("modal.occurredAt")} value={new Date(entry.occurredAt).toLocaleString()} />
+          <InfoCell label={t("modal.createdAt")} value={new Date(entry.createdAt).toLocaleString()} />
+          <InfoCell label={t("modal.ipAddress")} value={entry.ipAddress ?? "—"} />
+          <InfoCell label={t("modal.isCritico")} value={entry.isCritico ? t("modal.yes") : t("modal.no")} />
+        </div>
+
+        {/* IDs */}
+        <div className="space-y-2">
+          <InfoCell label={t("modal.aggregateId")} value={entry.aggregateId} mono />
+          {entry.servidorId && (
+            <InfoCell label={t("modal.servidorId")} value={entry.servidorId} mono />
+          )}
+          <InfoCell label={t("modal.id")} value={entry.id} mono />
+        </div>
+
+        {/* Hash */}
+        <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs font-semibold text-neutral-500">{t("modal.hash")}</p>
+            <button
+              type="button"
+              onClick={copyHash}
+              className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-neutral-400 hover:bg-neutral-200 hover:text-neutral-700"
+            >
+              {copied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
+              {copied ? "Copiado" : "Copiar"}
+            </button>
+          </div>
+          <p className="mt-1 break-all font-mono text-xs text-neutral-600">{entry.hash}</p>
+        </div>
+
+        {/* Payload */}
+        <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2">
+          <p className="mb-2 text-xs font-semibold text-neutral-500">{t("modal.payload")}</p>
+          {payloadEntries.length === 0 ? (
+            <p className="text-xs text-neutral-400">{t("modal.payloadEmpty")}</p>
+          ) : (
+            <div className="space-y-1">
+              {payloadEntries.map(([key, value]) => (
+                <div key={key} className="flex items-start gap-2 text-xs">
+                  <span className="shrink-0 font-medium text-neutral-600">{key}:</span>
+                  <span className="break-all font-mono text-neutral-500">{JSON.stringify(value)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+// ── InfoCell ──────────────────────────────────────────────────────────────────
+
+function InfoCell({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2">
+      <p className="text-xs font-semibold text-neutral-500">{label}</p>
+      <p className={["mt-0.5 text-sm text-neutral-900 break-all", mono ? "font-mono text-xs" : ""].join(" ")}>
+        {value}
+      </p>
+    </div>
   );
 }

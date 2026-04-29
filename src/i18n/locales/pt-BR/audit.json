@@ -6,18 +6,22 @@
     "empty": {
       "title": "Nenhum evento encontrado",
       "message": "Tente alterar os filtros ou o intervalo de datas."
-    }
+    },
+    "counter_one": "{{count}} evento",
+    "counter_other": "{{count}} eventos",
+    "page": "Página {{page}} de {{total}}"
   },
   "filters": {
     "eventName": "Nome do evento",
-    "aggregateType": "Tipo de aggregate",
-    "aggregateId": "ID do aggregate",
+    "aggregateType": "Tipo de entidade",
+    "aggregateId": "ID da entidade",
     "isCritico": "Criticidade",
     "dataInicio": "Data início",
     "dataFim": "Data fim",
     "placeholders": {
       "eventName": "Ex: CorridaCriada",
       "aggregateType": "Ex: Corrida, Motorista",
+      "aggregateId": "UUID da entidade",
       "allEvents": "Todos os eventos",
       "criticalOnly": "Apenas críticos",
       "nonCritical": "Não críticos"
@@ -25,11 +29,40 @@
   },
   "table": {
     "event": "Evento",
-    "aggregate": "Aggregate",
+    "aggregate": "Entidade",
     "occurredAt": "Ocorrido em",
-    "critical": "Criticidade"
+    "critical": "Criticidade",
+    "actions": "Ações"
   },
-  "actions": {
-    "loadMore": "Carregar mais"
+  "criticality": {
+    "critical": "Crítico",
+    "normal": "Normal"
+  },
+  "modal": {
+    "title": "Detalhes do evento",
+    "close": "Fechar",
+    "id": "ID do registro",
+    "eventName": "Nome do evento",
+    "aggregateType": "Tipo de entidade",
+    "aggregateId": "ID da entidade",
+    "servidorId": "Servidor responsável",
+    "ipAddress": "Endereço IP",
+    "occurredAt": "Ocorrido em",
+    "createdAt": "Registrado em",
+    "isCritico": "Evento crítico",
+    "hash": "Hash de integridade (SHA-256)",
+    "payload": "Payload do evento",
+    "payloadEmpty": "Sem dados adicionais",
+    "yes": "Sim",
+    "no": "Não"
+  },
+  "aggregateTypes": {
+    "Corrida": "Corrida",
+    "Motorista": "Motorista",
+    "Servidor": "Servidor",
+    "Veiculo": "Veículo",
+    "Cargo": "Cargo",
+    "Lotacao": "Lotação",
+    "User": "Usuário"
   }
 }

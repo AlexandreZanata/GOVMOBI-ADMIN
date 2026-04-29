@@ -6,18 +6,22 @@
     "empty": {
       "title": "No events found",
       "message": "Try changing the filters or date range."
-    }
+    },
+    "counter_one": "{{count}} event",
+    "counter_other": "{{count}} events",
+    "page": "Page {{page}} of {{total}}"
   },
   "filters": {
     "eventName": "Event name",
-    "aggregateType": "Aggregate type",
-    "aggregateId": "Aggregate ID",
+    "aggregateType": "Entity type",
+    "aggregateId": "Entity ID",
     "isCritico": "Criticality",
     "dataInicio": "Start date",
     "dataFim": "End date",
     "placeholders": {
       "eventName": "e.g. CorridaCriada",
       "aggregateType": "e.g. Corrida, Motorista",
+      "aggregateId": "Entity UUID",
       "allEvents": "All events",
       "criticalOnly": "Critical only",
       "nonCritical": "Non-critical"
@@ -25,11 +29,40 @@
   },
   "table": {
     "event": "Event",
-    "aggregate": "Aggregate",
+    "aggregate": "Entity",
     "occurredAt": "Occurred at",
-    "critical": "Criticality"
+    "critical": "Criticality",
+    "actions": "Actions"
   },
-  "actions": {
-    "loadMore": "Load more"
+  "criticality": {
+    "critical": "Critical",
+    "normal": "Normal"
+  },
+  "modal": {
+    "title": "Event details",
+    "close": "Close",
+    "id": "Record ID",
+    "eventName": "Event name",
+    "aggregateType": "Entity type",
+    "aggregateId": "Entity ID",
+    "servidorId": "Responsible server",
+    "ipAddress": "IP address",
+    "occurredAt": "Occurred at",
+    "createdAt": "Recorded at",
+    "isCritico": "Critical event",
+    "hash": "Integrity hash (SHA-256)",
+    "payload": "Event payload",
+    "payloadEmpty": "No additional data",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "aggregateTypes": {
+    "Corrida": "Run",
+    "Motorista": "Driver",
+    "Servidor": "Employee",
+    "Veiculo": "Vehicle",
+    "Cargo": "Position",
+    "Lotacao": "Department",
+    "User": "User"
   }
 }
