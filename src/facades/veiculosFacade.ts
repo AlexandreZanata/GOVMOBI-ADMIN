@@ -25,7 +25,7 @@ export const veiculosFacade = {
    * @throws ApiError on non-2xx responses
    */
   async listVeiculos(): Promise<Veiculo[]> {
-    const response = await fetchWithAuth(`${baseUrl()}/frota/veiculos`);
+    const response = await fetchWithAuth(`${baseUrl()}/frota/veiculos?incluirInativos=true`);
     return handleEnvelopedResponse<Veiculo[]>(response);
   },
 

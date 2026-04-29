@@ -32,7 +32,7 @@ export const motoristasFacade = {
    * @throws ApiError on non-2xx responses
    */
   async listMotoristas(): Promise<Motorista[]> {
-    const response = await fetchWithAuth(`${baseUrl()}/frota/motoristas`);
+    const response = await fetchWithAuth(`${baseUrl()}/frota/motoristas?incluirInativos=true`);
     return handleEnvelopedResponse<Motorista[]>(response);
   },
 

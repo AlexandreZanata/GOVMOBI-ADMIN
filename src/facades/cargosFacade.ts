@@ -25,7 +25,7 @@ export const cargosFacade = {
    * @throws ApiError on non-2xx responses
    */
   async listCargos(): Promise<Cargo[]> {
-    const response = await fetchWithAuth(`${baseUrl()}/cargos`);
+    const response = await fetchWithAuth(`${baseUrl()}/cargos?incluirInativos=true`);
     return handleEnvelopedResponse<Cargo[]>(response);
   },
 
