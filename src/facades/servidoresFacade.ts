@@ -1,4 +1,4 @@
-import { handleEnvelopedResponse } from "@/lib/handleApiResponse";
+import { handleEnvelopedResponse, handleApiResponse } from "@/lib/handleApiResponse";
 import { fetchWithAuth } from "@/facades/authFacade";
 import { getApiBase } from "@/lib/apiBase";
 import type { Servidor } from "@/models/Servidor";
@@ -131,7 +131,8 @@ export const servidoresFacade = {
       method: "PATCH",
       body: formData,
     });
-    return handleEnvelopedResponse<{ fotoPerfilUrl: string }>(response);
+    // API returns { fotoPerfilUrl } directly — no envelope wrapper
+    return handleApiResponse<{ fotoPerfilUrl: string }>(response);
   },
 
   /**
@@ -151,6 +152,7 @@ export const servidoresFacade = {
       method: "PATCH",
       body: formData,
     });
-    return handleEnvelopedResponse<{ fotoPerfilUrl: string }>(response);
+    // API returns { fotoPerfilUrl } directly — no envelope wrapper
+    return handleApiResponse<{ fotoPerfilUrl: string }>(response);
   },
 };
