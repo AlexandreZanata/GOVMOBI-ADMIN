@@ -96,9 +96,17 @@ describe("RunsPageClient", () => {
     });
     
     mockUseCurrentUser.mockReturnValue({
-      data: { id: "user-1", email: "admin@test.com", role: UserRole.ADMIN },
+      data: {
+        id: "user-1",
+        nome: "Admin User",
+        cpf: "00000000000",
+        email: "admin@test.com",
+        role: UserRole.ADMIN,
+        permissions: [],
+      },
       isLoading: false,
       isError: false,
+      error: null,
       refetch: vi.fn(async () => { throw new Error("not used"); }),
     });
     

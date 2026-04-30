@@ -6,8 +6,8 @@ export interface CreateCargoInput {
   nome: string;
   /** Priority weight for dispatch ordering (0–100). */
   pesoPrioridade: number;
-  /** Hierarchical level of the cargo. */
-  nivelHierarquia: number;
+  /** Hierarchical level of the cargo (optional). */
+  nivelHierarquia?: number;
 }
 
 /**
@@ -19,8 +19,8 @@ export interface UpdateCargoInput {
   nome: string;
   /** Updated priority weight (0–100). */
   pesoPrioridade: number;
-  /** Updated hierarchical level. */
-  nivelHierarquia: number;
+  /** Updated hierarchical level (optional). */
+  nivelHierarquia?: number;
 }
 
 /**

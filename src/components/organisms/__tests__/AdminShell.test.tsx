@@ -13,7 +13,7 @@ import React from "react";
 // Mock next/navigation — usePathname used inside NavItem
 vi.mock("next/navigation", () => ({
   usePathname: () => "/runs",
-  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() }),
 }));
 
 // Mock next/link — renders a plain <a> in tests
@@ -70,13 +70,13 @@ describe("AdminShell", () => {
   it("renders the sidebar in expanded state by default", () => {
     render(<AdminShell />);
     const sidebar = screen.getByTestId("sidebar-nav");
-    expect(sidebar).toHaveClass("w-60");
+    expect(sidebar).toHaveStyle({ width: "15rem" });
   });
 
   it("renders the sidebar in collapsed state when defaultCollapsed=true", () => {
     render(<AdminShell defaultCollapsed />);
     const sidebar = screen.getByTestId("sidebar-nav");
-    expect(sidebar).toHaveClass("w-16");
+    expect(sidebar).toHaveStyle({ width: "4rem" });
   });
 
   it("toggles sidebar collapse on button click and persists cookie", async () => {
@@ -87,7 +87,7 @@ describe("AdminShell", () => {
     await user.click(toggle);
 
     const sidebar = screen.getByTestId("sidebar-nav");
-    expect(sidebar).toHaveClass("w-16");
+    expect(sidebar).toHaveStyle({ width: "4rem" });
     expect(document.cookie).toContain("sidebar_collapsed=true");
   });
 

@@ -42,7 +42,7 @@ export function ChangePasswordDialog({
   "data-testid": testId,
 }: ChangePasswordDialogProps): React.ReactElement | null {
   const { t } = useTranslation("auth");
-  const { mutate, isPending, isError, error, isSuccess, reset } = useChangePassword();
+  const { mutate, isPending, reset } = useChangePassword();
 
   const [senhaAntiga, setSenhaAntiga] = useState("");
   const [novaSenha, setNovaSenha] = useState("");
@@ -63,57 +63,17 @@ export function ChangePasswordDialog({
     }
   }, [open]);
 
-  // Reset form when dialog closes
-  useEffect(() => {
-    if (!open) {
-      setSenhaAntiga("");
-      setNovaSenha("");
-      setConfirmarSenha("");
-      setErrors({});
-      setTouched({});
-      setShowSuccess(false);
-      reset();
-    }
-  }, [open, reset]);
-
-  // Handle success: show message and auto-close after 2s
-  useEffect(() => {
-    if (isSuccess) {
-      setShowSuccess(true);
-      const timer = setTimeout(() => {
-        onClose();
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isSuccess, onClose]);
-
-  // Handle API errors
-  useEffect(() => {
-    if (isError && error) {
-      const newErrors: FormErrors = {};
-
-      if (error.status === 401) {
-        // Incorrect current password
-        newErrors.senhaAntiga = t("changePassword.errors.incorrectPassword");
-      } else if (error.status === 422) {
-        // Validation error from API
-        const apiError = error as ApiError & { field?: string };
-        if (apiError.field === "novaSenha") {
-          newErrors.novaSenha = error.message || t("changePassword.errors.passwordTooShort");
-        } else {
-          newErrors.general = error.message;
-        }
-      } else if (error.code === "NETWORK_ERROR") {
-        // Network error
-        newErrors.general = t("errors.networkError");
-      } else {
-        // Other errors
-        newErrors.general = error.message || t("errors.serverError");
-      }
-
-      setErrors(newErrors);
-    }
-  }, [isError, error, t]);
+  // Wrap onClose to also reset form state
+  const handleClose = () => {
+    setSenhaAntiga("");
+    setNovaSenha("");
+    setConfirmarSenha("");
+    setErrors({});
+    setTouched({});
+    setShowSuccess(false);
+    reset();
+    onClose();
+  };
 
   // Client-side validation
   const validateField = (field: string, value: string): string | undefined => {
@@ -175,8 +135,36 @@ export function ChangePasswordDialog({
       return;
     }
 
-    // Submit
-    mutate({ senhaAntiga, novaSenha });
+    // Submit with inline callbacks — avoids setState inside useEffect
+    mutate(
+      { senhaAntiga, novaSenha },
+      {
+        onSuccess: () => {
+          setShowSuccess(true);
+          setTimeout(() => {
+            handleClose();
+          }, 2000);
+        },
+        onError: (err) => {
+          const newErrors: FormErrors = {};
+          if (err.status === 401) {
+            newErrors.senhaAntiga = t("changePassword.errors.incorrectPassword");
+          } else if (err.status === 422) {
+            const apiErr = err as ApiError & { field?: string };
+            if (apiErr.field === "novaSenha") {
+              newErrors.novaSenha = err.message || t("changePassword.errors.passwordTooShort");
+            } else {
+              newErrors.general = err.message;
+            }
+          } else if (err.code === "NETWORK_ERROR") {
+            newErrors.general = t("errors.networkError");
+          } else {
+            newErrors.general = err.message || t("errors.serverError");
+          }
+          setErrors(newErrors);
+        },
+      }
+    );
   };
 
   // Success state
@@ -184,7 +172,7 @@ export function ChangePasswordDialog({
     return (
       <Modal
         open={open}
-        onClose={onClose}
+        onClose={handleClose}
         title={t("changePassword.title")}
         data-testid={testId}
       >
@@ -213,7 +201,7 @@ export function ChangePasswordDialog({
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       title={t("changePassword.title")}
       data-testid={testId}
       footer={
@@ -222,7 +210,7 @@ export function ChangePasswordDialog({
             type="button"
             variant="ghost"
             size="sm"
-            onClick={onClose}
+            onClick={handleClose}
             disabled={isPending}
           >
             {t("changePassword.cancelButton")}

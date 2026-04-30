@@ -3,7 +3,7 @@ import { delay, http, HttpResponse } from "msw";
 import type { AuditEntry } from "@/models/AuditEntry";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
 function latency(): number {
   return 200 + Math.floor(Math.random() * 301);

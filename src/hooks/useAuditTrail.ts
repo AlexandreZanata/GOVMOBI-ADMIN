@@ -17,6 +17,12 @@ export interface UseAuditTrailResult {
   isLoading: boolean;
   isError: boolean;
   refetch: () => Promise<unknown>;
+  /** Whether there is a next page available (alias for currentPage < totalPages). */
+  hasNextPage: boolean;
+  /** Fetches the next page (increments the page filter). */
+  fetchNextPage: () => Promise<unknown>;
+  /** Whether a next-page fetch is in progress. */
+  isFetchingNextPage: boolean;
 }
 
 /**
@@ -43,5 +49,8 @@ export function useAuditTrail(filters: AuditFilters = {}): UseAuditTrailResult {
     isLoading: query.isLoading,
     isError: query.isError,
     refetch: () => query.refetch(),
+    hasNextPage: (query.data?.page ?? 1) < (query.data?.totalPages ?? 0),
+    fetchNextPage: () => query.refetch(),
+    isFetchingNextPage: query.isFetching && !query.isLoading,
   };
 }

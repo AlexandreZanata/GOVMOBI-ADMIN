@@ -6,7 +6,7 @@ import { mockMotoristas } from "@/test/fixtures/motoristas";
 import type { Motorista } from "@/models/Motorista";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
 const server = setupServer(...motoristasHandlers);
 
@@ -185,7 +185,7 @@ describe("motoristasHandlers", () => {
       expect(response.status).toBe(200);
       expect(body.data.ativo).toBe(false);
       expect(body.data.deletedAt).not.toBeNull();
-      expect(body.data.statusOperacional).toBe("INDISPONIVEL");
+      expect(body.data.statusOperacional).toBe("OFFLINE");
     });
 
     it("returns 404 for id 'not-found'", async () => {

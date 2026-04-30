@@ -1,4 +1,4 @@
-import { StatusOperacional, Papel } from "@/models";
+import { StatusOperacional } from "@/models";
 import { Run, RunStatus } from "@/models/Run";
 
 /**

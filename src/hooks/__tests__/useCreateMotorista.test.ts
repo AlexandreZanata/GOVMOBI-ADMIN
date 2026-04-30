@@ -40,7 +40,7 @@ vi.mock("react-i18next", () => ({
 }));
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
 const server = setupServer(...motoristasHandlers);
 

@@ -7,7 +7,6 @@ import dynamic from "next/dynamic";
 import "@/i18n/config";
 
 import { Modal } from "@/components/molecules/Modal";
-import { Button } from "@/components/atoms";
 import type { Run } from "@/models/Run";
 import { RunStatus } from "@/models/Run";
 import type { Servidor } from "@/models/Servidor";

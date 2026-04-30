@@ -11,7 +11,9 @@ describe("Domain model contracts", () => {
       "aguardando_aceite",
       "aceita",
       "em_rota",
+      "passageiro_a_bordo",
       "concluida",
+      "avaliada",
       "cancelada",
       "expirada",
     ]);

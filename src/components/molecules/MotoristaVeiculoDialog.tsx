@@ -37,28 +37,33 @@ export function MotoristaVeiculoDialog({
   const listboxId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [selectedVeiculo, setSelectedVeiculo] = useState<Veiculo | null>(null);
+  // Derive selected vehicle from server data.
+  const derivedVeiculo = currentVeiculo
+    ?? (motorista.veiculoId ? (veiculos.find((v) => v.id === motorista.veiculoId) ?? null) : null);
+
+  const [selectedVeiculo, setSelectedVeiculo] = useState<Veiculo | null>(derivedVeiculo);
+  const [prevDerivedId, setPrevDerivedId] = useState<string | null | undefined>(derivedVeiculo?.id ?? null);
   const [query, setQuery] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [inlineError, setInlineError] = useState<string | null>(null);
+  const [prevOpen, setPrevOpen] = useState(open);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (currentVeiculo) {
-      setSelectedVeiculo(currentVeiculo);
-    } else if (motorista.veiculoId && veiculos.length > 0) {
-      const found = veiculos.find((v) => v.id === motorista.veiculoId) ?? null;
-      setSelectedVeiculo(found);
-    } else {
-      setSelectedVeiculo(null);
-    }
-  }, [currentVeiculo, motorista.veiculoId, veiculos]);
+  // Keep selectedVeiculo in sync when server data arrives — React render-time state update.
+  // This is the recommended pattern for "derived state from props" in React docs.
+  if ((derivedVeiculo?.id ?? null) !== prevDerivedId) {
+    setPrevDerivedId(derivedVeiculo?.id ?? null);
+    setSelectedVeiculo(derivedVeiculo);
+  }
 
-  // Reset error when dialog opens/closes
-  useEffect(() => {
-    if (open) setInlineError(null);
-  }, [open]);
+  // Reset inlineError when dialog opens — render-time state update.
+  if (open && !prevOpen) {
+    setInlineError(null);
+  }
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+  }
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {

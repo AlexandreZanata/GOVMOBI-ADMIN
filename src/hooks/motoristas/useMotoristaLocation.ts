@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import { io, type Socket } from "socket.io-client";
 
 export interface MotoristaLocationData {
@@ -22,6 +22,47 @@ interface UseMotoristaLocationResult {
   isLive: boolean;
 }
 
+interface LocationState {
+  data: MotoristaLocationData | null;
+  isLoading: boolean;
+  error: string | null;
+  isLive: boolean;
+}
+
+type LocationAction =
+  | { type: "CONNECTING" }
+  | { type: "CONNECTED" }
+  | { type: "POSITION"; payload: MotoristaLocationData }
+  | { type: "ERROR"; payload: string }
+  | { type: "DISCONNECTED" }
+  | { type: "RESET" };
+
+const initialState: LocationState = {
+  data: null,
+  isLoading: false,
+  error: null,
+  isLive: false,
+};
+
+function locationReducer(state: LocationState, action: LocationAction): LocationState {
+  switch (action.type) {
+    case "CONNECTING":
+      return { data: null, isLoading: true, error: null, isLive: false };
+    case "CONNECTED":
+      return { ...state, isLive: true };
+    case "POSITION":
+      return { ...state, isLoading: false, error: null, data: action.payload };
+    case "ERROR":
+      return { ...state, isLoading: false, error: action.payload };
+    case "DISCONNECTED":
+      return { ...state, isLive: false };
+    case "RESET":
+      return initialState;
+    default:
+      return state;
+  }
+}
+
 const REFRESH_INTERVAL_MS = 3000;
 
 /**
@@ -35,32 +76,24 @@ export function useMotoristaLocation(
   motoristaId: string | undefined,
   enabled: boolean
 ): UseMotoristaLocationResult {
-  const [data, setData] = useState<MotoristaLocationData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isLive, setIsLive] = useState(false);
+  const [state, dispatch] = useReducer(locationReducer, initialState);
   const socketRef = useRef<Socket | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (!enabled || !motoristaId) {
-      setData(null);
-      setError(null);
-      setIsLive(false);
+      dispatch({ type: "RESET" });
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
-    setData(null);
-    setIsLive(false);
+    dispatch({ type: "CONNECTING" });
 
     const token =
       typeof window !== "undefined"
         ? sessionStorage.getItem("govmobile.access_token")
         : null;
 
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
     const socket = io(`${backendUrl}/despacho`, {
       transports: ["polling", "websocket"],
@@ -81,7 +114,7 @@ export function useMotoristaLocation(
     };
 
     socket.on("connect", () => {
-      setIsLive(true);
+      dispatch({ type: "CONNECTED" });
       requestPosition();
       // Poll every 3s to keep position fresh
       intervalRef.current = setInterval(requestPosition, REFRESH_INTERVAL_MS);
@@ -90,29 +123,25 @@ export function useMotoristaLocation(
     socket.on(
       "posicao-motorista",
       (payload: { motoristaId: string; posicao: MotoristaLocationData | null }) => {
-        setIsLoading(false);
         if (!payload.posicao) {
-          setError("no_position");
+          dispatch({ type: "ERROR", payload: "no_position" });
           return;
         }
-        setError(null);
-        setData(payload.posicao);
+        dispatch({ type: "POSITION", payload: payload.posicao });
       }
     );
 
     socket.on("erro-posicoes", (payload: { mensagem: string }) => {
-      setIsLoading(false);
-      setError(payload.mensagem ?? "error");
+      dispatch({ type: "ERROR", payload: payload.mensagem ?? "error" });
     });
 
     socket.on("connect_error", (err) => {
-      setIsLoading(false);
-      setIsLive(false);
-      setError(err.message ?? "connect_error");
+      dispatch({ type: "ERROR", payload: err.message ?? "connect_error" });
+      dispatch({ type: "DISCONNECTED" });
     });
 
     socket.on("disconnect", () => {
-      setIsLive(false);
+      dispatch({ type: "DISCONNECTED" });
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -129,5 +158,5 @@ export function useMotoristaLocation(
     };
   }, [motoristaId, enabled]);
 
-  return { data, isLoading, error, isLive };
+  return state;
 }

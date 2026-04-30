@@ -264,7 +264,7 @@ export const authFacade = {
             },
             body: JSON.stringify({ refreshToken }),
           });
-        } catch (error) {
+        } catch {
           // Network error - retry if attempts remain
           lastError = new ApiError(0, "NETWORK_ERROR", "Network request failed");
           if (attempt < MAX_RETRIES) {

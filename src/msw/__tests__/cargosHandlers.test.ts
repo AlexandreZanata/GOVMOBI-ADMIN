@@ -5,7 +5,7 @@ import { cargosHandlers } from "@/msw/cargosHandlers";
 import { mockCargos } from "@/test/fixtures/cargos";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
 const server = setupServer(...cargosHandlers);
 

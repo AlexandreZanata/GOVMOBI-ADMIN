@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button, Input } from "@/components/atoms";
@@ -60,12 +60,16 @@ export function MotoristaFormDialog({
     setInlineError(undefined);
   }
 
-  useEffect(() => {
-    if (open && mode === "create") {
-      setServidorId(""); setMunicipioId(""); setCnhNumero(""); setCnhCategoria("B");
-      setErrors({}); setInlineError(undefined);
-    }
-  }, [open, mode]);
+  // Reset form when dialog opens in create mode — called on close and on successful create
+  const resetForm = () => {
+    setServidorId(""); setMunicipioId(""); setCnhNumero(""); setCnhCategoria("B");
+    setErrors({}); setInlineError(undefined);
+  };
+
+  const handleClose = () => {
+    if (mode === "create") resetForm();
+    onClose();
+  };
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
@@ -87,12 +91,12 @@ export function MotoristaFormDialog({
       if (mode === "create") {
         await createMutation.mutateAsync(
           { servidorId: servidorId.trim(), municipioId: municipioId.trim(), cnhNumero: cnhNumero.trim(), cnhCategoria },
-          { onSuccess: onClose }
+          { onSuccess: handleClose }
         );
       } else if (motorista) {
         await updateMutation.mutateAsync(
           { id: motorista.id, cnhNumero: cnhNumero.trim(), cnhCategoria },
-          { onSuccess: onClose }
+          { onSuccess: handleClose }
         );
       }
     } catch (err) {
@@ -105,13 +109,13 @@ export function MotoristaFormDialog({
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       title={mode === "create" ? t("actions.create") : t("actions.edit")}
       maxWidth="max-w-lg"
       data-testid={testId}
       footer={
         <div className="flex items-center justify-end gap-2">
-          <Button type="button" variant="ghost" onClick={onClose} data-testid="motorista-form-cancel">
+          <Button type="button" variant="ghost" onClick={handleClose} data-testid="motorista-form-cancel">
             {t("form.cancel")}
           </Button>
           <Button

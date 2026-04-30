@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button, Input } from "@/components/atoms";
@@ -70,13 +70,16 @@ export function LotacaoFormDialog({
     setNomeError(undefined);
   }
 
-  // Reset form when dialog opens in create mode
-  useEffect(() => {
-    if (open && mode === "create") {
-      setNome("");
-      setNomeError(undefined);
-    }
-  }, [open, mode]);
+  // Reset form fields — called on close and on successful create
+  const resetForm = () => {
+    setNome("");
+    setNomeError(undefined);
+  };
+
+  const handleClose = () => {
+    if (mode === "create") resetForm();
+    onClose();
+  };
 
   if (!open) return null;
 
@@ -110,7 +113,7 @@ export function LotacaoFormDialog({
       } else if (lotacao) {
         await updateMutation.mutateAsync({ id: lotacao.id, nome: trimmed });
       }
-      onClose();
+      handleClose();
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
         setNomeError(t("form.duplicateName"));
@@ -121,7 +124,7 @@ export function LotacaoFormDialog({
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       title={mode === "create" ? t("form.titleCreate") : t("form.titleEdit")}
       maxWidth="max-w-4xl"
       data-testid={testId}
@@ -131,7 +134,7 @@ export function LotacaoFormDialog({
             type="button"
             data-testid={testId ? `${testId}-cancel` : "lotacao-form-cancel"}
             variant="ghost"
-            onClick={onClose}
+            onClick={handleClose}
           >
             {t("form.cancel")}
           </Button>

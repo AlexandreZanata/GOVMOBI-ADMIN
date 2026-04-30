@@ -64,7 +64,7 @@ export function RunsPageClient() {
     status: statusFilter || undefined,
   });
 
-  const runs = data?.data ?? [];
+  const runs = useMemo(() => data?.data ?? [], [data]);
   const totalPages = data?.totalPages ?? 1;
 
   // Client-side search filter (by ID prefix)
