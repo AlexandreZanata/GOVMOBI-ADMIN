@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "@/i18n/config";
 
@@ -50,16 +50,20 @@ export function VeiculoFormDialog({
     setAnoError(undefined);
   }
 
-  useEffect(() => {
-    if (open && mode === "create") {
-      setPlaca(""); setModelo(""); setAno("");
-      setPlacaError(undefined); setModeloError(undefined); setAnoError(undefined);
-    }
-  }, [open, mode]);
-
   const createMutation = useCreateVeiculo();
   const updateMutation = useUpdateVeiculo();
   const isPending = createMutation.isPending || updateMutation.isPending;
+
+  // Reset form fields — called on close and on successful create
+  const resetForm = () => {
+    setPlaca(""); setModelo(""); setAno("");
+    setPlacaError(undefined); setModeloError(undefined); setAnoError(undefined);
+  };
+
+  const handleClose = () => {
+    if (mode === "create") resetForm();
+    onClose();
+  };
 
   const validate = (): boolean => {
     let valid = true;
@@ -92,7 +96,7 @@ export function VeiculoFormDialog({
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       title={mode === "create" ? t("form.titleCreate") : t("form.titleEdit")}
       maxWidth="max-w-2xl"
       data-testid={testId}
@@ -100,7 +104,7 @@ export function VeiculoFormDialog({
         <div className="flex items-center justify-end gap-2">
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="inline-flex items-center justify-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
             data-testid="veiculo-form-cancel"
           >

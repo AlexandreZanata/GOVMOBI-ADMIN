@@ -28,7 +28,7 @@ interface PwErrors {
 export function ProfilePageClient() {
   const { t } = useTranslation("auth");
   const user = useAuthStore((s) => s.user);
-  const { mutate, isPending, isSuccess, isError, error, reset } = useChangePassword();
+  const { mutate, isPending, isSuccess, reset } = useChangePassword();
 
   const [senhaAntiga, setSenhaAntiga] = useState("");
   const [novaSenha, setNovaSenha] = useState("");

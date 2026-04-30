@@ -18,16 +18,17 @@ const mockUseAuditTrail = vi.mocked(useAuditTrail);
 const auditFixture: AuditEntry[] = [
   {
     id: "audit-001",
-    eventType: "run.overridden",
-    actorId: "user-001",
-    actorRole: "SUPERVISOR",
-    entityType: "run",
-    entityId: "run-001",
-    departmentId: "dept-001",
+    eventName: "run.overridden",
+    aggregateId: "run-001",
+    aggregateType: "run",
     payload: { reason: "manual override", prevStatus: "IN_PROGRESS" },
-    priority: "high",
-    timestamp: "2026-04-15T10:30:00.000Z",
-  },
+    occurredAt: "2026-04-15T10:30:00.000Z",
+    servidorId: "user-001",
+    ipAddress: null,
+    isCritico: true,
+    hash: "abc123",
+    createdAt: "2026-04-15T10:30:00.000Z",
+  } satisfies AuditEntry,
 ];
 
 function renderForRole(role: UserRole) {
@@ -42,6 +43,9 @@ describe("AuditPageClient", () => {
   beforeEach(() => {
     mockUseAuditTrail.mockReturnValue({
       data: auditFixture,
+      total: 1,
+      totalPages: 1,
+      currentPage: 1,
       isLoading: false,
       isError: false,
       refetch: vi.fn(async () => undefined),
@@ -66,6 +70,9 @@ describe("AuditPageClient", () => {
     const fetchNextPage = vi.fn(async () => undefined);
     mockUseAuditTrail.mockReturnValue({
       data: auditFixture,
+      total: 1,
+      totalPages: 1,
+      currentPage: 1,
       isLoading: false,
       isError: false,
       refetch: vi.fn(async () => undefined),

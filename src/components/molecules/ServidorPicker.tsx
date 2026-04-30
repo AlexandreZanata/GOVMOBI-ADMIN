@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Search, X, User } from "lucide-react";
 
 import { useServidores } from "@/hooks/servidores/useServidores";
@@ -38,7 +37,6 @@ export function ServidorPicker({
   "data-testid": testId,
   onlyAtivo = true,
 }: ServidorPickerProps) {
-  const { t } = useTranslation("common");
   const inputId = useId();
   const listboxId = useId();
   const containerRef = useRef<HTMLDivElement>(null);

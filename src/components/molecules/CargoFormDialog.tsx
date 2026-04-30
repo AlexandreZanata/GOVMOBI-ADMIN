@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button, Input } from "@/components/atoms";
@@ -88,17 +88,20 @@ export function CargoFormDialog({
     setNivelError(undefined);
   }
 
-  // Reset form when dialog opens in create mode
-  useEffect(() => {
-    if (open && mode === "create") {
-      setNome("");
-      setPesoPrioridade("");
-      setNivelHierarquia("");
-      setNomeError(undefined);
-      setPesoError(undefined);
-      setNivelError(undefined);
-    }
-  }, [open, mode]);
+  // Reset form fields — called on close and on successful create
+  const resetForm = () => {
+    setNome("");
+    setPesoPrioridade("");
+    setNivelHierarquia("");
+    setNomeError(undefined);
+    setPesoError(undefined);
+    setNivelError(undefined);
+  };
+
+  const handleClose = () => {
+    if (mode === "create") resetForm();
+    onClose();
+  };
 
   const validate = (): boolean => {
     let valid = true;
@@ -166,7 +169,7 @@ export function CargoFormDialog({
           nivelHierarquia: nivelNum,
         });
       }
-      onClose();
+      handleClose();
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
         setNomeError(t("form.duplicateName"));
@@ -180,7 +183,7 @@ export function CargoFormDialog({
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       title={t(titleKey)}
       maxWidth="max-w-4xl"
       data-testid={testId}
@@ -190,7 +193,7 @@ export function CargoFormDialog({
             type="button"
             data-testid={testId ? `${testId}-cancel` : "cargo-form-cancel"}
             variant="ghost"
-            onClick={onClose}
+            onClick={handleClose}
           >
             {t("form.cancel")}
           </Button>

@@ -4,7 +4,6 @@ import {
   makeRunDetail,
   runsFixture,
   type PaginatedResponse,
-  type RunDetail,
   type RunListItem,
 } from "@/test/fixtures/runs";
 
