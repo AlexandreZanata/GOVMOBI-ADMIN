@@ -44,7 +44,9 @@ describe("UserMenu", () => {
     const user = userEvent.setup();
     renderMenu(UserRole.DISPATCHER);
 
-    await user.click(screen.getByTestId("user-menu"));
+    // The toggle button is the only button before the dropdown opens
+    const [toggleBtn] = screen.getAllByRole("button");
+    await user.click(toggleBtn);
     expect(screen.getByTestId("user-menu-logout")).toBeInTheDocument();
   });
 });
