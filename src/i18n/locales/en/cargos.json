@@ -1,10 +1,10 @@
 {
   "page": {
-    "title": "Cargos",
-    "accessDenied": "You do not have permission to view cargos.",
+    "title": "Positions",
+    "accessDenied": "You do not have permission to view positions.",
     "empty": {
-      "title": "No cargos found",
-      "message": "Create the first cargo to get started."
+      "title": "No positions found",
+      "message": "Create the first position to get started."
     },
     "filters": {
       "all": "All",
@@ -15,32 +15,36 @@
   "table": {
     "nome": "Name",
     "pesoPrioridade": "Priority Weight",
+    "nivelHierarquia": "Hierarchy Level",
     "status": "Status",
     "actions": "Actions"
   },
   "actions": {
     "view": "View",
-    "create": "New Cargo",
+    "create": "New Position",
     "edit": "Edit",
     "delete": "Deactivate",
     "reativar": "Reactivate"
   },
   "form": {
-    "titleCreate": "New Cargo",
-    "titleEdit": "Edit Cargo",
+    "titleCreate": "New Position",
+    "titleEdit": "Edit Position",
     "nome": "Name",
     "pesoPrioridade": "Priority Weight",
+    "nivelHierarquia": "Hierarchy Level",
     "nomeRequired": "Name is required.",
     "nomeMaxLength": "Name must be at most 100 characters.",
     "pesoPrioridadeRequired": "Priority weight is required.",
     "pesoPrioridadeMin": "Priority weight must be at least 0.",
     "pesoPrioridadeMax": "Priority weight must be at most 100.",
-    "duplicateName": "A cargo with this name already exists.",
+    "nivelHierarquiaRequired": "Hierarchy level is required.",
+    "nivelHierarquiaMin": "Hierarchy level must be a positive integer.",
+    "duplicateName": "A position with this name already exists.",
     "submit": "Save",
     "cancel": "Cancel"
   },
   "delete": {
-    "confirmation": "Do you want to deactivate the cargo \"{{nome}}\"?",
+    "confirmation": "Do you want to deactivate the position \"{{nome}}\"?",
     "reversible": "This action can be reversed."
   },
   "status": {
@@ -48,11 +52,11 @@
     "inactive": "Inactive"
   },
   "toast": {
-    "created": "Cargo created successfully.",
-    "updated": "Cargo updated successfully.",
-    "deleted": "Cargo deactivated.",
-    "reativado": "Cargo reactivated.",
-    "duplicateName": "A cargo with this name already exists.",
-    "notFound": "Cargo not found."
+    "created": "Position created successfully.",
+    "updated": "Position updated successfully.",
+    "deleted": "Position deactivated.",
+    "reativado": "Position reactivated.",
+    "duplicateName": "A position with this name already exists.",
+    "notFound": "Position not found."
   }
 }

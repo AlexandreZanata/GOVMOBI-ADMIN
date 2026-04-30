@@ -13,21 +13,31 @@
     }
   },
   "table": {
+    "servidor": "Servidor",
     "cnhNumero": "Numero da CNH",
     "cnhCategoria": "Categoria da CNH",
     "statusOperacional": "Status operacional",
+    "veiculo": "Veículo",
+    "veiculoAssociado": "Associado",
+    "avaliacao": "Avaliação",
     "status": "Status",
     "actions": "Acoes"
   },
   "actions": {
+    "view": "Visualizar",
     "create": "Novo motorista",
     "edit": "Editar",
     "desativar": "Desativar",
     "reativar": "Reativar",
-    "updateStatus": "Atualizar status"
+    "updateStatus": "Atualizar status",
+    "gerenciarVeiculo": "Gerenciar veículo",
+    "associarVeiculo": "Associar veículo",
+    "desassociarVeiculo": "Remover veículo",
+    "viewLocation": "Ver localização"
   },
   "form": {
-    "servidorId": "Servidor (UUID)",
+    "servidorId": "Servidor",
+    "servidorIdRequired": "Selecione um servidor.",
     "servidorIdInvalid": "O ID do servidor deve ser um UUID válido.",
     "municipioId": "Município (UUID)",
     "municipioIdInvalid": "O ID do município deve ser um UUID válido.",
@@ -35,16 +45,24 @@
     "cnhNumeroRequired": "O número da CNH é obrigatório.",
     "cnhCategoria": "Categoria da CNH",
     "statusOperacional": "Status operacional",
+    "veiculo": "Veículo associado",
+    "veiculoAtual": "Veículo atual",
+    "selecionarVeiculo": "Selecionar novo veículo",
+    "veiculoPlaceholder": "Selecione um veículo...",
     "submit": "Salvar",
     "cancel": "Cancelar"
   },
   "status": {
     "active": "Ativo",
     "inactive": "Inativo",
-    "DISPONIVEL": "Disponivel",
-    "EM_SERVICO": "Em servico",
-    "INDISPONIVEL": "Indisponivel",
-    "AFASTADO": "Afastado"
+    "DISPONIVEL": "Disponível",
+    "EM_CORRIDA": "Em corrida",
+    "OFFLINE": "Offline"
+  },
+  "delete": {
+    "confirmation": "Deseja desativar o motorista com CNH \"{{cnhNumero}}\"?",
+    "reativarConfirmation": "Deseja reativar o motorista com CNH \"{{cnhNumero}}\"?",
+    "reversible": "Esta ação pode ser revertida."
   },
   "toast": {
     "created": "Motorista cadastrado com sucesso.",
@@ -52,8 +70,35 @@
     "statusUpdated": "Status operacional atualizado.",
     "desativado": "Motorista desativado.",
     "reativado": "Motorista reativado.",
+    "veiculoAssociado": "Veículo associado com sucesso.",
+    "veiculoDesassociado": "Veículo removido.",
+    "veiculoJaAssociado": "Motorista já possui um veículo associado.",
     "duplicateCnh": "Ja existe um motorista com este numero de CNH.",
     "notFound": "Motorista nao encontrado.",
     "invalidData": "Dados invalidos. Revise o formulario."
+  },
+  "location": {
+    "title": "Localização do motorista",
+    "subtitle": "CNH: {{cnh}}",
+    "close": "Fechar",
+    "loading": "Carregando localização...",
+    "loadingMap": "Carregando mapa...",
+    "error": "Não foi possível carregar a localização",
+    "errorDescription": "O motorista pode estar offline ou sem localização disponível.",
+    "mapError": "Erro ao carregar o mapa",
+    "noPosition": "Motorista sem localização disponível",
+    "noPositionDescription": "O motorista pode estar offline ou ainda não enviou sua posição.",
+    "driverPosition": "Posição do motorista",
+    "address": "Endereço",
+    "coordinates": "Coordenadas",
+    "lastUpdate": "Última atualização",
+    "operationalStatus": "Status operacional",
+    "activeRun": "Corrida ativa",
+    "passenger": "Passageiro",
+    "destination": "Destino",
+    "opStatus": {
+      "disponivel": "Disponível",
+      "ocupado": "Em corrida"
+    }
   }
 }

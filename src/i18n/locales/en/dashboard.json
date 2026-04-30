@@ -1,0 +1,52 @@
+{
+  "page": {
+    "title": "Dashboard",
+    "subtitle": "Real-time operational overview"
+  },
+  "stats": {
+    "totalServidores": "Total servidores",
+    "totalMotoristas": "Total motoristas",
+    "totalCorridas": "Total runs",
+    "corridasHoje": "Runs today",
+    "ativos": "active",
+    "disponiveis": "available"
+  },
+  "sections": {
+    "topSolicitantes": "Top run requesters",
+    "topMotoristas": "Motoristas with most runs",
+    "topAvaliacoes": "Top rated motoristas",
+    "corridasPorStatus": "Runs by status"
+  },
+  "table": {
+    "rank": "#",
+    "nome": "Name",
+    "total": "Total",
+    "corridas": "runs",
+    "avaliacao": "Rating",
+    "status": "Status",
+    "semDados": "No data available"
+  },
+  "rating": {
+    "pending": "Coming soon",
+    "pendingDescription": "The ratings API is currently being developed."
+  },
+  "status": {
+    "solicitada": "Requested",
+    "aguardando_aceite": "Awaiting acceptance",
+    "aceita": "Accepted",
+    "em_rota": "En route",
+    "passageiro_a_bordo": "Passenger on board",
+    "concluida": "Completed",
+    "avaliada": "Rated",
+    "cancelada": "Cancelled",
+    "expirada": "Expired"
+  },
+  "empty": {
+    "title": "No data",
+    "message": "No data available to display."
+  },
+  "error": {
+    "title": "Failed to load",
+    "retry": "Try again"
+  }
+}

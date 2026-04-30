@@ -167,9 +167,16 @@ export function UsersPageClient({
       <div className="space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between gap-3">
-          <h1 className="text-lg font-semibold text-neutral-900">
-            {t("page.title")}
-          </h1>
+          <div>
+            <h1 className="text-xl font-bold text-neutral-900">
+              {t("page.title")}
+            </h1>
+            {data && (
+              <p className="mt-0.5 text-sm text-neutral-500">
+                {items.length} {items.length === 1 ? "user" : "users"}
+              </p>
+            )}
+          </div>
           <Can perform={Permission.USER_CREATE}>
             <Button
               data-testid="users-create-btn"

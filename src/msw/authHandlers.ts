@@ -2,6 +2,7 @@ import { delay, http, HttpResponse } from "msw";
 
 import { Permission } from "@/models/Permission";
 import { UserRole } from "@/models/User";
+import { Papel } from "@/models";
 import type { AuthUser, TokenPair, LoginInput, RegisterInput } from "@/models/Auth";
 import type { Servidor } from "@/models/Servidor";
 
@@ -115,7 +116,7 @@ export const authHandlers = [
       telefone: body.telefone,
       cargoId: body.cargoId,
       lotacaoId: body.lotacaoId,
-      papeis: ["USUARIO"],
+      papeis: [Papel.USUARIO],
       ativo: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -146,7 +147,7 @@ export const authHandlers = [
       telefone: "11999999999",
       cargoId: "cargo-1",
       lotacaoId: "lotacao-1",
-      papeis: ["USUARIO"],
+      papeis: [Papel.USUARIO],
       ativo: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -154,5 +155,43 @@ export const authHandlers = [
     };
 
     return HttpResponse.json(makeEnvelope(activated));
+  }),
+
+  // POST /auth/change-password — 204 on success, 401 on incorrect password, 422 on validation error
+  http.post(`${BASE_URL}/auth/change-password`, async ({ request }) => {
+    await delay(latency());
+
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return HttpResponse.json(
+        { code: "UNAUTHORIZED", message: "Missing or invalid token" },
+        { status: 401 }
+      );
+    }
+
+    const body = (await request.json()) as { senhaAntiga: string; novaSenha: string };
+
+    // Simulate incorrect current password
+    if (body.senhaAntiga !== VALID_SENHA) {
+      return HttpResponse.json(
+        { code: "UNAUTHORIZED", message: "Current password is incorrect" },
+        { status: 401 }
+      );
+    }
+
+    // Simulate validation error (password too short)
+    if (body.novaSenha.length < 8) {
+      return HttpResponse.json(
+        {
+          code: "VALIDATION_ERROR",
+          message: "Password must be at least 8 characters",
+          field: "novaSenha",
+        },
+        { status: 422 }
+      );
+    }
+
+    // Success - 204 No Content
+    return new HttpResponse(null, { status: 204 });
   }),
 ];

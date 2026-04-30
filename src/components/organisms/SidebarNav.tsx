@@ -5,13 +5,14 @@ import {
   Building2,
   Car,
   ClipboardList,
+  LayoutDashboard,
   MapPin,
   ScrollText,
   Truck,
   UserCheck,
+  UserRound,
   Users,
-  ChevronLeft,
-  ChevronRight,
+  PanelLeftClose,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -23,7 +24,6 @@ import { UserMenu } from "@/components/molecules/UserMenu";
 import type { NavItemConfig } from "@/config/nav";
 import { UserRole } from "@/models";
 
-/** Map of icon name strings to Lucide components. */
 const ICON_MAP: Record<string, LucideIcon> = {
   ClipboardList,
   Briefcase,
@@ -34,39 +34,22 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Users,
   Building2,
   ScrollText,
+  LayoutDashboard,
+  UserRound,
 };
 
 export interface SidebarNavProps {
-  /** Ordered nav item config array. */
   items: NavItemConfig[];
-  /** Whether the sidebar is in collapsed (icon-only) mode. */
   isCollapsed: boolean;
-  /** Called when the collapse toggle is clicked. */
   onToggle: () => void;
-  /** Authenticated user display name. */
   userName: string;
-  /** Authenticated user role. */
   userRole: UserRole;
-  /** Optional avatar URL. */
   userAvatarUrl?: string | null;
-  /** Called when the user clicks the logout button. */
   onLogout?: () => void;
-  /** Test selector. */
+  onChangePassword?: () => void;
   "data-testid"?: string;
 }
 
-/**
- * Admin sidebar navigation with collapse toggle and user identity block.
- *
- * @param items - Ordered nav item config
- * @param isCollapsed - Collapsed state
- * @param onToggle - Toggle callback
- * @param userName - Authenticated user name
- * @param userRole - Authenticated user role
- * @param userAvatarUrl - Optional avatar URL
- * @param testId - Optional test selector
- * @returns Sidebar nav element
- */
 export function SidebarNav({
   items,
   isCollapsed,
@@ -75,6 +58,7 @@ export function SidebarNav({
   userRole,
   userAvatarUrl,
   onLogout,
+  onChangePassword,
   "data-testid": testId,
 }: SidebarNavProps) {
   const { t } = useTranslation("nav");
@@ -82,38 +66,36 @@ export function SidebarNav({
   return (
     <aside
       data-testid={testId ?? "sidebar-nav"}
-      className={[
-        "flex h-full flex-col border-r border-neutral-200 bg-white",
-        "transition-[width] duration-200 ease-in-out",
-        isCollapsed ? "w-16" : "w-60",
-      ].join(" ")}
+      style={{ width: isCollapsed ? "4rem" : "15rem" }}
+      className="relative flex h-full shrink-0 flex-col border-r border-neutral-200 bg-white transition-[width] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-hidden"
     >
-      {/* Logo / brand area */}
-      <div
-        className={[
-          "flex h-14 shrink-0 items-center border-b border-neutral-200 px-3",
-          isCollapsed ? "justify-center" : "gap-2",
-        ].join(" ")}
-      >
-        <span
-          aria-hidden="true"
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-brand-primary text-xs font-bold text-white"
-        >
-          G
-        </span>
-        {!isCollapsed && (
-          <span className="truncate text-sm font-semibold text-neutral-900">
-            GovMobile
+      {/* Brand */}
+      <div className="flex h-14 shrink-0 items-center border-b border-neutral-200">
+        {/* Icon always at same x position */}
+        <div className="flex w-16 shrink-0 items-center justify-center">
+          <span
+            aria-hidden="true"
+            className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-primary text-xs font-bold text-white"
+          >
+            G
           </span>
-        )}
+        </div>
+        {/* Label slides in */}
+        <span
+          className="whitespace-nowrap text-sm font-semibold text-neutral-900 transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+          style={{
+            opacity: isCollapsed ? 0 : 1,
+            transform: isCollapsed ? "translateX(-8px)" : "translateX(0)",
+            pointerEvents: isCollapsed ? "none" : "auto",
+          }}
+        >
+          GovMobile
+        </span>
       </div>
 
-      {/* Navigation links */}
-      <nav
-        aria-label={t("mainNavigation")}
-        className="flex-1 overflow-y-auto px-2 py-3"
-      >
-        <ul className="space-y-1" role="list">
+      {/* Nav links */}
+      <nav aria-label={t("mainNavigation")} className="flex-1 overflow-y-auto overflow-x-hidden py-3">
+        <ul className="space-y-0.5" role="list">
           {items.map((item) => {
             const Icon = ICON_MAP[item.icon];
             if (!Icon) return null;
@@ -141,7 +123,7 @@ export function SidebarNav({
         </ul>
       </nav>
 
-      {/* User identity block */}
+      {/* User menu */}
       <div className="shrink-0 border-t border-neutral-200">
         <UserMenu
           name={userName}
@@ -149,32 +131,39 @@ export function SidebarNav({
           avatarUrl={userAvatarUrl}
           isCollapsed={isCollapsed}
           onLogout={onLogout}
+          onChangePassword={onChangePassword}
         />
       </div>
 
       {/* Collapse toggle */}
-      <div className="shrink-0 border-t border-neutral-200 px-2 py-2">
+      <div className="shrink-0 border-t border-neutral-200">
         <button
           type="button"
           data-testid="sidebar-collapse-toggle"
           aria-expanded={!isCollapsed}
           aria-label={isCollapsed ? t("expand") : t("collapse")}
           onClick={onToggle}
-          className={[
-            "flex w-full items-center rounded-md px-3 py-2 text-sm",
-            "text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary",
-            isCollapsed ? "justify-center" : "gap-2",
-          ].join(" ")}
+          className="flex h-11 w-full items-center text-neutral-400 transition-colors hover:bg-neutral-50 hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-primary"
         >
-          {isCollapsed ? (
-            <ChevronRight aria-hidden="true" className="h-4 w-4 shrink-0" />
-          ) : (
-            <>
-              <ChevronLeft aria-hidden="true" className="h-4 w-4 shrink-0" />
-              <span className="truncate">{t("collapse")}</span>
-            </>
-          )}
+          {/* Icon — always at same x */}
+          <div className="flex w-16 shrink-0 items-center justify-center">
+            <PanelLeftClose
+              aria-hidden="true"
+              className="h-4 w-4 transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+              style={{ transform: isCollapsed ? "rotate(180deg)" : "rotate(0deg)" }}
+            />
+          </div>
+          {/* Label */}
+          <span
+            className="whitespace-nowrap text-sm transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+            style={{
+              opacity: isCollapsed ? 0 : 1,
+              transform: isCollapsed ? "translateX(-8px)" : "translateX(0)",
+              pointerEvents: isCollapsed ? "none" : "auto",
+            }}
+          >
+            {t("collapse")}
+          </span>
         </button>
       </div>
     </aside>

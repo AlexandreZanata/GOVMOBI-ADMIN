@@ -1,7 +1,14 @@
 import { getApiBase } from "@/lib/apiBase";
 import { fetchWithAuth } from "@/facades/authFacade";
 import { handleApiResponse } from "@/lib/handleApiResponse";
-import type { CorridasFilters, CorridasPage, Run } from "@/models/Run";
+import type {
+  CancelRunInput,
+  CorridasFilters,
+  CorridasPage,
+  CreateAdminRunInput,
+  CreateAdminRunResponse,
+  Run,
+} from "@/models/Run";
 
 function baseUrl(): string {
   return getApiBase();
@@ -9,15 +16,11 @@ function baseUrl(): string {
 
 /**
  * Facade for corrida (ride) business actions and API orchestration.
- * Endpoint: GET /corridas — returns { data, total, page, limit, totalPages }
  */
 export const runsFacade = {
   /**
    * Retrieves a paginated list of corridas with optional filters.
-   *
-   * @param filters - Optional pagination and status filters
-   * @returns Promise resolving to the paginated corridas response
-   * @throws ApiError on non-2xx responses
+   * GET /corridas
    */
   async listRuns(filters: CorridasFilters = {}): Promise<CorridasPage> {
     const params = new URLSearchParams();
@@ -33,13 +36,49 @@ export const runsFacade = {
 
   /**
    * Retrieves a single corrida by identifier.
-   *
-   * @param id - Corrida identifier
-   * @returns Promise resolving to the corrida
-   * @throws ApiError 404 when not found
+   * GET /corridas/{id}
    */
   async getRunById(id: string): Promise<Run> {
     const response = await fetchWithAuth(`${baseUrl()}/corridas/${id}`);
     return handleApiResponse<Run>(response);
+  },
+
+  /**
+   * Cancels an active corrida.
+   * POST /corridas/{id}/cancelar
+   * Backend DTO requires solicitanteId (UUID) and tipoSolicitante.
+   */
+  async cancelRun(input: CancelRunInput): Promise<void> {
+    const { id, solicitanteId, motivo, tipoSolicitante } = input;
+    const response = await fetchWithAuth(`${baseUrl()}/corridas/${id}/cancelar`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ solicitanteId, motivo, tipoSolicitante }),
+    });
+    if (!response.ok) {
+      await handleApiResponse<never>(response);
+    }
+  },
+
+  /**
+   * Creates a corrida on behalf of a servidor (admin only).
+   * POST /admin/corridas
+   */
+  async createAdminRun(input: CreateAdminRunInput): Promise<CreateAdminRunResponse> {
+    const response = await fetchWithAuth(`${baseUrl()}/admin/corridas`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    return handleApiResponse<CreateAdminRunResponse>(response);
+  },
+
+  /**
+   * Lists all active corridas with motorista position (admin only).
+   * GET /admin/corridas/ativas
+   */
+  async listActiveRuns(): Promise<Run[]> {
+    const response = await fetchWithAuth(`${baseUrl()}/admin/corridas/ativas`);
+    return handleApiResponse<Run[]>(response);
   },
 };

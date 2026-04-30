@@ -15,6 +15,7 @@
   "table": {
     "nome": "Nome",
     "pesoPrioridade": "Peso de prioridade",
+    "nivelHierarquia": "Nível hierárquico",
     "status": "Status",
     "actions": "Acoes"
   },
@@ -30,11 +31,14 @@
     "titleEdit": "Editar Cargo",
     "nome": "Nome",
     "pesoPrioridade": "Peso de prioridade",
+    "nivelHierarquia": "Nível hierárquico",
     "nomeRequired": "O nome é obrigatório.",
     "nomeMaxLength": "O nome deve ter no máximo 100 caracteres.",
     "pesoPrioridadeRequired": "O peso de prioridade é obrigatório.",
     "pesoPrioridadeMin": "O peso de prioridade deve ser no mínimo 0.",
     "pesoPrioridadeMax": "O peso de prioridade deve ser no máximo 100.",
+    "nivelHierarquiaRequired": "O nível hierárquico é obrigatório.",
+    "nivelHierarquiaMin": "O nível hierárquico deve ser um número inteiro maior que 0.",
     "duplicateName": "Já existe um cargo com este nome.",
     "submit": "Salvar",
     "cancel": "Cancelar"

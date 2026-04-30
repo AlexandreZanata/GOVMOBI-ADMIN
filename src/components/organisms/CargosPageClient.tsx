@@ -114,6 +114,7 @@ export function CargosPageClient({
             <tr>
               <th className="px-4 py-3">{t("table.nome")}</th>
               <th className="px-4 py-3">{t("table.pesoPrioridade")}</th>
+              <th className="hidden px-4 py-3 md:table-cell">{t("table.nivelHierarquia")}</th>
               <th className="px-4 py-3">{t("table.status")}</th>
               <th className="px-4 py-3 text-right">{t("table.actions")}</th>
             </tr>
@@ -151,9 +152,16 @@ export function CargosPageClient({
       <div className="space-y-4">
         {/* Header row */}
         <div className="flex items-center justify-between gap-3">
-          <h1 className="text-lg font-semibold text-neutral-900">
-            {t("page.title")}
-          </h1>
+          <div>
+            <h1 className="text-xl font-bold text-neutral-900">
+              {t("page.title")}
+            </h1>
+            {data && (
+              <p className="mt-0.5 text-sm text-neutral-500">
+                {filtered.length} {filtered.length === 1 ? "cargo" : "cargos"}
+              </p>
+            )}
+          </div>
           <Can perform={Permission.CARGO_CREATE}>
             <Button
               data-testid="cargos-create-btn"
@@ -267,6 +275,7 @@ function CargoRow({ cargo, onView, onEdit, onDelete }: CargoRowProps) {
     >
       <td className="px-4 py-3 font-medium text-neutral-900">{cargo.nome}</td>
       <td className="px-4 py-3 text-neutral-700">{cargo.pesoPrioridade}</td>
+      <td className="hidden px-4 py-3 text-neutral-700 md:table-cell">{cargo.nivelHierarquia ?? "—"}</td>
 
       <td className="px-4 py-3">
         <span

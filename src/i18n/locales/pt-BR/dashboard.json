@@ -1,0 +1,52 @@
+{
+  "page": {
+    "title": "Dashboard",
+    "subtitle": "Visão geral operacional em tempo real"
+  },
+  "stats": {
+    "totalServidores": "Total de servidores",
+    "totalMotoristas": "Total de motoristas",
+    "totalCorridas": "Total de corridas",
+    "corridasHoje": "Corridas hoje",
+    "ativos": "ativos",
+    "disponiveis": "disponíveis"
+  },
+  "sections": {
+    "topSolicitantes": "Usuários que mais solicitam corridas",
+    "topMotoristas": "Motoristas com mais corridas",
+    "topAvaliacoes": "Top motoristas por avaliação",
+    "corridasPorStatus": "Corridas por status"
+  },
+  "table": {
+    "rank": "#",
+    "nome": "Nome",
+    "total": "Total",
+    "corridas": "corridas",
+    "avaliacao": "Avaliação",
+    "status": "Status",
+    "semDados": "Sem dados disponíveis"
+  },
+  "rating": {
+    "pending": "Em breve",
+    "pendingDescription": "A API de avaliações está sendo produzida."
+  },
+  "status": {
+    "solicitada": "Solicitada",
+    "aguardando_aceite": "Aguardando aceite",
+    "aceita": "Aceita",
+    "em_rota": "Em rota",
+    "passageiro_a_bordo": "Passageiro a bordo",
+    "concluida": "Concluída",
+    "avaliada": "Avaliada",
+    "cancelada": "Cancelada",
+    "expirada": "Expirada"
+  },
+  "empty": {
+    "title": "Sem dados",
+    "message": "Nenhum dado disponível para exibição."
+  },
+  "error": {
+    "title": "Erro ao carregar",
+    "retry": "Tentar novamente"
+  }
+}

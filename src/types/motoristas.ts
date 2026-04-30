@@ -1,4 +1,5 @@
-import type { CnhCategoria, MotoristaStatusOperacional } from "@/models/Motorista";
+import type { CnhCategoria } from "@/models/Motorista";
+import type { StatusOperacional } from "@/models";
 
 /**
  * Input contract for registering a new motorista.
@@ -30,7 +31,7 @@ export interface UpdateMotoristaInput {
  */
 export interface UpdateMotoristaStatusInput {
   /** New operational status to assign. */
-  statusOperacional: MotoristaStatusOperacional;
+  statusOperacional: StatusOperacional;
 }
 
 /**

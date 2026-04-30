@@ -1,32 +1,68 @@
 {
   "page": {
     "title": "Audit Trail",
-    "subtitle": "Read-only timeline of state-changing actions across the platform.",
+    "subtitle": "Immutable system event log with integrity verification.",
     "accessDenied": "You do not have permission to view audit entries.",
     "empty": {
-      "title": "No audit entries found",
-      "message": "Try changing filters or date range to view matching events."
-    }
+      "title": "No events found",
+      "message": "Try changing the filters or date range."
+    },
+    "counter_one": "{{count}} event",
+    "counter_other": "{{count}} events",
+    "page": "Page {{page}} of {{total}}"
   },
   "filters": {
-    "eventType": "Event type",
-    "actorId": "Actor ID",
-    "entityType": "Entity type",
-    "from": "From",
-    "to": "To",
+    "eventName": "Event name",
+    "aggregateType": "Entity type",
+    "aggregateId": "Entity ID",
+    "isCritico": "Criticality",
+    "dataInicio": "Start date",
+    "dataFim": "End date",
     "placeholders": {
-      "eventType": "run.overridden",
-      "actorId": "user-001",
-      "entityType": "run"
+      "eventName": "e.g. CorridaCriada",
+      "aggregateType": "e.g. Corrida, Motorista",
+      "aggregateId": "e.g. 019db503-...",
+      "allEvents": "All events",
+      "criticalOnly": "Critical only",
+      "nonCritical": "Non-critical"
     }
   },
-  "actions": {
-    "loadMore": "Load more"
+  "table": {
+    "event": "Event",
+    "aggregate": "Entity",
+    "occurredAt": "Occurred at",
+    "critical": "Criticality",
+    "actions": "Actions"
   },
-  "timeline": {
-    "entity": "Entity: {{entityType}} #{{entityId}}",
-    "payload": "Payload",
-    "payloadEmpty": "none",
-    "actorFallback": "User {{actorId}}"
+  "criticality": {
+    "critical": "Critical",
+    "normal": "Normal"
+  },
+  "modal": {
+    "title": "Event details",
+    "close": "Close",
+    "id": "Record ID",
+    "eventName": "Event name",
+    "aggregateType": "Entity type",
+    "aggregateId": "Entity ID",
+    "servidorId": "Responsible server",
+    "ipAddress": "IP address",
+    "occurredAt": "Occurred at",
+    "createdAt": "Recorded at",
+    "isCritico": "Critical event",
+    "hash": "Integrity hash (SHA-256)",
+    "payload": "Event payload",
+    "payloadEmpty": "No additional data",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "aggregateTypes": {
+    "Corrida": "Run",
+    "Motorista": "Driver",
+    "Servidor": "Employee",
+    "Veiculo": "Vehicle",
+    "Cargo": "Position",
+    "Lotacao": "Department",
+    "User": "User"
   }
 }

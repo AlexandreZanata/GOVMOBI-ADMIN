@@ -1,6 +1,7 @@
 import { delay, http, HttpResponse } from "msw";
 
 import type { Motorista } from "@/models/Motorista";
+import { StatusOperacional } from "@/models";
 import type {
   CreateMotoristaInput,
   UpdateMotoristaInput,
@@ -60,7 +61,10 @@ export const motoristasHandlers = [
       servidorId: body.servidorId,
       cnhNumero: body.cnhNumero,
       cnhCategoria: body.cnhCategoria,
-      statusOperacional: "DISPONIVEL",
+      statusOperacional: StatusOperacional.DISPONIVEL,
+      veiculoId: null,
+      notaMedia: null,
+      totalAvaliacoes: 0,
       ativo: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -144,7 +148,7 @@ export const motoristasHandlers = [
     const updated: Motorista = {
       ...motorista,
       ativo: false,
-      statusOperacional: "INDISPONIVEL",
+      statusOperacional: StatusOperacional.OFFLINE,
       deletedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

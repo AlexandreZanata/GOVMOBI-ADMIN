@@ -1,32 +1,68 @@
 {
   "page": {
     "title": "Trilha de auditoria",
-    "subtitle": "Linha do tempo somente leitura de acoes que alteram estado na plataforma.",
-    "accessDenied": "Voce nao tem permissao para visualizar registros de auditoria.",
+    "subtitle": "Log imutável de eventos do sistema com verificação de integridade.",
+    "accessDenied": "Você não tem permissão para visualizar registros de auditoria.",
     "empty": {
-      "title": "Nenhum registro de auditoria encontrado",
-      "message": "Tente alterar filtros ou intervalo de datas para ver eventos correspondentes."
-    }
+      "title": "Nenhum evento encontrado",
+      "message": "Tente alterar os filtros ou o intervalo de datas."
+    },
+    "counter_one": "{{count}} evento",
+    "counter_other": "{{count}} eventos",
+    "page": "Página {{page}} de {{total}}"
   },
   "filters": {
-    "eventType": "Tipo de evento",
-    "actorId": "ID do ator",
-    "entityType": "Tipo de entidade",
-    "from": "De",
-    "to": "Ate",
+    "eventName": "Nome do evento",
+    "aggregateType": "Tipo de entidade",
+    "aggregateId": "ID da entidade",
+    "isCritico": "Criticidade",
+    "dataInicio": "Data início",
+    "dataFim": "Data fim",
     "placeholders": {
-      "eventType": "run.overridden",
-      "actorId": "user-001",
-      "entityType": "run"
+      "eventName": "Ex: CorridaCriada",
+      "aggregateType": "Ex: Corrida, Motorista",
+      "aggregateId": "Ex: 019db503-...",
+      "allEvents": "Todos os eventos",
+      "criticalOnly": "Apenas críticos",
+      "nonCritical": "Não críticos"
     }
   },
-  "actions": {
-    "loadMore": "Carregar mais"
+  "table": {
+    "event": "Evento",
+    "aggregate": "Entidade",
+    "occurredAt": "Ocorrido em",
+    "critical": "Criticidade",
+    "actions": "Ações"
   },
-  "timeline": {
-    "entity": "Entidade: {{entityType}} #{{entityId}}",
-    "payload": "Payload",
-    "payloadEmpty": "nenhum",
-    "actorFallback": "Usuario {{actorId}}"
+  "criticality": {
+    "critical": "Crítico",
+    "normal": "Normal"
+  },
+  "modal": {
+    "title": "Detalhes do evento",
+    "close": "Fechar",
+    "id": "ID do registro",
+    "eventName": "Nome do evento",
+    "aggregateType": "Tipo de entidade",
+    "aggregateId": "ID da entidade",
+    "servidorId": "Servidor responsável",
+    "ipAddress": "Endereço IP",
+    "occurredAt": "Ocorrido em",
+    "createdAt": "Registrado em",
+    "isCritico": "Evento crítico",
+    "hash": "Hash de integridade (SHA-256)",
+    "payload": "Payload do evento",
+    "payloadEmpty": "Sem dados adicionais",
+    "yes": "Sim",
+    "no": "Não"
+  },
+  "aggregateTypes": {
+    "Corrida": "Corrida",
+    "Motorista": "Motorista",
+    "Servidor": "Servidor",
+    "Veiculo": "Veículo",
+    "Cargo": "Cargo",
+    "Lotacao": "Lotação",
+    "User": "Usuário"
   }
 }

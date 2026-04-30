@@ -1,10 +1,10 @@
 {
   "page": {
-    "title": "Lotações",
-    "accessDenied": "You do not have permission to view lotações.",
+    "title": "Departments",
+    "accessDenied": "You do not have permission to view departments.",
     "empty": {
-      "title": "No lotações found",
-      "message": "Create the first lotação to get started."
+      "title": "No departments found",
+      "message": "Create the first department to get started."
     },
     "filters": {
       "all": "All",
@@ -18,23 +18,24 @@
     "actions": "Actions"
   },
   "actions": {
-    "create": "New Lotação",
+    "create": "New Department",
+    "view": "View",
     "edit": "Edit",
     "delete": "Deactivate",
     "reativar": "Reactivate"
   },
   "form": {
-    "titleCreate": "New Lotação",
-    "titleEdit": "Edit Lotação",
+    "titleCreate": "New Department",
+    "titleEdit": "Edit Department",
     "nome": "Name",
     "nomeRequired": "Name is required.",
     "nomeMaxLength": "Name must be at most 100 characters.",
-    "duplicateName": "A lotação with this name already exists.",
+    "duplicateName": "A department with this name already exists.",
     "submit": "Save",
     "cancel": "Cancel"
   },
   "delete": {
-    "confirmation": "Do you want to deactivate the lotação \"{{nome}}\"?",
+    "confirmation": "Do you want to deactivate the department \"{{nome}}\"?",
     "reversible": "This action can be reversed."
   },
   "status": {
@@ -42,11 +43,11 @@
     "inactive": "Inactive"
   },
   "toast": {
-    "created": "Lotação created successfully.",
-    "updated": "Lotação updated successfully.",
-    "deleted": "Lotação deactivated.",
-    "reativado": "Lotação reactivated.",
-    "duplicateName": "A lotação with this name already exists.",
-    "notFound": "Lotação not found."
+    "created": "Department created successfully.",
+    "updated": "Department updated successfully.",
+    "deleted": "Department deactivated.",
+    "reativado": "Department reactivated.",
+    "duplicateName": "A department with this name already exists.",
+    "notFound": "Department not found."
   }
 }

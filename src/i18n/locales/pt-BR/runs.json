@@ -1,40 +1,40 @@
 {
   "status": {
-    "PENDING": "Pendente",
-    "ASSIGNED": "Atribuida",
-    "IN_PROGRESS": "Em andamento",
-    "COMPLETED": "Concluida",
-    "CANCELLED": "Cancelada",
     "solicitada": "Solicitada",
     "aguardando_aceite": "Aguardando aceite",
     "aceita": "Aceita",
     "em_rota": "Em rota",
+    "passageiro_a_bordo": "Passageiro a bordo",
     "concluida": "Concluída",
+    "avaliada": "Avaliada",
     "cancelada": "Cancelada",
     "expirada": "Expirada"
   },
   "page": {
     "title": "Corridas",
     "accessDenied": "Acesso negado",
+    "searchPlaceholder": "Buscar por ID da corrida...",
+    "totalRuns": "corridas",
+    "tabs": {
+      "all": "Todas",
+      "ativas": "Ativas"
+    },
     "empty": {
       "title": "Nenhuma corrida encontrada",
-      "message": "Nao ha corridas para os filtros selecionados."
+      "message": "Não há corridas para os filtros selecionados."
+    },
+    "emptyAtivas": {
+      "title": "Nenhuma corrida ativa",
+      "message": "Não há corridas em andamento no momento."
     },
     "filters": {
       "status": "Status",
-      "type": "Tipo",
       "all": "Todos"
     },
-    "types": {
-      "TRANSPORT": "Transporte",
-      "INSPECTION": "Inspecao",
-      "EMERGENCY": "Emergencia",
-      "MAINTENANCE": "Manutencao",
-      "ADMINISTRATIVE": "Administrativo"
-    },
     "actions": {
-      "assign": "Atribuir",
-      "updateStatus": "Atualizar status",
+      "createRun": "Solicitar corrida",
+      "view": "Visualizar corrida",
+      "cancel": "Cancelar",
       "override": "Sobrescrever"
     }
   },
@@ -47,16 +47,93 @@
     "destino": "Destino",
     "distancia": "Distância",
     "duracao": "Duração",
-    "createdAt": "Criada em"
+    "createdAt": "Criada em",
+    "posicao": "Posição motorista",
+    "actions": "Ações"
   },
   "dialogs": {
     "override": {
       "open": "Sobrescrever",
       "title": "Confirmar sobrescrita de corrida",
-      "description": "Esta acao exige um motivo e sera registrada para auditoria.",
+      "description": "Esta ação exige um motivo e será registrada para auditoria.",
       "reasonLabel": "Motivo da sobrescrita",
       "confirm": "Confirmar sobrescrita",
       "cancel": "Cancelar"
+    },
+    "cancel": {
+      "title": "Cancelar corrida",
+      "description": "Informe o motivo do cancelamento. Esta ação não pode ser desfeita.",
+      "motivoLabel": "Motivo",
+      "confirm": "Confirmar cancelamento",
+      "cancel": "Voltar"
+    },
+    "createRun": {
+      "title": "Solicitar corrida",
+      "passageiroId": "Passageiro",
+      "origem": "Local de origem",
+      "destino": "Local de destino",
+      "origemLat": "Latitude de origem",
+      "origemLng": "Longitude de origem",
+      "destinoLat": "Latitude de destino",
+      "destinoLng": "Longitude de destino",
+      "motivoServico": "Motivo do serviço",
+      "observacoes": "Observações (opcional)",
+      "confirm": "Solicitar",
+      "cancel": "Cancelar",
+      "passageiroIdRequired": "Selecione um passageiro.",
+      "passageiroIdInvalid": "ID do passageiro deve ser um UUID válido.",
+      "origemRequired": "Selecione o local de origem.",
+      "destinoRequired": "Selecione o local de destino.",
+      "origemLatRequired": "Latitude de origem é obrigatória.",
+      "origemLngRequired": "Longitude de origem é obrigatória.",
+      "destinoLatRequired": "Latitude de destino é obrigatória.",
+      "destinoLngRequired": "Longitude de destino é obrigatória.",
+      "motivoServicoRequired": "Motivo do serviço é obrigatório.",
+      "locationPlaceholder": "Digite um endereço ou local..."
     }
+  },
+  "view": {
+    "title": "Corrida",
+    "rota": "Rota",
+    "origem": "Local de origem",
+    "destino": "Local de destino",
+    "distancia": "Distância",
+    "duracao": "Duração estimada",
+    "participantes": "Participantes",
+    "passageiro": "Passageiro",
+    "motorista": "Motorista",
+    "veiculo": "Veículo",
+    "notaMotorista": "Avaliação do motorista",
+    "servico": "Dados do serviço",
+    "motivoServico": "Motivo do serviço",
+    "observacoes": "Observações",
+    "avaliacao": "Avaliação da corrida",
+    "nota": "Nota",
+    "comentario": "Comentário",
+    "cancelamento": "Cancelamento",
+    "cancelMotivo": "Motivo",
+    "cancelTipo": "Solicitante",
+    "cancelSolicitante": "ID do solicitante",
+    "posicaoMotorista": "Posição do motorista",
+    "posicaoAtual": "Localização atual",
+    "posicaoAtualizada": "Atualizado em",
+    "identificacao": "Identificação do registro",
+    "auditoria": "Auditoria",
+    "criadoEm": "Criada em",
+    "atualizadoEm": "Atualizada em",
+    "viewMap": "Ver no mapa",
+    "hideMap": "Ocultar mapa",
+    "loadingRoute": "Carregando rota...",
+    "routeCalculated": "Rota calculada",
+    "straightLine": "Linha reta (rota indisponível)"
+  },
+  "toast": {
+    "created": "Corrida solicitada com sucesso.",
+    "cancelled": "Corrida cancelada.",
+    "cannotCancel": "Não é possível cancelar uma corrida já finalizada.",
+    "cancelError": "Erro ao cancelar a corrida.",
+    "createError": "Erro ao solicitar a corrida.",
+    "alreadyActive": "Servidor já possui uma corrida ativa.",
+    "forbidden": "Acesso negado."
   }
 }

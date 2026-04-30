@@ -10,14 +10,15 @@ import { buildServidorUpdatePayload } from "@/lib/buildServidorUpdatePayload";
 import { formatCpf } from "@/lib/formatCpf";
 import { useCargos } from "@/hooks/cargos/useCargos";
 import { useLotacoes } from "@/hooks/useLotacoes";
-import type { Papel, Servidor } from "@/models/Servidor";
+import type { Servidor } from "@/models/Servidor";
+import { Papel } from "@/models";
 import { ApiError } from "@/types";
 
 /** Dialog mode — controls which mutation is called on submit. */
 export type ServidorFormMode = "create" | "edit";
 
 /** All available papel options. */
-const PAPEL_OPTIONS: Papel[] = ["USUARIO", "ADMIN", "MOTORISTA"];
+const PAPEL_OPTIONS: Papel[] = [Papel.USUARIO, Papel.ADMIN, Papel.MOTORISTA];
 
 /**
  * Props for the servidor create/edit form dialog.
@@ -61,7 +62,7 @@ export function ServidorFormDialog({
   const [telefone, setTelefone] = useState(servidor?.telefone ?? "");
   const [cargoId, setCargoId] = useState(servidor?.cargoId ?? "");
   const [lotacaoId, setLotacaoId] = useState(servidor?.lotacaoId ?? "");
-  const [papeis, setPapeis] = useState<Papel[]>(servidor?.papeis ?? ["USUARIO"]);
+  const [papeis, setPapeis] = useState<Papel[]>(servidor?.papeis ?? [Papel.USUARIO]);
   const [senha, setSenha] = useState("");
   const [inlineError, setInlineError] = useState<string | undefined>();
 
@@ -85,7 +86,7 @@ export function ServidorFormDialog({
     setTelefone(servidor?.telefone ?? "");
     setCargoId(servidor?.cargoId ?? "");
     setLotacaoId(servidor?.lotacaoId ?? "");
-    setPapeis(servidor?.papeis ?? ["USUARIO"]);
+    setPapeis(servidor?.papeis ?? [Papel.USUARIO]);
     setSenha("");
     setInlineError(undefined);
   }

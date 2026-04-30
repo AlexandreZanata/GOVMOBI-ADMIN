@@ -32,7 +32,7 @@ export const motoristasFacade = {
    * @throws ApiError on non-2xx responses
    */
   async listMotoristas(): Promise<Motorista[]> {
-    const response = await fetchWithAuth(`${baseUrl()}/frota/motoristas`);
+    const response = await fetchWithAuth(`${baseUrl()}/frota/motoristas?incluirInativos=true`);
     return handleEnvelopedResponse<Motorista[]>(response);
   },
 
@@ -120,7 +120,7 @@ export const motoristasFacade = {
    * @throws ApiError 404 when the motorista does not exist
    */
   async desativarMotorista(id: string): Promise<Motorista> {
-    const response = await fetch(
+    const response = await fetchWithAuth(
       `${baseUrl()}/frota/motoristas/${id}/desativar`,
       { method: "PATCH" }
     );
@@ -135,10 +135,52 @@ export const motoristasFacade = {
    * @throws ApiError 404 when the motorista does not exist
    */
   async reativarMotorista(id: string): Promise<Motorista> {
-    const response = await fetch(
+    const response = await fetchWithAuth(
       `${baseUrl()}/frota/motoristas/${id}/reativar`,
       { method: "PATCH" }
     );
     return handleEnvelopedResponse<Motorista>(response);
+  },
+
+  /**
+   * Associates a vehicle to a motorista.
+   * POST /frota/motoristas/{id}/veiculo
+   */
+  async associarVeiculo(motoristaId: string, veiculoId: string): Promise<Motorista> {
+    const response = await fetchWithAuth(
+      `${baseUrl()}/frota/motoristas/${motoristaId}/veiculo`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ veiculoId }),
+      }
+    );
+    return handleEnvelopedResponse<Motorista>(response);
+  },
+
+  /**
+   * Removes the vehicle association from a motorista.
+   * DELETE /frota/motoristas/{id}/veiculo
+   */
+  async desassociarVeiculo(motoristaId: string): Promise<void> {
+    const response = await fetchWithAuth(
+      `${baseUrl()}/frota/motoristas/${motoristaId}/veiculo`,
+      { method: "DELETE" }
+    );
+    if (!response.ok) {
+      await handleEnvelopedResponse<never>(response);
+    }
+  },
+
+  /**
+   * Gets the vehicle currently associated to a motorista.
+   * GET /frota/motoristas/{id}/veiculo
+   */
+  async getVeiculoDoMotorista(motoristaId: string): Promise<import("@/models/Veiculo").Veiculo | null> {
+    const response = await fetchWithAuth(
+      `${baseUrl()}/frota/motoristas/${motoristaId}/veiculo`
+    );
+    if (response.status === 404) return null;
+    return handleEnvelopedResponse<import("@/models/Veiculo").Veiculo>(response);
   },
 };

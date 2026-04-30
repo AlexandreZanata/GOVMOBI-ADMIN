@@ -10,31 +10,12 @@ import { useLogout } from "@/hooks/auth/useLogout";
 import { UserRole } from "@/models";
 
 export interface AdminShellProps {
-  /** Page content rendered in the main area. */
   children?: ReactNode;
-  /**
-   * Initial collapsed state read from the server cookie.
-   * Defaults to false (expanded).
-   */
   defaultCollapsed?: boolean;
 }
 
-/**
- * Root admin shell layout — sidebar + header + main content area.
- * Manages sidebar collapse state and persists it to a cookie.
- * Reads authenticated user data from the auth store.
- *
- * @param children - Page content
- * @param defaultCollapsed - Initial sidebar state from server cookie
- * @returns Full-height admin layout
- */
-export function AdminShell({
-  children,
-  defaultCollapsed = false,
-}: AdminShellProps) {
+export function AdminShell({ children, defaultCollapsed = false }: AdminShellProps) {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
-
-  // Real user data from auth store
   const user = useAuthStore((s) => s.user);
   const { mutate: logout } = useLogout();
 
@@ -46,9 +27,7 @@ export function AdminShell({
     });
   }, []);
 
-  const handleLogout = useCallback(() => {
-    logout();
-  }, [logout]);
+  const handleLogout = useCallback(() => logout(), [logout]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-neutral-50">
@@ -63,20 +42,12 @@ export function AdminShell({
       />
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        {/* Top header bar */}
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-neutral-200 bg-white px-6">
-          <h1 className="text-sm font-semibold text-neutral-900">
-            GovMobile Admin
-          </h1>
+          <h1 className="text-sm font-semibold text-neutral-900">GovMobile Admin</h1>
           <LanguageSwitcher />
         </header>
 
-        {/* Main content */}
-        <main
-          id="main-content"
-          className="flex-1 overflow-y-auto p-6"
-          tabIndex={-1}
-        >
+        <main id="main-content" className="flex-1 overflow-y-auto p-6" tabIndex={-1}>
           {children}
         </main>
       </div>

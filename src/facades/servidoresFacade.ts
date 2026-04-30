@@ -30,7 +30,7 @@ export const servidoresFacade = {
    * @throws ApiError on non-2xx responses
    */
   async listServidores(): Promise<Servidor[]> {
-    const response = await fetchWithAuth(`${baseUrl()}/servidores`);
+    const response = await fetchWithAuth(`${baseUrl()}/servidores?incluirInativos=true`);
     return handleEnvelopedResponse<Servidor[]>(response);
   },
 

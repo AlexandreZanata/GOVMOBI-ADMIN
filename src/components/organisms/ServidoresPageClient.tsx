@@ -15,15 +15,17 @@ import { formatCpf } from "@/lib/formatCpf";
 import { unformatCpf } from "@/lib/cpfUtils";
 import { useReativarServidor } from "@/hooks/servidores/useReativarServidor";
 import { useServidores } from "@/hooks/servidores/useServidores";
+import { useCargos } from "@/hooks/cargos/useCargos";
+import { useLotacoes } from "@/hooks/useLotacoes";
 import { filterByAtivo } from "@/lib/filterByAtivo";
 import type { AtivoFilter } from "@/lib/filterByAtivo";
-import { Permission } from "@/models";
-import type { Papel, Servidor } from "@/models/Servidor";
+import { Permission, Papel } from "@/models";
+import type { Servidor } from "@/models/Servidor";
 
 const papelVariant: Record<Papel, "danger" | "info" | "neutral"> = {
-  ADMIN: "danger",
-  MOTORISTA: "info",
-  USUARIO: "neutral",
+  [Papel.ADMIN]: "danger",
+  [Papel.MOTORISTA]: "info",
+  [Papel.USUARIO]: "neutral",
 };
 
 /**
@@ -32,6 +34,10 @@ const papelVariant: Record<Papel, "danger" | "info" | "neutral"> = {
 export function ServidoresPageClient() {
   const { t } = useTranslation("servidores");
   const { data, isLoading, isError, refetch } = useServidores();
+
+  // Pre-load cargos and lotacoes for name resolution in ServidorViewModal
+  const { data: cargosData } = useCargos();
+  const { data: lotacoesData } = useLotacoes();
 
   const [filter, setFilter] = useState<AtivoFilter>("all");
   const [search, setSearch] = useState("");
@@ -124,7 +130,7 @@ export function ServidoresPageClient() {
           </div>
           <Can perform={Permission.SERVIDOR_CREATE}>
             <Button data-testid="servidores-create-btn" variant="primary" size="sm" onClick={handleOpenCreate}>
-              + {t("actions.create")}
+              {t("actions.create")}
             </Button>
           </Can>
         </div>
@@ -201,6 +207,8 @@ export function ServidoresPageClient() {
         open={!!viewTarget}
         onClose={() => setViewTarget(undefined)}
         servidor={viewTarget}
+        cargos={cargosData}
+        lotacoes={lotacoesData}
       />
     </Can>
   );

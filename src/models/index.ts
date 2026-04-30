@@ -9,3 +9,4 @@ export * from "./AuditEntry";
 export * from "./Motorista";
 export * from "./Servidor";
 export * from "./Veiculo";
+export * from "./enums";

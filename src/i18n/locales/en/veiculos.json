@@ -2,6 +2,7 @@
   "page": {
     "title": "Vehicles",
     "accessDenied": "You do not have permission to view vehicles.",
+    "searchPlaceholder": "Search by plate, model or year...",
     "empty": {
       "title": "No vehicles found",
       "message": "Register the first vehicle to get started."
@@ -21,9 +22,18 @@
   },
   "actions": {
     "create": "New Vehicle",
+    "view": "View",
     "edit": "Edit",
     "desativar": "Deactivate",
     "reativar": "Reactivate"
+  },
+  "view": {
+    "dadosVeiculo": "Vehicle Details",
+    "identificacao": "Record Identification",
+    "auditoria": "Audit",
+    "criadoEm": "Created at",
+    "atualizadoEm": "Updated at",
+    "excluidoEm": "Deleted at"
   },
   "form": {
     "titleCreate": "New Vehicle",

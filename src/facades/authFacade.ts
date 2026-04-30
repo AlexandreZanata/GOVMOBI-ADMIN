@@ -10,6 +10,11 @@ import { UserRole } from "@/models/User";
 import type { Servidor } from "@/models/Servidor";
 import { ApiError } from "@/types";
 
+export interface ChangePasswordInput {
+  senhaAntiga: string;
+  novaSenha: string;
+}
+
 function baseUrl(): string {
   return getApiBase();
 }
@@ -20,6 +25,10 @@ function baseUrl(): string {
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
 let refreshPromise: Promise<TokenPair> | null = null;
+
+// Retry configuration for token refresh
+const MAX_RETRIES = 2;
+const RETRY_DELAYS = [1000, 2000]; // Exponential backoff in milliseconds
 
 // ---------------------------------------------------------------------------
 // Token persistence helpers (sessionStorage — survives page refresh, cleared on tab close)
@@ -41,6 +50,9 @@ function saveTokens(pair: TokenPair): void {
     sessionStorage.setItem(TOKEN_KEY, pair.accessToken);
     sessionStorage.setItem(REFRESH_KEY, pair.refreshToken);
   }
+  if (process.env.NODE_ENV === "development") {
+    console.log("Tokens saved");
+  }
 }
 
 /**
@@ -54,6 +66,9 @@ function clearTokens(): void {
   if (typeof window !== "undefined") {
     sessionStorage.removeItem(TOKEN_KEY);
     sessionStorage.removeItem(REFRESH_KEY);
+  }
+  if (process.env.NODE_ENV === "development") {
+    console.log("Tokens cleared");
   }
 }
 
@@ -106,13 +121,19 @@ export async function fetchWithAuth(
       } catch {
         throw new ApiError(0, "NETWORK_ERROR", "Network request failed");
       }
+      // Return the retried response regardless of status —
+      // let the caller decide how to handle non-401 errors
+      return response;
     } catch (error) {
       // If the error is already an ApiError from the retry fetch, re-throw it
       if (error instanceof ApiError && error.code === "NETWORK_ERROR") {
         throw error;
       }
-      // Refresh failed — clear tokens and throw
-      clearTokens();
+      // Refresh failed with 401 (refresh token expired) — clear tokens
+      // For other errors (5xx, network), don't clear tokens — may be transient
+      if (error instanceof ApiError && error.status === 401) {
+        clearTokens();
+      }
       throw error;
     }
   }
@@ -208,6 +229,9 @@ export const authFacade = {
    *
    * Uses a mutex pattern: if a refresh is already in progress, subsequent
    * callers await the same promise instead of issuing duplicate requests.
+   * 
+   * Implements retry logic with exponential backoff for network errors and 5xx responses.
+   * Does NOT retry on 401 responses (authentication failure).
    *
    * @returns The new token pair
    * @throws ApiError on refresh failure
@@ -218,31 +242,92 @@ export const authFacade = {
       return refreshPromise;
     }
 
+    if (process.env.NODE_ENV === "development") {
+      console.log("Token refresh initiated");
+    }
+
     refreshPromise = (async () => {
-      let response: Response;
-      try {
-        response = await fetch(`${baseUrl()}/auth/refresh`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(accessToken
-              ? { Authorization: `Bearer ${accessToken}` }
-              : {}),
-          },
-          body: JSON.stringify({ refreshToken }),
-        });
-      } catch {
-        clearTokens();
-        throw new ApiError(0, "NETWORK_ERROR", "Network request failed");
+      let lastError: Error | ApiError | null = null;
+
+      for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        // Apply exponential backoff delay before retry attempts
+        if (attempt > 0) {
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAYS[attempt - 1]));
+        }
+
+        let response: Response;
+        try {
+          response = await fetch(`${baseUrl()}/auth/refresh`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ refreshToken }),
+          });
+        } catch (error) {
+          // Network error - retry if attempts remain
+          lastError = new ApiError(0, "NETWORK_ERROR", "Network request failed");
+          if (attempt < MAX_RETRIES) {
+            if (process.env.NODE_ENV === "development") {
+              console.log(`Token refresh failed: Network error (attempt ${attempt + 1}/${MAX_RETRIES + 1})`);
+            }
+            continue;
+          }
+          // Final attempt failed — don't clear tokens, may be transient
+          if (process.env.NODE_ENV === "development") {
+            console.log("Token refresh failed: Network error (all retries exhausted)");
+          }
+          throw lastError;
+        }
+
+        // 401 - refresh token is expired/invalid, must re-login
+        if (response.status === 401) {
+          if (process.env.NODE_ENV === "development") {
+            console.log("Token refresh failed: 401 Unauthorized — refresh token expired");
+          }
+          clearTokens();
+          throw new ApiError(401, "UNAUTHORIZED", "Refresh token expired or invalid");
+        }
+
+        // 5xx - server error, retry if attempts remain — don't clear tokens
+        if (response.status >= 500) {
+          lastError = new ApiError(response.status, "SERVER_ERROR", `Server error: ${response.statusText}`);
+          if (attempt < MAX_RETRIES) {
+            if (process.env.NODE_ENV === "development") {
+              console.log(`Token refresh failed: ${response.status} ${response.statusText} (attempt ${attempt + 1}/${MAX_RETRIES + 1})`);
+            }
+            continue;
+          }
+          if (process.env.NODE_ENV === "development") {
+            console.log(`Token refresh failed: ${response.status} ${response.statusText} (all retries exhausted)`);
+          }
+          // Don't clear tokens on server errors — may be transient
+          throw lastError;
+        }
+
+        // Other non-OK responses — don't clear tokens
+        if (!response.ok) {
+          if (process.env.NODE_ENV === "development") {
+            console.log(`Token refresh failed: ${response.status} ${response.statusText}`);
+          }
+          throw new ApiError(response.status, "REFRESH_FAILED", `Token refresh failed: ${response.statusText}`);
+        }
+
+        // Success - parse and save tokens
+        const raw = await handleApiResponse<TokenPair & { success?: boolean; data?: TokenPair }>(response);
+        const tokens: TokenPair = raw.data && raw.data.accessToken
+          ? raw.data
+          : { accessToken: raw.accessToken, refreshToken: raw.refreshToken };
+
+        saveTokens(tokens);
+        if (process.env.NODE_ENV === "development") {
+          console.log("Token refresh succeeded");
+        }
+        return tokens;
       }
 
-      const raw = await handleApiResponse<TokenPair & { success?: boolean; data?: TokenPair }>(response);
-      const tokens: TokenPair = raw.data && raw.data.accessToken
-        ? raw.data
-        : { accessToken: raw.accessToken, refreshToken: raw.refreshToken };
-
-      saveTokens(tokens);
-      return tokens;
+      // Should never reach here, but TypeScript needs this
+      throw lastError || new ApiError(0, "UNKNOWN_ERROR", "Token refresh failed");
     })();
 
     try {
@@ -322,5 +407,31 @@ export const authFacade = {
       method: "POST",
     });
     return handleEnvelopedResponse<Servidor>(response);
+  },
+
+  /**
+   * Changes the authenticated user's password.
+   *
+   * @param senhaAntiga - Current password for verification
+   * @param novaSenha - New password (must be at least 8 characters)
+   * @returns Promise<void> (204 No Content response)
+   * @throws ApiError 401 when current password is incorrect
+   * @throws ApiError 422 on validation errors
+   * @throws ApiError with code NETWORK_ERROR on network failures
+   */
+  async changePassword(senhaAntiga: string, novaSenha: string): Promise<void> {
+    const response = await fetchWithAuth(`${baseUrl()}/auth/change-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ senhaAntiga, novaSenha } satisfies ChangePasswordInput),
+    });
+
+    // 204 No Content - success, no body to parse
+    if (response.status === 204) {
+      return;
+    }
+
+    // For other responses, parse the error
+    await handleApiResponse<never>(response);
   },
 };

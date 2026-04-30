@@ -30,7 +30,7 @@ export const lotacoesFacade = {
    * @throws ApiError on non-2xx responses
    */
   async listLotacoes(): Promise<Lotacao[]> {
-    const response = await fetchWithAuth(`${baseUrl()}/lotacoes`);
+    const response = await fetchWithAuth(`${baseUrl()}/lotacoes?incluirInativos=true`);
     const payload = await handleApiResponse<ApiEnvelope<Lotacao[]>>(response);
     return payload.data;
   },
