@@ -93,7 +93,7 @@ export function useMotoristaLocation(
         ? sessionStorage.getItem("govmobile.access_token")
         : null;
 
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
     const socket = io(`${backendUrl}/despacho`, {
       transports: ["polling", "websocket"],

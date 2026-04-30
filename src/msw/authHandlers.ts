@@ -7,7 +7,7 @@ import type { AuthUser, TokenPair, LoginInput, RegisterInput } from "@/models/Au
 import type { Servidor } from "@/models/Servidor";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
 /** Valid password accepted by the mock login handler. Any CPF is accepted. */
 const VALID_SENHA = "GovMob@2026";

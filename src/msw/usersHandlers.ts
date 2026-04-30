@@ -6,7 +6,7 @@ import type { CreateUserInput, UpdateUserInput } from "@/types/users";
 import { mockUsers } from "@/test/fixtures/users";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://172.19.2.116:3000";
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
 /** Sentinel email that triggers a 409 conflict in tests. */
 const DUPLICATE_EMAIL = "duplicate@gov.internal";
