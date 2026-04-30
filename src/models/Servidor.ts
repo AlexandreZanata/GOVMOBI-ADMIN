@@ -28,4 +28,6 @@ export interface Servidor {
   updatedAt: string;
   /** ISO 8601 timestamp when the record was soft-deleted, or null if active. */
   deletedAt: string | null;
+  /** Public URL of the profile photo, or null when not set. */
+  fotoPerfilUrl?: string | null;
 }

@@ -70,5 +70,21 @@
   "timestamps": {
     "createdAt": "Criado em",
     "updatedAt": "Atualizado em"
+  },
+  "profilePhoto": {
+    "label": "Foto de perfil",
+    "buttonSelect": "Selecionar foto",
+    "buttonSend": "Enviar foto",
+    "buttonChange": "Alterar foto",
+    "preview": "Pré-visualização da foto selecionada",
+    "uploading": "Enviando...",
+    "errors": {
+      "invalidType": "Tipo de arquivo não permitido. Use JPEG, PNG ou WebP.",
+      "fileTooLarge": "O arquivo excede o tamanho máximo de 5 MB.",
+      "invalidFile": "O arquivo é inválido ou corrompido.",
+      "serverNotFound": "Servidor não encontrado.",
+      "serverError": "Erro ao enviar a foto. Tente novamente."
+    },
+    "success": "Foto de perfil atualizada com sucesso."
   }
 }

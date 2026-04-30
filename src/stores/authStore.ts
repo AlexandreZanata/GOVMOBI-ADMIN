@@ -54,6 +54,12 @@ export interface AuthActions {
    * Called on logout and when a token refresh fails.
    */
   clearSession: () => void;
+
+  /**
+   * Updates the profile photo URL of the authenticated user without replacing the full user object.
+   * @param url - The new public URL of the profile photo.
+   */
+  updateFotoPerfilUrl: (url: string) => void;
 }
 
 /**
@@ -87,4 +93,10 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
 
   /** Resets user and authentication status (e.g. on logout or refresh failure). */
   clearSession: () => set({ user: null, isAuthenticated: false }),
+
+  /** Updates the profile photo URL of the authenticated user. */
+  updateFotoPerfilUrl: (url) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, fotoPerfilUrl: url } : state.user,
+    })),
 }));

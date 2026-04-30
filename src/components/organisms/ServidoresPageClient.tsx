@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Search } from "lucide-react";
 
 import { Badge, Button } from "@/components/atoms";
+import { Avatar } from "@/components/atoms/Avatar";
 import { Can } from "@/components/auth/Can";
 import { ErrorState } from "@/components/molecules/ErrorState";
 import { ServidorDeleteDialog } from "@/components/molecules/ServidorDeleteDialog";
@@ -230,7 +231,15 @@ function ServidorRow({ servidor, onView, onEdit, onDelete }: ServidorRowProps) {
   return (
     <tr data-testid={`servidor-row-${servidor.id}`} className="transition-colors hover:bg-neutral-50/60">
       <td className="px-5 py-3.5">
-        <span className="font-medium text-neutral-900">{servidor.nome}</span>
+        <div className="flex items-center gap-3">
+          <Avatar
+            name={servidor.nome}
+            src={servidor.fotoPerfilUrl ?? undefined}
+            size="sm"
+            data-testid={`servidor-avatar-${servidor.id}`}
+          />
+          <span className="font-medium text-neutral-900">{servidor.nome}</span>
+        </div>
       </td>
 
       <td className="hidden px-5 py-3.5 text-neutral-500 md:table-cell">

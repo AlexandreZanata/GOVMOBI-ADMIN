@@ -37,7 +37,7 @@ export function AdminShell({ children, defaultCollapsed = false }: AdminShellPro
         onToggle={handleToggle}
         userName={user?.nome ?? "User"}
         userRole={user?.role ?? UserRole.DISPATCHER}
-        userAvatarUrl={null}
+        userAvatarUrl={user?.fotoPerfilUrl ?? null}
         onLogout={handleLogout}
       />
 

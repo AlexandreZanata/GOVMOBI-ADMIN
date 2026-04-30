@@ -9,6 +9,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { useChangePassword } from "@/hooks/auth/useChangePassword";
 import { formatCpf } from "@/lib/cpfUtils";
 import { Button } from "@/components/atoms";
+import { ProfilePhotoUploader } from "@/components/molecules/ProfilePhotoUploader";
 import type { ApiError } from "@/types";
 
 const ROLE_COLORS: Record<string, string> = {
@@ -79,6 +80,16 @@ export function ProfilePageClient() {
           <h1 className="text-xl font-bold text-neutral-900">{t("profile.title")}</h1>
           <p className="mt-0.5 text-sm text-neutral-500">{t("profile.subtitle")}</p>
         </div>
+      </div>
+
+      {/* Profile photo uploader */}
+      <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
+        <ProfilePhotoUploader
+          mode="me"
+          servidorNome={user?.nome ?? ""}
+          currentFotoUrl={user?.fotoPerfilUrl}
+          data-testid="profile-photo-uploader"
+        />
       </div>
 
       {/* Identity card */}

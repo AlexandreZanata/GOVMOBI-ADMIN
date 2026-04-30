@@ -113,4 +113,44 @@ export const servidoresFacade = {
     });
     return handleEnvelopedResponse<Servidor>(response);
   },
+
+  /**
+   * Uploads the profile photo of the authenticated servidor.
+   * Sends PATCH /servidores/me/foto-perfil with multipart/form-data.
+   * Content-Type is set automatically by the browser when using FormData.
+   *
+   * @param file - Image file (JPEG, PNG or WebP, max 5 MB)
+   * @returns Promise resolving to the public URL of the uploaded photo
+   * @throws ApiError 400 when the file type is not allowed or the image is corrupted
+   * @throws ApiError 413 when the file exceeds the maximum size
+   */
+  async uploadFotoPerfilMe(file: File): Promise<{ fotoPerfilUrl: string }> {
+    const formData = new FormData();
+    formData.append("foto", file);
+    const response = await fetchWithAuth(`${baseUrl()}/servidores/me/foto-perfil`, {
+      method: "PATCH",
+      body: formData,
+    });
+    return handleEnvelopedResponse<{ fotoPerfilUrl: string }>(response);
+  },
+
+  /**
+   * Uploads the profile photo of a specific servidor (admin only).
+   * Sends PATCH /servidores/{id}/foto-perfil with multipart/form-data.
+   *
+   * @param id - Target servidor identifier
+   * @param file - Image file (JPEG, PNG or WebP, max 5 MB)
+   * @returns Promise resolving to the public URL of the uploaded photo
+   * @throws ApiError 400 when the file type is not allowed or the image is corrupted
+   * @throws ApiError 404 when the servidor does not exist
+   */
+  async uploadFotoPerfilAdmin(id: string, file: File): Promise<{ fotoPerfilUrl: string }> {
+    const formData = new FormData();
+    formData.append("foto", file);
+    const response = await fetchWithAuth(`${baseUrl()}/servidores/${id}/foto-perfil`, {
+      method: "PATCH",
+      body: formData,
+    });
+    return handleEnvelopedResponse<{ fotoPerfilUrl: string }>(response);
+  },
 };

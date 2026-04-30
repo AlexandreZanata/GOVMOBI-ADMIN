@@ -145,4 +145,69 @@ export const servidoresHandlers = [
 
     return HttpResponse.json(makeEnvelope(reativado));
   }),
+
+  // PATCH /servidores/me/foto-perfil — upload own profile photo
+  http.patch(`${BASE_URL}/servidores/me/foto-perfil`, async ({ request }) => {
+    await delay(latency());
+    const formData = await request.formData();
+    const foto = formData.get("foto");
+
+    if (!foto || !(foto instanceof File)) {
+      return HttpResponse.json(
+        { code: "INVALID_FILE", message: "Arquivo inválido ou ausente" },
+        { status: 400 }
+      );
+    }
+
+    // Sentinel: file named "invalid" triggers 400
+    if (foto.name === "invalid") {
+      return HttpResponse.json(
+        { code: "INVALID_FILE", message: "Tipo de arquivo não permitido ou imagem corrompida" },
+        { status: 400 }
+      );
+    }
+
+    // Sentinel: file named "toolarge" triggers 413
+    if (foto.name === "toolarge") {
+      return HttpResponse.json(
+        { code: "FILE_TOO_LARGE", message: "Arquivo muito grande (máx. 5MB)" },
+        { status: 413 }
+      );
+    }
+
+    const fotoPerfilUrl = `https://cdn.example.com/avatars/me/${crypto.randomUUID()}.webp`;
+    return HttpResponse.json({ fotoPerfilUrl });
+  }),
+
+  // PATCH /servidores/:id/foto-perfil — admin upload profile photo for any servidor
+  http.patch(`${BASE_URL}/servidores/:id/foto-perfil`, async ({ params, request }) => {
+    await delay(latency());
+    const id = String(params.id);
+
+    if (id === NOT_FOUND_ID) return notFound();
+
+    const servidor = mockServidores.find((s) => s.id === id);
+    if (!servidor) return notFound();
+
+    const formData = await request.formData();
+    const foto = formData.get("foto");
+
+    if (!foto || !(foto instanceof File)) {
+      return HttpResponse.json(
+        { code: "INVALID_FILE", message: "Arquivo inválido ou ausente" },
+        { status: 400 }
+      );
+    }
+
+    // Sentinel: file named "invalid" triggers 400
+    if (foto.name === "invalid") {
+      return HttpResponse.json(
+        { code: "INVALID_FILE", message: "Tipo de arquivo não permitido ou imagem corrompida" },
+        { status: 400 }
+      );
+    }
+
+    const fotoPerfilUrl = `https://cdn.example.com/avatars/${id}/${crypto.randomUUID()}.webp`;
+    return HttpResponse.json({ fotoPerfilUrl });
+  }),
 ];

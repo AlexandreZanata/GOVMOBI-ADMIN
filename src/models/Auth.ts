@@ -17,6 +17,8 @@ export interface AuthUser {
   role: UserRole;
   /** Resolved permissions for the authenticated user. */
   permissions: Permission[];
+  /** Public URL of the profile photo, or null when not set. */
+  fotoPerfilUrl?: string | null;
 }
 
 /**

@@ -70,5 +70,21 @@
   "timestamps": {
     "createdAt": "Created at",
     "updatedAt": "Updated at"
+  },
+  "profilePhoto": {
+    "label": "Profile photo",
+    "buttonSelect": "Select photo",
+    "buttonSend": "Upload photo",
+    "buttonChange": "Change photo",
+    "preview": "Preview of selected photo",
+    "uploading": "Uploading...",
+    "errors": {
+      "invalidType": "File type not allowed. Use JPEG, PNG or WebP.",
+      "fileTooLarge": "The file exceeds the maximum size of 5 MB.",
+      "invalidFile": "The file is invalid or corrupted.",
+      "serverNotFound": "Employee not found.",
+      "serverError": "Error uploading photo. Please try again."
+    },
+    "success": "Profile photo updated successfully."
   }
 }

@@ -6,11 +6,13 @@ import "@/i18n/config";
 
 import { Badge } from "@/components/atoms";
 import { Modal } from "@/components/molecules/Modal";
+import { ProfilePhotoUploader } from "@/components/molecules/ProfilePhotoUploader";
+import { Can } from "@/components/auth/Can";
 import { formatCpf } from "@/lib/formatCpf";
 import type { Servidor } from "@/models/Servidor";
 import type { Cargo } from "@/models/Cargo";
 import type { Lotacao } from "@/models/Lotacao";
-import { Papel } from "@/models";
+import { Papel, Permission } from "@/models";
 
 const papelVariant: Record<Papel, "danger" | "info" | "neutral"> = {
   [Papel.ADMIN]: "danger",
@@ -107,6 +109,19 @@ export function ServidorViewModal({
             </span>
           )}
         </div>
+
+        {/* Profile photo — admin only */}
+        <Can perform={Permission.SERVIDOR_EDIT}>
+          <Section title={t("profilePhoto.label")}>
+            <ProfilePhotoUploader
+              mode="admin"
+              servidorId={servidor.id}
+              servidorNome={servidor.nome}
+              currentFotoUrl={servidor.fotoPerfilUrl}
+              data-testid="servidor-view-photo-uploader"
+            />
+          </Section>
+        </Can>
 
         {/* Informações Pessoais */}
         <Section title="Informações Pessoais">
