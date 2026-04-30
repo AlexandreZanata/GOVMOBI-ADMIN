@@ -5,7 +5,6 @@ import { StatusOperacional } from "@/models";
 import type {
   CreateMotoristaInput,
   UpdateMotoristaInput,
-  UpdateMotoristaStatusInput,
 } from "@/types/motoristas";
 import { makeEnvelope, mockMotoristas } from "@/test/fixtures/motoristas";
 
@@ -123,11 +122,13 @@ export const motoristasHandlers = [
       const motorista = mockMotoristas.find((m) => m.id === id);
       if (!motorista) return notFound();
 
-      const body = (await request.json()) as UpdateMotoristaStatusInput;
+      // Facade sends { status: "..." }, but also accept { statusOperacional: "..." }
+      const body = (await request.json()) as { status?: string; statusOperacional?: string };
+      const newStatus = (body.status ?? body.statusOperacional) as StatusOperacional | undefined;
 
       const updated: Motorista = {
         ...motorista,
-        statusOperacional: body.statusOperacional,
+        ...(newStatus !== undefined && { statusOperacional: newStatus }),
         updatedAt: new Date().toISOString(),
       };
 

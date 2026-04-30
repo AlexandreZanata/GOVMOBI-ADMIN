@@ -1,12 +1,19 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import "@/test/i18n-mock";
 
 import { PermissionsProvider } from "@/components/auth/PermissionsProvider";
 import { UserMenu } from "@/components/molecules/UserMenu";
 import { UserRole } from "@/models";
+
+// Mock next/navigation — UserMenu uses useRouter
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() }),
+  usePathname: () => "/",
+}));
 
 /**
  * Renders user menu with permission context for language selector tests.
@@ -15,10 +22,13 @@ import { UserRole } from "@/models";
  * @returns Testing Library render result
  */
 function renderMenu(role: UserRole) {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <PermissionsProvider role={role}>
-      <UserMenu name="Jane Doe" role={role} isCollapsed={false} />
-    </PermissionsProvider>
+    <QueryClientProvider client={queryClient}>
+      <PermissionsProvider role={role}>
+        <UserMenu name="Jane Doe" role={role} isCollapsed={false} />
+      </PermissionsProvider>
+    </QueryClientProvider>
   );
 }
 

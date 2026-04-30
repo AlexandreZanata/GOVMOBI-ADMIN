@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import "@/test/i18n-mock";
 
@@ -78,10 +79,13 @@ const noopMutation = {
 };
 
 function renderForRole(role: UserRole) {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <PermissionsProvider role={role}>
-      <MotoristasPageClient />
-    </PermissionsProvider>
+    <QueryClientProvider client={queryClient}>
+      <PermissionsProvider role={role}>
+        <MotoristasPageClient />
+      </PermissionsProvider>
+    </QueryClientProvider>
   );
 }
 

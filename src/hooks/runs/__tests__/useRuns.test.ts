@@ -8,7 +8,7 @@ import { renderWithProviders } from "@/test/renderWithProviders";
 import { RunStatus, type Run } from "@/models";
 import type { CorridasPage } from "@/models/Run";
 
-const RUNS_API_URL = "http://localhost:3000/api/proxy/corridas";
+const RUNS_API_URL = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000"}/corridas`;
 
 const runFixture: Run = {
   id: "run-1",

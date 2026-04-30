@@ -124,7 +124,7 @@ export function MotoristasPageClient() {
     <Can
       perform={Permission.MOTORISTA_VIEW}
       fallback={
-        <div className="rounded-xl border border-danger/20 bg-danger/5 p-6">
+        <div data-testid="motoristas-access-denied" className="rounded-xl border border-danger/20 bg-danger/5 p-6">
           <p className="text-sm font-medium text-danger">{t("page.accessDenied")}</p>
         </div>
       }

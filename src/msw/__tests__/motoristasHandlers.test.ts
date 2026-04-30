@@ -185,7 +185,7 @@ describe("motoristasHandlers", () => {
       expect(response.status).toBe(200);
       expect(body.data.ativo).toBe(false);
       expect(body.data.deletedAt).not.toBeNull();
-      expect(body.data.statusOperacional).toBe("INDISPONIVEL");
+      expect(body.data.statusOperacional).toBe("OFFLINE");
     });
 
     it("returns 404 for id 'not-found'", async () => {
