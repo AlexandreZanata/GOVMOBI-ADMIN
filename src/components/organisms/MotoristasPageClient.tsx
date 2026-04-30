@@ -70,7 +70,7 @@ export function MotoristasPageClient() {
 
   if (isLoading) {
     content = (
-      <div className="space-y-2">
+      <div data-testid="motoristas-loading" className="space-y-2">
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="h-14 w-full animate-pulse rounded-lg bg-neutral-100" />
         ))}

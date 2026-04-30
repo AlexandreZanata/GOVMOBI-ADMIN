@@ -70,13 +70,13 @@ describe("AdminShell", () => {
   it("renders the sidebar in expanded state by default", () => {
     render(<AdminShell />);
     const sidebar = screen.getByTestId("sidebar-nav");
-    expect(sidebar).toHaveClass("w-60");
+    expect(sidebar).toHaveStyle({ width: "15rem" });
   });
 
   it("renders the sidebar in collapsed state when defaultCollapsed=true", () => {
     render(<AdminShell defaultCollapsed />);
     const sidebar = screen.getByTestId("sidebar-nav");
-    expect(sidebar).toHaveClass("w-16");
+    expect(sidebar).toHaveStyle({ width: "4rem" });
   });
 
   it("toggles sidebar collapse on button click and persists cookie", async () => {
@@ -87,7 +87,7 @@ describe("AdminShell", () => {
     await user.click(toggle);
 
     const sidebar = screen.getByTestId("sidebar-nav");
-    expect(sidebar).toHaveClass("w-16");
+    expect(sidebar).toHaveStyle({ width: "4rem" });
     expect(document.cookie).toContain("sidebar_collapsed=true");
   });
 
